@@ -103,7 +103,7 @@ public class ListShops extends AppCompatActivity implements GoogleApiClient.Conn
 
     private void displayLocation() {
         if (ActivityCompat.checkSelfPermission(this,android.Manifest.permission.ACCESS_COARSE_LOCATION ) != PackageManager.PERMISSION_GRANTED
-                &&ActivityCompat.checkSelfPermission(this,android.Manifest.permission.ACCESS_FINE_LOCATION) !=  PackageManager.PERMISSION_GRANTED)
+                && ActivityCompat.checkSelfPermission(this,android.Manifest.permission.ACCESS_FINE_LOCATION) !=  PackageManager.PERMISSION_GRANTED)
         {
             return;
         }
@@ -174,9 +174,12 @@ public class ListShops extends AppCompatActivity implements GoogleApiClient.Conn
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     User user = postSnapshot.getValue(User.class);
                     String textStatus;
-                    if (user.getStatus() == 1) {
+                    if (user.getStatus() == 1)
+                    {
                         textStatus = "@string/online";
-                    } else {
+                    }
+                    else
+                    {
                         textStatus = "@string/offline";
                     }
                     Log.d("LOG", "" + user.getEmail() + " is " + textStatus);
@@ -216,12 +219,14 @@ public class ListShops extends AppCompatActivity implements GoogleApiClient.Conn
 
     private void buildGoogleApiClient() {
         mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addApi(LocationServices.API)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
                 .build();
-        super.onStart();
-        mGoogleApiClient.connect();
+        if ( mGoogleApiClient != null )
+        {
+            mGoogleApiClient.connect();
+        }
     }
     private boolean checkPlayServices() {
         int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
@@ -249,11 +254,8 @@ public class ListShops extends AppCompatActivity implements GoogleApiClient.Conn
     }
     @Override
     public void onLocationChanged(Location location) {
-        super.onStart();
-        if(mGoogleApiClient != null)
-        {
-            mGoogleApiClient.connect();
-        }
+        mLastLocation = location;
+        displayLocation();
     }
     @Override
     public void onConnected(@Nullable Bundle bundle) {
@@ -279,11 +281,11 @@ public class ListShops extends AppCompatActivity implements GoogleApiClient.Conn
     }
     @Override
     protected void onStop() {
-        if(mGoogleApiClient != null)
+        super.onStop();
+        if(mGoogleApiClient.isConnected())
         {
             mGoogleApiClient.disconnect();
         }
-        super.onStop();
     }
 
     @Override
