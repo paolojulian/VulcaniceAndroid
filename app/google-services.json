@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "394374229482",
+    "firebase_url": "https://vulcanice-72c4e.firebaseio.com",
+    "project_id": "vulcanice-72c4e",
+    "storage_bucket": "vulcanice-72c4e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:394374229482:android:4f92413f03a3a7df",
+        "android_client_info": {
+          "package_name": "com.vulcanice.vulcanice"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "394374229482-s55vist8b482ggt4das503726g72mt0l.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.vulcanice.vulcanice",
+            "certificate_hash": "eee60490620a55628ad62ea579d6b626c3bdc9a4"
+          }
+        },
+        {
+          "client_id": "394374229482-8q9shhp8mdacgbd96jqit69enub3orrt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAmQCR4gmagNBMiN9pzkRu10C11HwMGqiM"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "394374229482-8q9shhp8mdacgbd96jqit69enub3orrt.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

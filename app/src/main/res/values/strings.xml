@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">VulcaNice</string>
+    <string name="title">Vulcanice</string>
+
+    <string name="vcn_logout">Logout</string>
+    <string name="vcn_signin">Sign In</string>
+    <string name="vcn_signup">Sign Up</string>
+    <string name="vcn_join">Join</string>
+
+    <string name="vcn_online">Online</string>
+    <string name="vcn_offline">Offline</string>
+    <string name="title_activity_map_tracking">Map</string>
+</resources>
