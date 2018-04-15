@@ -1,5 +1,7 @@
 package com.vulcanice.vulcanice;
 
+import android.*;
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -18,13 +20,15 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.google.android.gms.location.LocationListener;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -34,7 +38,11 @@ import com.google.firebase.database.ValueEventListener;
 import com.vulcanice.vulcanice.Model.Tracking;
 import com.vulcanice.vulcanice.Model.User;
 
-public class ListShops extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener{
+public class ListShops extends AppCompatActivity
+        implements GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener,
+        LocationListener
+{
     DatabaseReference locations, onlineShopsRef, currentUserRef, counterRef;
     FirebaseRecyclerAdapter<User, ListShopViewHolder> adapter;
 
@@ -52,6 +60,8 @@ public class ListShops extends AppCompatActivity implements GoogleApiClient.Conn
     private static int UPDATE_INTERVAL = 5000;
     private static int FASTEST_INTERVAL = 3000;
     private static int DISTANCE = 10;
+
+    private FusedLocationProviderClient mFusedLocationClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,7 +94,8 @@ public class ListShops extends AppCompatActivity implements GoogleApiClient.Conn
         {
             ActivityCompat.requestPermissions(this, new String[] {
                 android.Manifest.permission.ACCESS_COARSE_LOCATION,
-                android.Manifest.permission.ACCESS_FINE_LOCATION
+                android.Manifest.permission.ACCESS_FINE_LOCATION,
+                android.Manifest.permission.INTERNET
             },PERMISSION_REQUEST_CODE);
 
         }
@@ -92,8 +103,9 @@ public class ListShops extends AppCompatActivity implements GoogleApiClient.Conn
         {
             if (checkPlayServices())
             {
-                buildGoogleApiClient();
+                mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
                 createLocationRequest();
+                buildGoogleApiClient();
                 displayLocation();
             }
         }
@@ -103,33 +115,50 @@ public class ListShops extends AppCompatActivity implements GoogleApiClient.Conn
 
     private void displayLocation() {
         if (ActivityCompat.checkSelfPermission(this,android.Manifest.permission.ACCESS_COARSE_LOCATION ) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(this,android.Manifest.permission.ACCESS_FINE_LOCATION) !=  PackageManager.PERMISSION_GRANTED)
+                && ActivityCompat.checkSelfPermission(this,android.Manifest.permission.ACCESS_FINE_LOCATION) !=  PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this,android.Manifest.permission.INTERNET) !=  PackageManager.PERMISSION_GRANTED)
         {
             return;
         }
-        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-        if (mLastLocation == null )
-        {
-            Toast.makeText(this, "Couldn't get the location", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        //Update to firebase
-        Tracking tracking = new Tracking();
-        tracking.setEmail( FirebaseAuth.getInstance().getCurrentUser().getEmail() );
-        tracking.setUid( FirebaseAuth.getInstance().getCurrentUser().getUid() );
-        tracking.setLatitude( String.valueOf(mLastLocation.getLatitude()) );
-        tracking.setLongitude( String.valueOf(mLastLocation.getLongitude()) );
+        mFusedLocationClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
+            @Override
+            public void onSuccess(Location location) {
+                //Update to firebase
+                Tracking tracking = new Tracking();
+                tracking.setEmail( FirebaseAuth.getInstance().getCurrentUser().getEmail() );
+                tracking.setUid( FirebaseAuth.getInstance().getCurrentUser().getUid() );
+                tracking.setLatitude( String.valueOf(location.getLatitude()) );
+                tracking.setLongitude( String.valueOf(location.getLongitude()) );
 
-        locations.child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-                .setValue(tracking);
+                locations.child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                        .setValue(tracking);
+            }
+        });
+//        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+//        if (mLastLocation != null )
+//        {
+//            //Update to firebase
+//            Tracking tracking = new Tracking();
+//            tracking.setEmail( FirebaseAuth.getInstance().getCurrentUser().getEmail() );
+//            tracking.setUid( FirebaseAuth.getInstance().getCurrentUser().getUid() );
+//            tracking.setLatitude( String.valueOf(mLastLocation.getLatitude()) );
+//            tracking.setLongitude( String.valueOf(mLastLocation.getLongitude()) );
+//
+//            locations.child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+//                    .setValue(tracking);
+//        }
+//        else
+//        {
+//            Toast.makeText(this, "Couldn't get the location", Toast.LENGTH_SHORT).show();
+//        }
     }
 
     private void createLocationRequest() {
         mLocationRequest = LocationRequest.create();
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         mLocationRequest.setInterval(UPDATE_INTERVAL);
         mLocationRequest.setFastestInterval(FASTEST_INTERVAL);
         mLocationRequest.setSmallestDisplacement(DISTANCE);
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
     private void updateList() {
@@ -219,14 +248,10 @@ public class ListShops extends AppCompatActivity implements GoogleApiClient.Conn
 
     private void buildGoogleApiClient() {
         mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addApi(LocationServices.API)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
                 .build();
-        if ( mGoogleApiClient != null )
-        {
-            mGoogleApiClient.connect();
-        }
     }
     private boolean checkPlayServices() {
         int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
@@ -250,7 +275,10 @@ public class ListShops extends AppCompatActivity implements GoogleApiClient.Conn
     protected void onStart() {
         super.onStart();
         // Connect the client.
-        mGoogleApiClient.connect();
+        if ( mGoogleApiClient != null )
+        {
+            mGoogleApiClient.connect();
+        }
     }
     @Override
     public void onLocationChanged(Location location) {
@@ -269,7 +297,9 @@ public class ListShops extends AppCompatActivity implements GoogleApiClient.Conn
         {
             return;
         }
-        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+        LocationServices.FusedLocationApi.requestLocationUpdates(
+                mGoogleApiClient, mLocationRequest, this
+        );
     }
 
     @Override
@@ -277,15 +307,15 @@ public class ListShops extends AppCompatActivity implements GoogleApiClient.Conn
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
+        Toast.makeText(this, "Location services connection failed!!!", Toast.LENGTH_SHORT).show();
     }
     @Override
     protected void onStop() {
-        super.onStop();
-        if(mGoogleApiClient.isConnected())
+        if(mGoogleApiClient != null)
         {
             mGoogleApiClient.disconnect();
         }
+        super.onStop();
     }
 
     @Override
