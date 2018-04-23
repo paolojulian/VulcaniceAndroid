@@ -3,6 +3,7 @@ package com.vulcanice.vulcanice;
 import android.*;
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 //import android.location.LocationListener;
@@ -18,6 +19,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -103,7 +105,7 @@ public class ListShops extends AppCompatActivity
         {
             if (checkPlayServices())
             {
-                mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+//                mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
                 createLocationRequest();
                 buildGoogleApiClient();
                 displayLocation();
@@ -120,46 +122,39 @@ public class ListShops extends AppCompatActivity
         {
             return;
         }
-        mFusedLocationClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
-            @Override
-            public void onSuccess(Location location) {
-                //Update to firebase
-                Tracking tracking = new Tracking();
-                tracking.setEmail( FirebaseAuth.getInstance().getCurrentUser().getEmail() );
-                tracking.setUid( FirebaseAuth.getInstance().getCurrentUser().getUid() );
-                tracking.setLatitude( String.valueOf(location.getLatitude()) );
-                tracking.setLongitude( String.valueOf(location.getLongitude()) );
-
-                locations.child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-                        .setValue(tracking);
-            }
-        });
-//        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-//        if (mLastLocation != null )
-//        {
-//            //Update to firebase
-//            Tracking tracking = new Tracking();
-//            tracking.setEmail( FirebaseAuth.getInstance().getCurrentUser().getEmail() );
-//            tracking.setUid( FirebaseAuth.getInstance().getCurrentUser().getUid() );
-//            tracking.setLatitude( String.valueOf(mLastLocation.getLatitude()) );
-//            tracking.setLongitude( String.valueOf(mLastLocation.getLongitude()) );
+//        mFusedLocationClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
+//            @Override
+//            public void onSuccess(Location location) {
+//                //Update to firebase
+//                Tracking tracking = new Tracking();
+//                tracking.setEmail( FirebaseAuth.getInstance().getCurrentUser().getEmail() );
+//                tracking.setUid( FirebaseAuth.getInstance().getCurrentUser().getUid() );
+//                tracking.setLatitude( String.valueOf(location.getLatitude()) );
+//                tracking.setLongitude( String.valueOf(location.getLongitude()) );
 //
-//            locations.child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-//                    .setValue(tracking);
-//        }
+//                locations.child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+//                        .setValue(tracking);
+//            }
+//        });
+        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        if (mLastLocation != null )
+        {
+            //Update to firebase
+            Tracking tracking = new Tracking();
+            tracking.setEmail( FirebaseAuth.getInstance().getCurrentUser().getEmail() );
+            tracking.setUid( FirebaseAuth.getInstance().getCurrentUser().getUid() );
+            tracking.setLatitude( String.valueOf(mLastLocation.getLatitude()) );
+            tracking.setLongitude( String.valueOf(mLastLocation.getLongitude()) );
+
+            locations.child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                    .setValue(tracking);
+        }
 //        else
 //        {
 //            Toast.makeText(this, "Couldn't get the location", Toast.LENGTH_SHORT).show();
 //        }
     }
 
-    private void createLocationRequest() {
-        mLocationRequest = LocationRequest.create();
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        mLocationRequest.setInterval(UPDATE_INTERVAL);
-        mLocationRequest.setFastestInterval(FASTEST_INTERVAL);
-        mLocationRequest.setSmallestDisplacement(DISTANCE);
-    }
 
     private void updateList() {
         adapter = new FirebaseRecyclerAdapter<User, ListShopViewHolder>(
@@ -170,7 +165,22 @@ public class ListShops extends AppCompatActivity
         ) {
             @Override
             protected void populateViewHolder(ListShopViewHolder viewHolder, User model, int position) {
-                viewHolder.textEmail.setText(model.getEmail());
+                final String email = model.getEmail();
+                viewHolder.textEmail.setText(email);
+
+                //On click of recycler view
+                viewHolder.itemClickListener = new ItemClickListener() {
+                    public void onClick(View view, int position) {
+                        if ( email != FirebaseAuth.getInstance().getCurrentUser().getEmail())
+                        {
+                            Intent map = new Intent(ListShops.this, MapTracking.class);
+                            map.putExtra("email", FirebaseAuth.getInstance().getCurrentUser().getEmail());
+                            map.putExtra("lat", mLastLocation.getLatitude() );
+                            map.putExtra("lng", mLastLocation.getLongitude() );
+                            startActivity(map);
+                        }
+                    }
+                };
             }
         };
         adapter.notifyDataSetChanged();
@@ -244,14 +254,6 @@ public class ListShops extends AppCompatActivity
                 break;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    private void buildGoogleApiClient() {
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
-                .build();
     }
     private boolean checkPlayServices() {
         int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
@@ -333,6 +335,7 @@ public class ListShops extends AppCompatActivity
                 {
                     if(checkPlayServices())
                     {
+//                        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
                         buildGoogleApiClient();
                         createLocationRequest();
                         displayLocation();
@@ -341,5 +344,20 @@ public class ListShops extends AppCompatActivity
                 break;
 
         }
+    }
+
+    private void buildGoogleApiClient() {
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
+    }
+    private void createLocationRequest() {
+        mLocationRequest = LocationRequest.create();
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        mLocationRequest.setInterval(UPDATE_INTERVAL);
+        mLocationRequest.setFastestInterval(FASTEST_INTERVAL);
+        mLocationRequest.setSmallestDisplacement(DISTANCE);
     }
 }
