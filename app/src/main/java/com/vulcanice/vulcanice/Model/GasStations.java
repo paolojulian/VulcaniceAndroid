@@ -1,24 +1,20 @@
 package com.vulcanice.vulcanice.Model;
 
 /**
- * Created by User on 12/04/2018.
+ * Created by paolo on 4/14/18.
  */
 
-public class VulcanizingShop {
+public class GasStations {
     private String latitude;
     private String longitude;
     private String ownerId;
     private String name;
 
-    public String getLatitude() {
-        return latitude;
-    }
+    public String getLatitude() { return latitude; }
     public void setLatitude(String latitude) { this.latitude = latitude; }
 
     public String getLongitude() { return longitude; }
-    public void setLongitude(String longitude) {
-        this.longitude = longitude;
-    }
+    public void setLongitude(String longitude) { this.longitude = longitude; }
 
     public String getOwnerId() { return ownerId; }
     public void setOwnerId(String ownerId) { this.ownerId = ownerId; }

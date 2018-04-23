@@ -7,7 +7,19 @@
     <string name="vcn_signup">Sign Up</string>
     <string name="vcn_join">Join</string>
 
+    <string name="vcn_vulcanice_inc">VulcaNice ™</string>
+
     <string name="vcn_online">Online</string>
     <string name="vcn_offline">Offline</string>
     <string name="title_activity_map_tracking">Map</string>
+    <!--
+        SHOP_CREATION
+    -->
+    <string name="vcn_shop_name">Name</string>
+    <string name="vcn_shop_description">Description</string>
+    <string-array name="vcn_shop_type">
+        <item>Vulcanizing Station</item>
+        <item>Gasoline Station</item>
+    </string-array>
+    <string name="vcn_shop_create">Create Shop</string>
 </resources>

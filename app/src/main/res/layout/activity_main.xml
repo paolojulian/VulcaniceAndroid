@@ -7,14 +7,42 @@
     android:layout_height="match_parent"
     tools:context="com.vulcanice.vulcanice.MainActivity">
 
-    <Button
-        android:id="@+id/btnSignIn"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/vcn_signin"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_height="match_parent"
+        android:padding="10dp"
+        android:orientation="vertical">
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <Button
+            android:id="@+id/btnSignIn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/vcn_signin"
+            android:layout_marginTop="5dp"
+            android:layout_gravity="top"
+            android:background="@color/colorSemiLight"
+            android:textColor="@color/colorPrimaryDark"/>
 
+        <Button
+            android:id="@+id/btnSignUp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/vcn_signup"
+            android:layout_marginTop="5dp"
+            android:layout_gravity="top"
+            android:background="@color/colorSemiLight"
+            android:textColor="@color/colorPrimaryDark"/>
+
+        <TextView
+            android:text="@string/vcn_vulcanice_inc"
+            android:textAlignment="center"
+            android:layout_marginTop="20dp"
+            android:layout_gravity="bottom"
+            android:textColor="@color/colorPrimary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
 </android.support.constraint.ConstraintLayout>
