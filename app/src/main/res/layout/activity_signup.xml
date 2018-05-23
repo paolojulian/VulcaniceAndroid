@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:background="@color/colorLight"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:padding="10dp"
+        android:layout_height="fill_parent">
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent">
+            <EditText
+                android:id="@+id/signup_email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent">
+            <EditText
+                android:id="@+id/signup_password"
+                android:focusableInTouchMode="true"
+                android:hint="@string/vcn_pwd_hint"
+                android:inputType="textPassword"
+                android:maxLines="1"
+                android:textColor="@color/colorPrimaryDark"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </android.support.design.widget.TextInputLayout>
+
+        <Button
+            android:text="@string/vcn_signup"
+            android:id="@+id/btn_sign_up"
+            android:layout_width="fill_parent"
+            android:textStyle="bold"
+            android:background="@color/colorPrimary"
+            android:layout_marginTop="10dp"
+            android:textColor="@color/colorLight"
+            android:layout_height="wrap_content" />
+        <Button
+            android:text="@string/vcn_forgot_password"
+            android:id="@+id/btn_reset_password"
+            android:textStyle="italic"
+            android:layout_width="fill_parent"
+            android:background="@color/colorAccent"
+            android:layout_marginTop="10dp"
+            android:textColor="@color/colorLight"
+            android:layout_height="wrap_content" />
+        <Button
+            android:text="@string/vcn_link_to_login"
+            android:id="@+id/btn_sign_in"
+            android:layout_width="fill_parent"
+            android:textStyle="italic"
+            android:background="@color/colorAccent"
+            android:layout_marginTop="10dp"
+            android:textColor="@color/colorLight"
+            android:layout_height="wrap_content" />
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            android:layout_width="30dp"
+            android:layout_marginTop="30dp"
+            android:layout_gravity="center|bottom"
+            android:layout_height="30dp" />
+    </LinearLayout>
+
+</android.support.constraint.ConstraintLayout>

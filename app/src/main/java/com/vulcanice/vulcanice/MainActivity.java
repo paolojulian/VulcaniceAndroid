@@ -10,13 +10,20 @@ import com.firebase.ui.auth.AuthUI;
 
 public class MainActivity extends AppCompatActivity {
 
-    Button btnSignIn;
+    Button btnSignIn, btnSignUp;
     private final static int LOGIN_PERMISSION=1000;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        btnSignUp = (Button) findViewById(R.id.btnSignUp);
+        btnSignUp.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, SignUpActivity.class));
+            }
+        });
         btnSignIn = (Button)findViewById(R.id.btnSignIn);
         btnSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -42,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void startNewActivity( int resultCode, Intent data ) {
         if ( resultCode == RESULT_OK ) {
-            Intent intent = new Intent( MainActivity.this, ListShops.class );
+            Intent intent = new Intent( MainActivity.this, CustomerMapActivity.class );
             startActivity( intent );
             finish();
         }

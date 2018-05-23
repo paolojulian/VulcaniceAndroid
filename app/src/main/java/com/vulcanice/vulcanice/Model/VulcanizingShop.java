@@ -7,8 +7,13 @@ package com.vulcanice.vulcanice.Model;
 public class VulcanizingShop {
     private String latitude;
     private String longitude;
-    private String ownerId;
     private String name;
+
+    public VulcanizingShop(String latitude, String longitude, String name) {
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.name = name;
+    }
 
     public String getLatitude() {
         return latitude;
@@ -19,9 +24,6 @@ public class VulcanizingShop {
     public void setLongitude(String longitude) {
         this.longitude = longitude;
     }
-
-    public String getOwnerId() { return ownerId; }
-    public void setOwnerId(String ownerId) { this.ownerId = ownerId; }
 
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }

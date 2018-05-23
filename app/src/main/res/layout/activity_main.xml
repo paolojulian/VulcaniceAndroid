@@ -13,6 +13,7 @@
         android:padding="10dp"
         android:orientation="vertical">
         <ImageView
+            android:layout_marginBottom="50dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
         <Button
@@ -22,8 +23,8 @@
             android:text="@string/vcn_signin"
             android:layout_marginTop="5dp"
             android:layout_gravity="top"
-            android:background="@color/colorSemiLight"
-            android:textColor="@color/colorPrimaryDark"/>
+            android:background="@color/colorPrimaryDark"
+            android:textColor="@color/colorLight"/>
 
         <Button
             android:id="@+id/btnSignUp"
@@ -32,17 +33,8 @@
             android:text="@string/vcn_signup"
             android:layout_marginTop="5dp"
             android:layout_gravity="top"
-            android:background="@color/colorSemiLight"
-            android:textColor="@color/colorPrimaryDark"/>
-
-        <TextView
-            android:text="@string/vcn_vulcanice_inc"
-            android:textAlignment="center"
-            android:layout_marginTop="20dp"
-            android:layout_gravity="bottom"
-            android:textColor="@color/colorPrimary"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:background="@color/colorAccent"
+            android:textColor="@color/colorLight"/>
 
     </LinearLayout>
 </android.support.constraint.ConstraintLayout>
