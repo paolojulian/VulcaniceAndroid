@@ -26,7 +26,13 @@
     <!--
         SIGN_UP
     -->
+    <string-array name="vcn_user_types">
+        <item>Client</item>
+        <item>Shop Owner</item>
+    </string-array>
     <string name="vcn_pwd_hint">Enter your password</string>
+    <string name="vcn_email_hint">Enter your Email Address</string>
+    <string name="vcn_name_hint">Enter your Full Name</string>
     <string name="vcn_link_to_login">Click to Login</string>
     <string name="vcn_forgot_password">Forgot Password?</string>
     <string name="title_activity_dash_board">DashBoard</string>
