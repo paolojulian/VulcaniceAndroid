@@ -7,15 +7,24 @@ import android.view.View;
 import android.widget.Button;
 
 import com.firebase.ui.auth.AuthUI;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class MainActivity extends AppCompatActivity {
 
     Button btnSignIn, btnSignUp;
     private final static int LOGIN_PERMISSION=1000;
+    private FirebaseUser user;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        user = FirebaseAuth.getInstance().getCurrentUser();
+        if(user != null)
+        {
+            startActivity(new Intent(MainActivity.this, MainPage.class));
+        }
 
         btnSignUp = (Button) findViewById(R.id.btnSignUp);
         btnSignUp.setOnClickListener(new View.OnClickListener(){
@@ -49,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void startNewActivity( int resultCode, Intent data ) {
         if ( resultCode == RESULT_OK ) {
-            Intent intent = new Intent( MainActivity.this, CustomerMapActivity.class );
+            Intent intent = new Intent( MainActivity.this, MainPage.class );
             startActivity( intent );
             finish();
         }

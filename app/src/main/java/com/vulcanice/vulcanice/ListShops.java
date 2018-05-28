@@ -166,7 +166,7 @@ public class ListShops extends AppCompatActivity
             @Override
             protected void populateViewHolder(ListShopViewHolder viewHolder, User model, int position) {
                 final String email = model.getEmail();
-                viewHolder.textEmail.setText(email);
+//                viewHolder.textEmail.setText(email);
 
                 //On click of recycler view
                 viewHolder.itemClickListener = new ItemClickListener() {

@@ -8,27 +8,41 @@ import com.google.firebase.database.FirebaseDatabase;
  */
 
 public class Shop {
-    DatabaseReference onlineShops;
-    private String latitude;
-    private String longitude;
-    private String ownerId;
-    private String name;
+    private String latitude, longitude, name, description, type;
 
-    public String getLatitude() { return latitude; }
-    public void setLatitude(String latitude) { this.latitude = latitude; }
+    /*
+        Type:
+            1 - Vulcanizing shop
+            2 - Gas Station
+    */
 
-    public String getLongitude() { return longitude; }
-    public void setLongitude(String longitude) { this.longitude = longitude; }
+    public Shop(String name, String description, String type) {
+        this.name = name;
+        this.description = description;
+        this.type = type;
+    }
+    public void setLocation(String latitude, String longitude) {
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
 
-    public String getOwnerId() { return ownerId; }
-    public void setOwnerId(String ownerId) { this.ownerId = ownerId; }
+    public String getLatitude() {
+        return latitude;
+    }
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public String getLongitude() {
+        return longitude;
+    }
 
-    public void insert( String type ) {
+    public String getName() {
+        return name;
+    }
 
-        onlineShops = FirebaseDatabase.getInstance().getReference("Shops");
-        onlineShops.child(type).setValue(this);
+    public String getDescription() {
+        return description;
+    }
+
+    public String getType() {
+        return type;
     }
 }

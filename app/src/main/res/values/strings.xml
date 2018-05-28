@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">VulcaNice</string>
     <string name="title">Vulcanice</string>
+    <string name="db_error">Unable to process your request\nPlease try again later</string>
 
     <string name="vcn_logout">Logout</string>
     <string name="vcn_signin">Sign In</string>
@@ -22,6 +23,13 @@
         <item>Gasoline Station</item>
     </string-array>
     <string name="vcn_shop_create">Create Shop</string>
+    <!--
+        navigation
+    -->
+    <string name="vcn_account_info">Account Information</string>
+    <string name="vcn_add_gas_station">Add Gas Station</string>
+    <string name="vcn_add_vul_station">Add Vulanizing Shop</string>
+    <string name="vcn_manage_shop">Manage Shops</string>
 
     <!--
         SIGN_UP
@@ -39,4 +47,17 @@
     <string name="action_settings">Settings</string>
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="title_activity_customer_map">Map</string>
+
+    <!--
+        Dashboard_1
+    -->
+    <string name="vcn_get_nearest_vul">Vulcanizing Shop</string>
+    <string name="vcn_get_nearest_gas">Gas Station</string>
+
+    <!--
+        Drawer
+    -->
+    <string name="vcn_open">Open</string>
+    <string name="vcn_close">Close</string>
+
 </resources>
