@@ -1,6 +1,7 @@
 package com.vulcanice.vulcanice;
 
 import android.content.Intent;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v4.view.ViewPager;
@@ -11,7 +12,7 @@ import android.widget.Button;
 public class DashBoard extends AppCompatActivity {
     private ViewPager mViewPager;
     private SectionsPageAdapter mSectionsPageAdapter;
-    private Button btnCreateShop;
+    private FloatingActionButton fabCreateShop;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,6 +21,19 @@ public class DashBoard extends AppCompatActivity {
 
         setupTabs();
         setupInputs();
+        eventCreateShop();
+    }
+
+    private void eventCreateShop() {
+        fabCreateShop = findViewById(R.id.fab_create_shop);
+        fabCreateShop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(
+                    new Intent(DashBoard.this, CreateShopActivity.class)
+                );
+            }
+        });
     }
 
     private void setupInputs() {

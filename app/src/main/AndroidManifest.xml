@@ -53,7 +53,7 @@
             android:name=".MapTracking"
             android:label="@string/title_activity_map_tracking" />
         <activity
-            android:theme="@style/AppTheme.NoActionBar"
+            android:theme="@style/AppTheme"
             android:name=".DashBoard"
             android:label="@string/title_activity_dash_board" />
         <activity

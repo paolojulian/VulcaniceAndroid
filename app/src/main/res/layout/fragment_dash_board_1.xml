@@ -22,13 +22,6 @@
         <android.support.design.widget.AppBarLayout
             android:layout_height="wrap_content"
             android:layout_width="match_parent"/>
-        <Button
-            android:id="@+id/btn_create_shop"
-            android:background="@color/colorAccent"
-            android:layout_marginTop="10dp"
-            android:textColor="@color/colorLight"
-            android:layout_width="50dp"
-            android:layout_height="50dp" />
     </LinearLayout>
 
 </RelativeLayout>

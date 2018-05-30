@@ -17,7 +17,7 @@
         SHOP_CREATION
     -->
     <string name="vcn_shop_name">Name</string>
-    <string name="vcn_shop_description">Description</string>
+    <string name="vcn_shop_description">Address</string>
     <string-array name="vcn_shop_type">
         <item>Vulcanizing Station</item>
         <item>Gasoline Station</item>

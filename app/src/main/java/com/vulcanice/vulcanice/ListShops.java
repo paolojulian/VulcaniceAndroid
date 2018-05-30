@@ -46,7 +46,6 @@ public class ListShops extends AppCompatActivity
         LocationListener
 {
     DatabaseReference locations, onlineShopsRef, currentUserRef, counterRef;
-    FirebaseRecyclerAdapter<User, ListShopViewHolder> adapter;
 
     protected int online = 1;
     RecyclerView listShop;
@@ -157,49 +156,12 @@ public class ListShops extends AppCompatActivity
 
 
     private void updateList() {
-        adapter = new FirebaseRecyclerAdapter<User, ListShopViewHolder>(
-                User.class,
-                R.layout.user_layout,
-                ListShopViewHolder.class,
-                counterRef
-        ) {
-            @Override
-            protected void populateViewHolder(ListShopViewHolder viewHolder, User model, int position) {
-                final String email = model.getEmail();
-//                viewHolder.textEmail.setText(email);
-
-                //On click of recycler view
-                viewHolder.itemClickListener = new ItemClickListener() {
-                    public void onClick(View view, int position) {
-                        if ( email != FirebaseAuth.getInstance().getCurrentUser().getEmail())
-                        {
-                            Intent map = new Intent(ListShops.this, MapTracking.class);
-                            map.putExtra("email", FirebaseAuth.getInstance().getCurrentUser().getEmail());
-                            map.putExtra("lat", mLastLocation.getLatitude() );
-                            map.putExtra("lng", mLastLocation.getLongitude() );
-                            startActivity(map);
-                        }
-                    }
-                };
-            }
-        };
-        adapter.notifyDataSetChanged();
-        listShop.setAdapter(adapter);
     }
 
     private void setupSystem() {
         onlineShopsRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.getValue(Boolean.class)) {
-                    currentUserRef.onDisconnect().removeValue();
-                    User user = new User();
-                    user.setEmail(FirebaseAuth.getInstance().getCurrentUser().getEmail());
-                    user.setStatus(online);
-                    counterRef.child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-                            .setValue(user);
-                    adapter.notifyDataSetChanged();
-                }
             }
 
             @Override
