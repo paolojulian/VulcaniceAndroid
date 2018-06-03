@@ -29,7 +29,7 @@ import com.vulcanice.vulcanice.Model.VCN_User;
  * Created by paolo on 5/27/18.
  */
 
-public class MainPage extends AppCompatActivity{
+public class MainPage extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     private FirebaseDatabase mDatabase;
@@ -40,22 +40,40 @@ public class MainPage extends AppCompatActivity{
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mToggleDrawer;
     private NavigationView mNavigationView;
-    private Button btnAddShop;
+
+    private Button BtnFindGas, BtnFindVul;
 
     private Toolbar mToolbar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_page);
 
+        setupBtn();
         mAuth = FirebaseAuth.getInstance();
+        eventGetClosestGas();
         setupDrawer();
         setupMenu();
     }
 
+    private void eventGetClosestGas() {
+        BtnFindGas.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainPage.this, FindGasActivity.class));
+            }
+        });
+    }
+
+    protected void setupBtn() {
+        BtnFindGas = findViewById(R.id.btn_find_gas);
+        BtnFindVul = findViewById(R.id.btn_find_vul);
+    }
+
     protected void getUserType() {
         DatabaseReference ref = mDatabase.getReference("Users")
-                                    .child(currentUser.getUid());
+                .child(currentUser.getUid());
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -73,8 +91,7 @@ public class MainPage extends AppCompatActivity{
     @Override
     protected void onStart() {
         currentUser = mAuth.getCurrentUser();
-        if ( currentUser == null )
-        {
+        if (currentUser == null) {
             gotoSignIn();
         }
         mDatabase = FirebaseDatabase.getInstance();
@@ -91,7 +108,7 @@ public class MainPage extends AppCompatActivity{
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(mToggleDrawer.onOptionsItemSelected(item)) {
+        if (mToggleDrawer.onOptionsItemSelected(item)) {
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -104,7 +121,7 @@ public class MainPage extends AppCompatActivity{
 
     private void setupDrawer() {
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mToggleDrawer = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.vcn_open, R.string.vcn_close );
+        mToggleDrawer = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.vcn_open, R.string.vcn_close);
         mDrawerLayout.addDrawerListener(mToggleDrawer);
         mToggleDrawer.syncState();
 
@@ -113,22 +130,21 @@ public class MainPage extends AppCompatActivity{
 
     private void setupMenu() {
         mNavigationView = (NavigationView) findViewById(R.id.navigation_view);
-        mNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener(){
+        mNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
 
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch(item.getItemId()) {
+                switch (item.getItemId()) {
                     case R.id.manage_account:
 //                        startActivity(new Intent(MainPage.this, SignUpActivity.class));
                         return true;
 
                     case R.id.manage_shop:
-                        if (userType.equals("Client"))
-                        {
+                        if (userType.equals("Client")) {
                             Toast.makeText(
-                                MainPage.this,
-                                "Must be a Shop Owner to manage shop",
-                                Toast.LENGTH_SHORT
+                                    MainPage.this,
+                                    "Must be a Shop Owner to manage shop",
+                                    Toast.LENGTH_SHORT
                             ).show();
                             return true;
                         }

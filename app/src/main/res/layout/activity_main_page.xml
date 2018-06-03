@@ -21,6 +21,7 @@
             <!--layout="@layout/navigation_action"/>-->
         <Button
             android:text="Vulcanizing shop"
+            android:id="@+id/btn_find_vul"
             android:layout_width="fill_parent"
             android:textStyle="bold"
             android:background="@color/colorAccent"
@@ -29,6 +30,7 @@
             android:layout_height="wrap_content" />
         <Button
             android:text="Gas station"
+            android:id="@+id/btn_find_gas"
             android:layout_width="fill_parent"
             android:textStyle="bold"
             android:background="@color/colorAccent"

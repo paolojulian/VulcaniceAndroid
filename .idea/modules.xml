@@ -2,9 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/VulcaNice2.iml" filepath="$PROJECT_DIR$/VulcaNice2.iml" />
+      <module fileurl="file://$PROJECT_DIR$/VulcaniceAndroid.iml" filepath="$PROJECT_DIR$/VulcaniceAndroid.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/vulcaniceAndroid.iml" filepath="$PROJECT_DIR$/vulcaniceAndroid.iml" />
     </modules>
   </component>
 </project>
