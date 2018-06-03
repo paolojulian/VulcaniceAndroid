@@ -54,6 +54,9 @@ public class CreateShopActivity extends AppCompatActivity implements OnMapReadyC
     private GoogleMap mMap;
     private GoogleApiClient mGoogleApiClient;
     private Location mLastLocation;
+    //STATIC_VALUES
+    private static final int PERMISSION_REQUEST_CODE = 7171;
+    private static final int PLAY_SERVICES_RES_REQUEST = 7172;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +65,13 @@ public class CreateShopActivity extends AppCompatActivity implements OnMapReadyC
         user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
             startActivity(new Intent(CreateShopActivity.this, MainActivity.class));
+        }
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[] {
+                    android.Manifest.permission.ACCESS_COARSE_LOCATION,
+                    android.Manifest.permission.ACCESS_FINE_LOCATION,
+                    android.Manifest.permission.INTERNET
+            },PERMISSION_REQUEST_CODE);
         }
         mShop = new Shop();
         setupMap();
@@ -95,6 +105,25 @@ public class CreateShopActivity extends AppCompatActivity implements OnMapReadyC
         mShop.setName(shopName.getText().toString().trim());
         mShop.setDescription(shopDescription.getText().toString().trim());
         mShop.setType(shopType.getSelectedItem().toString().trim());
+        if ( ! mShop.is_valid())
+        {
+            Toast.makeText(
+                    CreateShopActivity.this,
+                    "Please fill up the missing fields",
+                    Toast.LENGTH_SHORT
+            ).show();
+            return;
+        }
+
+        if ( ! mShop.is_location_valid())
+        {
+            Toast.makeText(
+                    CreateShopActivity.this,
+                    "Invalid Location",
+                    Toast.LENGTH_SHORT
+            ).show();
+            return;
+        }
     }
 
     private void saveShop() {
@@ -138,7 +167,11 @@ public class CreateShopActivity extends AppCompatActivity implements OnMapReadyC
     @Override
     public void onMapReady(GoogleMap googleMap) {
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
+            ActivityCompat.requestPermissions(this, new String[] {
+                    android.Manifest.permission.ACCESS_COARSE_LOCATION,
+                    android.Manifest.permission.ACCESS_FINE_LOCATION,
+                    android.Manifest.permission.INTERNET
+            },PERMISSION_REQUEST_CODE);
         }
         mMap = googleMap;
         mMap.setMyLocationEnabled(true);
@@ -164,7 +197,11 @@ public class CreateShopActivity extends AppCompatActivity implements OnMapReadyC
     @Override
     public void onConnected(Bundle bundle) {
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
+            ActivityCompat.requestPermissions(this, new String[] {
+                    android.Manifest.permission.ACCESS_COARSE_LOCATION,
+                    android.Manifest.permission.ACCESS_FINE_LOCATION,
+                    android.Manifest.permission.INTERNET
+            },PERMISSION_REQUEST_CODE);
         }
         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
                 mGoogleApiClient);
@@ -194,16 +231,21 @@ public class CreateShopActivity extends AppCompatActivity implements OnMapReadyC
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
+        Toast.makeText(this, "Location services connection failed!!!", Toast.LENGTH_SHORT).show();
     }
 
+    @Override
+    protected void onStop() {
+        if(mGoogleApiClient != null)
+        {
+            mGoogleApiClient.disconnect();
+        }
+        super.onStop();
+    }
     @Override
     public void onLocationChanged(Location location) {
 
     }
 
-    @Override
-    public void onConnectionSuspended(int i) {
-
-    }
+    public void onConnectionSuspended(int i) { mGoogleApiClient.connect(); }
 }

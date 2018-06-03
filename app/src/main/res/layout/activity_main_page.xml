@@ -11,15 +11,29 @@
     
     <LinearLayout
         android:orientation="vertical"
+        android:padding="10dp"
+        android:layout_marginTop="150dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <!--<include-->
             <!--android:layout_width="match_parent"-->
             <!--android:layout_height="wrap_content"-->
             <!--layout="@layout/navigation_action"/>-->
-        <TextView
-            android:text="test"
-            android:layout_width="match_parent"
+        <Button
+            android:text="Vulcanizing shop"
+            android:layout_width="fill_parent"
+            android:textStyle="bold"
+            android:background="@color/colorAccent"
+            android:layout_marginTop="10dp"
+            android:textColor="@color/colorLight"
+            android:layout_height="wrap_content" />
+        <Button
+            android:text="Gas station"
+            android:layout_width="fill_parent"
+            android:textStyle="bold"
+            android:background="@color/colorAccent"
+            android:layout_marginTop="10dp"
+            android:textColor="@color/colorLight"
             android:layout_height="wrap_content" />
     </LinearLayout>
 
@@ -35,4 +49,3 @@
     </android.support.design.widget.NavigationView>
 
 </android.support.v4.widget.DrawerLayout>
-

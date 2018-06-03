@@ -55,4 +55,24 @@ public class Shop {
     public void setType(String type) {
         this.type = type;
     }
+
+    public boolean is_valid() {
+        if (
+            this.name == "" ||
+            this.description == "" ||
+            this.type == ""
+        )
+        {
+            return false;
+        }
+        return true;
+    }
+
+    public boolean is_location_valid() {
+        if ( this.latitude == "" || this.longitude == "" )
+        {
+            return false;
+        }
+        return true;
+    }
 }

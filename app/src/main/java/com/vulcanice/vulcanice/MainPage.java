@@ -17,8 +17,13 @@ import android.widget.Toast;
 import com.google.android.gms.maps.model.Dash;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.vulcanice.vulcanice.Model.User;
+import com.vulcanice.vulcanice.Model.VCN_User;
 
 /**
  * Created by paolo on 5/27/18.
@@ -27,6 +32,11 @@ import com.google.firebase.database.FirebaseDatabase;
 public class MainPage extends AppCompatActivity{
 
     private FirebaseAuth mAuth;
+    private FirebaseDatabase mDatabase;
+    private FirebaseUser currentUser;
+    private String userType;
+
+    private VCN_User user;
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mToggleDrawer;
     private NavigationView mNavigationView;
@@ -43,13 +53,32 @@ public class MainPage extends AppCompatActivity{
         setupMenu();
     }
 
+    protected void getUserType() {
+        DatabaseReference ref = mDatabase.getReference("Users")
+                                    .child(currentUser.getUid());
+        ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                user = dataSnapshot.getValue(VCN_User.class);
+                userType = user.getUser_type();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Toast.makeText(MainPage.this, "@string/db_error", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
     @Override
     protected void onStart() {
-        FirebaseUser currentUser = mAuth.getCurrentUser();
+        currentUser = mAuth.getCurrentUser();
         if ( currentUser == null )
         {
             gotoSignIn();
         }
+        mDatabase = FirebaseDatabase.getInstance();
+        getUserType();
         super.onStart();
     }
 
@@ -90,10 +119,19 @@ public class MainPage extends AppCompatActivity{
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch(item.getItemId()) {
                     case R.id.manage_account:
-                        startActivity(new Intent(MainPage.this, SignUpActivity.class));
+//                        startActivity(new Intent(MainPage.this, SignUpActivity.class));
                         return true;
 
                     case R.id.manage_shop:
+                        if (userType.equals("Client"))
+                        {
+                            Toast.makeText(
+                                MainPage.this,
+                                "Must be a Shop Owner to manage shop",
+                                Toast.LENGTH_SHORT
+                            ).show();
+                            return true;
+                        }
                         startActivity(new Intent(MainPage.this, DashBoard.class));
                         return true;
 

@@ -1,26 +1,47 @@
 package com.vulcanice.vulcanice;
 
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
+import com.google.android.gms.maps.model.Dash;
+import com.google.firebase.auth.FirebaseAuth;
+
 public class DashBoard extends AppCompatActivity {
+
     private ViewPager mViewPager;
     private SectionsPageAdapter mSectionsPageAdapter;
     private FloatingActionButton fabCreateShop;
+    //FIREBASE
+    private FirebaseAuth mAuth;
+    //NAVIGATION
+    private DrawerLayout mDrawerLayout;
+    private ActionBarDrawerToggle mToggleDrawer;
+    private NavigationView mNavigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dash_board);
+        mAuth = FirebaseAuth.getInstance();
 
+        //INPUTS
         setupTabs();
         setupInputs();
+        //DRAWER
+        setupDrawer();
+        setupMenu();
+        //EVENTS
         eventCreateShop();
     }
 
@@ -41,10 +62,10 @@ public class DashBoard extends AppCompatActivity {
 
     private void setupTabs() {
         mSectionsPageAdapter = new SectionsPageAdapter(getSupportFragmentManager());
-        mViewPager = (ViewPager) findViewById(R.id.container);
+        mViewPager = findViewById(R.id.container);
         setupViewPage(mViewPager);
 
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+        TabLayout tabLayout = findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
     }
 
@@ -55,5 +76,43 @@ public class DashBoard extends AppCompatActivity {
         viewPager.setAdapter(adapter);
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(mToggleDrawer.onOptionsItemSelected(item)) {
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
+    private void setupDrawer() {
+        mDrawerLayout = findViewById(R.id.dash_board_drawer);
+        mToggleDrawer = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.vcn_open, R.string.vcn_close );
+        mDrawerLayout.addDrawerListener(mToggleDrawer);
+        mToggleDrawer.syncState();
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    }
+    private void setupMenu() {
+        mNavigationView = findViewById(R.id.dash_board_navigation);
+        mNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener(){
+
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch(item.getItemId()) {
+                    case R.id.main_page:
+                        startActivity(new Intent(DashBoard.this, MainPage.class));
+                        return true;
+                    case R.id.logout:
+                        mAuth.signOut();
+                        gotoSignIn();
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+        });
+    }
+    protected void gotoSignIn() {
+        startActivity(new Intent(DashBoard.this, MainActivity.class));
+    }
 }
