@@ -23,22 +23,18 @@ import java.util.ArrayList;
 public class ListShopViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
     View mView;
-    Context mContext;
     public ListShopViewHolder(View itemView) {
         super(itemView);
         mView = itemView;
-        mContext = itemView.getContext();
-        itemView.setOnClickListener(this);
     }
 
-    public void bindListGas(Shop shop) {
+    public void bindListShop(Shop shop) {
         TextView shopTitle = mView.findViewById(R.id.shop_title);
         TextView shopDescription = mView.findViewById(R.id.shop_description);
 
         shopTitle.setText(shop.getName());
         shopDescription.setText(shop.getDescription());
     }
-
     @Override
     public void onClick(View view) {
 //        final ArrayList<Shop> shops = new ArrayList<>();

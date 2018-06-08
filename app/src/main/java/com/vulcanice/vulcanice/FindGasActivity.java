@@ -9,8 +9,11 @@ import android.os.Bundle;
 import android.os.Looper;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.widget.Toast;
 
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -21,10 +24,18 @@ import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.vulcanice.vulcanice.Model.Shop;
 
 public class FindGasActivity extends AppCompatActivity {
     //DATABASE
     protected FirebaseUser user;
+    protected DatabaseReference vulcanizeRef;
+    //RECYCLER
+    private RecyclerView mListGas;
+    private RecyclerView.LayoutManager mLayoutManager;
+    protected FirebaseRecyclerAdapter<Shop, ListGasViewHolder> firebaseAdapter;
     //LOCATION
     protected FusedLocationProviderClient mFusedLocationClient;
     protected Location mLastLocation;
@@ -43,6 +54,7 @@ public class FindGasActivity extends AppCompatActivity {
         setLocationRequest();
         setLocation();
         setOnLocationUpdate();
+        listGas();
     }
 
     private void setLocationRequest() {
@@ -64,6 +76,30 @@ public class FindGasActivity extends AppCompatActivity {
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
     }
 
+    private void listGas() {
+        vulcanizeRef = FirebaseDatabase.getInstance()
+                .getReference("Shops")
+                .child("Gas Station");
+        mListGas = findViewById(R.id.list_gas_station);
+
+        firebaseAdapter = new FirebaseRecyclerAdapter<Shop, ListGasViewHolder>
+                (Shop.class, R.layout.listview_shop, ListGasViewHolder.class, vulcanizeRef) {
+            @Override
+            protected void populateViewHolder(ListGasViewHolder viewHolder, Shop model, int position) {
+                Toast.makeText(
+                        FindGasActivity.this,
+                        "Test",
+                        Toast.LENGTH_SHORT
+                ).show();
+                viewHolder.bindListGas(model);
+            }
+        };
+        mListGas.setHasFixedSize(true);
+        mLayoutManager = new LinearLayoutManager(this);
+        mListGas.setLayoutManager(mLayoutManager);
+        mListGas.setAdapter(firebaseAdapter);
+    }
+
     private void setOnLocationUpdate() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             responseNoLocation();
@@ -78,12 +114,12 @@ public class FindGasActivity extends AppCompatActivity {
                             return;
                         }
                         mLastLocation = location;
-                        Toast.makeText(
-                                FindGasActivity.this,
-                                "Lat: " + mLastLocation.getLatitude() +
-                                        "\nLon: " + mLastLocation.getLongitude(),
-                                Toast.LENGTH_SHORT
-                        ).show();
+//                        Toast.makeText(
+//                                FindGasActivity.this,
+//                                "Lat: " + mLastLocation.getLatitude() +
+//                                        "\nLon: " + mLastLocation.getLongitude(),
+//                                Toast.LENGTH_SHORT
+//                        ).show();
                     }
                 });
         locationCallback = new LocationCallback() {
@@ -92,12 +128,12 @@ public class FindGasActivity extends AppCompatActivity {
                 super.onLocationResult(locationResult);
                 for (Location location : locationResult.getLocations()) {
                     mLastLocation = location;
-                    Toast.makeText(
-                            FindGasActivity.this,
-                            "Lat: " + mLastLocation.getLatitude() +
-                                    "\nLon: " + mLastLocation.getLongitude(),
-                            Toast.LENGTH_SHORT
-                    ).show();
+//                    Toast.makeText(
+//                            FindGasActivity.this,
+//                            "Lat: " + mLastLocation.getLatitude() +
+//                                    "\nLon: " + mLastLocation.getLongitude(),
+//                            Toast.LENGTH_SHORT
+//                    ).show();
                 }
             }
         };

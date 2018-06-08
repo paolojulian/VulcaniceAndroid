@@ -50,7 +50,7 @@ public class DashBoardTab2 extends Fragment {
                 (Shop.class, R.layout.listview_shop, ListShopViewHolder.class, vulcanizeRef) {
             @Override
             protected void populateViewHolder(ListShopViewHolder viewHolder, Shop model, int position) {
-                viewHolder.bindListGas(model);
+                viewHolder.bindListShop(model);
             }
         };
         mListShop.setHasFixedSize(true);

@@ -39,7 +39,7 @@ public class DashBoardTab1 extends Fragment {
     private View view;
     private DatabaseReference gas_stations, vulcanizeRef;
 
-    protected FirebaseRecyclerAdapter<Shop, ListGasViewHolder> firebaseAdapter;
+    protected FirebaseRecyclerAdapter<Shop, ListShopViewHolder> firebaseAdapter;
 
     @Nullable
     @Override
@@ -57,11 +57,11 @@ public class DashBoardTab1 extends Fragment {
                 .child(FirebaseAuth.getInstance().getCurrentUser().getUid());
         mListShop = view.findViewById(R.id.list_vul_shop);
 
-        firebaseAdapter = new FirebaseRecyclerAdapter<Shop, ListGasViewHolder>
-                (Shop.class, R.layout.listview_shop, ListGasViewHolder.class, vulcanizeRef) {
+        firebaseAdapter = new FirebaseRecyclerAdapter<Shop, ListShopViewHolder>
+                (Shop.class, R.layout.listview_shop, ListShopViewHolder.class, vulcanizeRef) {
             @Override
-            protected void populateViewHolder(ListGasViewHolder viewHolder, Shop model, int position) {
-                viewHolder.bindListGas(model);
+            protected void populateViewHolder(ListShopViewHolder viewHolder, Shop model, int position) {
+                viewHolder.bindListShop(model);
             }
         };
         mListShop.setHasFixedSize(true);

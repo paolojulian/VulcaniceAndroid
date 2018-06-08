@@ -12,7 +12,7 @@
         android:padding="10dp"
         android:layout_height="fill_parent">
         <android.support.v7.widget.RecyclerView
-            android:id="@+id/list_vul_shop"
+            android:id="@+id/list_gas_station"
             android:layout_below="@id/toolBar"
             android:background="@color/colorLight"
             android:layout_width="match_parent"
