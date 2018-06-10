@@ -45,6 +45,16 @@
             android:label="Vulca-Nice" />
 
         <activity
+            android:name=".ViewNearestGasActivity"
+            android:theme="@style/AppTheme"
+            android:label="Nearest Gas Station" />
+
+        <activity
+            android:name=".EditAccountActivity"
+            android:theme="@style/AppTheme"
+            android:label="Account Information" />
+
+        <activity
             android:name=".FindGasActivity"
             android:theme="@style/AppTheme"
             android:label="Nearest Gas Station/s" />

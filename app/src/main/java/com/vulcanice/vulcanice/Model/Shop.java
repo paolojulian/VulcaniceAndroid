@@ -8,7 +8,7 @@ import com.google.firebase.database.FirebaseDatabase;
  */
 
 public class Shop {
-    private String name, description, type;
+    private String name, description, type, owner;
     private String latitude, longitude;
 
     /*
@@ -22,6 +22,12 @@ public class Shop {
     public void setLocation(String latitude, String longitude) {
         this.latitude = latitude;
         this.longitude = longitude;
+    }
+
+    public String getOwner() { return owner; }
+
+    public void setOwner(String owner) {
+        this.owner = owner;
     }
 
     public String getLatitude() {

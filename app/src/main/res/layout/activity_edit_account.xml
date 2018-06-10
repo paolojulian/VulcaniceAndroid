@@ -22,7 +22,7 @@
             android:layout_height="wrap_content"
             android:layout_width="match_parent">
             <EditText
-                android:id="@+id/signup_name"
+                android:id="@+id/user_name"
                 android:focusableInTouchMode="true"
                 android:maxLines="1"
                 android:hint="@string/vcn_name_hint"
@@ -31,37 +31,9 @@
                 android:layout_height="wrap_content"/>
         </android.support.design.widget.TextInputLayout>
 
-        <android.support.design.widget.TextInputLayout
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent">
-            <EditText
-                android:id="@+id/signup_email"
-                android:focusableInTouchMode="true"
-                android:maxLines="1"
-                android:hint="@string/vcn_email_hint"
-                android:textColor="@color/colorPrimaryDark"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-        </android.support.design.widget.TextInputLayout>
-
-        <android.support.design.widget.TextInputLayout
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent">
-            <EditText
-                android:id="@+id/signup_password"
-                android:focusableInTouchMode="true"
-                android:hint="@string/vcn_pwd_hint"
-                android:inputType="textPassword"
-                android:maxLines="1"
-                android:textColor="@color/colorPrimaryDark"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-        </android.support.design.widget.TextInputLayout>
-
-
         <Button
-            android:text="@string/vcn_signup"
-            android:id="@+id/btn_sign_up"
+            android:text="Update Account"
+            android:id="@+id/btn_update_account"
             android:layout_width="fill_parent"
             android:textStyle="bold"
             android:background="@color/colorPrimary"

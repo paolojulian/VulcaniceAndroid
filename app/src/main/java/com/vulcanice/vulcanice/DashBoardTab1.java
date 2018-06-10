@@ -23,6 +23,7 @@ import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.vulcanice.vulcanice.Model.Shop;
 import com.vulcanice.vulcanice.Model.User;
 
@@ -38,6 +39,7 @@ public class DashBoardTab1 extends Fragment {
 
     private View view;
     private DatabaseReference gas_stations, vulcanizeRef;
+    private Query vulcanizeQuery;
 
     protected FirebaseRecyclerAdapter<Shop, ListShopViewHolder> firebaseAdapter;
 
@@ -53,12 +55,14 @@ public class DashBoardTab1 extends Fragment {
     private void listShop() {
         vulcanizeRef = FirebaseDatabase.getInstance()
                 .getReference("Shops")
-                .child("Vulcanizing Station")
-                .child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+                .child("vulcanizeStation");
+        vulcanizeQuery = vulcanizeRef
+                .orderByChild("owner")
+                .equalTo(FirebaseAuth.getInstance().getCurrentUser().getUid());
         mListShop = view.findViewById(R.id.list_vul_shop);
 
         firebaseAdapter = new FirebaseRecyclerAdapter<Shop, ListShopViewHolder>
-                (Shop.class, R.layout.listview_shop, ListShopViewHolder.class, vulcanizeRef) {
+                (Shop.class, R.layout.listview_shop, ListShopViewHolder.class, vulcanizeQuery) {
             @Override
             protected void populateViewHolder(ListShopViewHolder viewHolder, Shop model, int position) {
                 viewHolder.bindListShop(model);

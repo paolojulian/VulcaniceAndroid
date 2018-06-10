@@ -3,6 +3,7 @@ package com.vulcanice.vulcanice;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.vulcanice.vulcanice.Model.Shop;
 
@@ -19,8 +20,8 @@ public class ListGasViewHolder extends RecyclerView.ViewHolder implements View.O
     }
 
     public void bindListGas(Shop shop) {
-        TextView shopTitle = mView.findViewById(R.id.shop_title);
-        TextView shopDescription = mView.findViewById(R.id.shop_description);
+        TextView shopTitle = mView.findViewById(R.id.gas_station_name);
+        TextView shopDescription = mView.findViewById(R.id.gas_station_address);
 
         shopTitle.setText(shop.getName());
         shopDescription.setText(shop.getDescription());
@@ -28,6 +29,5 @@ public class ListGasViewHolder extends RecyclerView.ViewHolder implements View.O
 
     @Override
     public void onClick(View view) {
-
     }
 }

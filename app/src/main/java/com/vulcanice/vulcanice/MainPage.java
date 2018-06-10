@@ -78,6 +78,10 @@ public class MainPage extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 user = dataSnapshot.getValue(VCN_User.class);
+                if (user == null) {
+                    userType = "Client";
+                    return;
+                }
                 userType = user.getUser_type();
             }
 
@@ -136,10 +140,16 @@ public class MainPage extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.manage_account:
-//                        startActivity(new Intent(MainPage.this, SignUpActivity.class));
+                        if ( ! isConnected()) {
+                            return true;
+                        }
+                        startActivity(new Intent(MainPage.this, EditAccountActivity.class));
                         return true;
 
                     case R.id.manage_shop:
+                        if ( ! isConnected()) {
+                            return true;
+                        }
                         if (userType.equals("Client")) {
                             Toast.makeText(
                                     MainPage.this,
@@ -163,6 +173,17 @@ public class MainPage extends AppCompatActivity {
         });
     }
 
+    protected boolean isConnected() {
+        if (user == null) {
+            Toast.makeText(
+                    MainPage.this,
+                    "Please Connect to the Internet",
+                    Toast.LENGTH_SHORT
+            ).show();
+            return false;
+        }
+        return true;
+    }
     protected void gotoSignIn() {
         startActivity(new Intent(MainPage.this, MainActivity.class));
     }

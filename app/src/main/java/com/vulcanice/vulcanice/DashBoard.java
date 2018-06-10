@@ -99,6 +99,9 @@ public class DashBoard extends AppCompatActivity {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch(item.getItemId()) {
+                    case R.id.manage_account:
+                        startActivity(new Intent(DashBoard.this, EditAccountActivity.class));
+                        return true;
                     case R.id.main_page:
                         startActivity(new Intent(DashBoard.this, MainPage.class));
                         return true;
