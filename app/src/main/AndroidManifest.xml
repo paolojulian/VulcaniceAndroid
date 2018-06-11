@@ -57,7 +57,7 @@
         <activity
             android:name=".FindGasActivity"
             android:theme="@style/AppTheme"
-            android:label="Nearest Gas Station/s" />
+            android:label="Finding nearest gas station" />
 
         <activity
             android:name=".CreateShopActivity"

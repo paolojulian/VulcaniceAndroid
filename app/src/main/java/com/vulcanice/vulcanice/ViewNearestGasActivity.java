@@ -34,6 +34,7 @@ public class ViewNearestGasActivity extends AppCompatActivity {
     FirebaseUser currentUser;
     //STRINGS
     String shopId, shopType;
+    Float currentShopDistance;
     AppCompatTextView shopName, shopAddress, constShopType, shopDistance;
     Double shopLat, shopLng;
     //MODEL
@@ -68,7 +69,7 @@ public class ViewNearestGasActivity extends AppCompatActivity {
         shopType = i.getExtras().getString("shopType");
         shopLat = i.getExtras().getDouble("shopLat");
         shopLng = i.getExtras().getDouble("shopLng");
-        Log.d("shopLat", "Lat: " + shopLat);
+        currentShopDistance = i.getExtras().getFloat("shopDistance");
         //view
         shopName = findViewById(R.id.shop_name);
         shopAddress = findViewById(R.id.shop_address);
@@ -147,6 +148,7 @@ public class ViewNearestGasActivity extends AppCompatActivity {
     }
 
     protected void displayShopDetails() {
+        shopDistance.setText(currentShopDistance + " m");
         DatabaseReference shopReference = mDatabase.getReference()
                 .child("Shops").child(shopType).child(shopId);
 
@@ -202,5 +204,17 @@ public class ViewNearestGasActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         startLocationUpdates();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+    }
+    @Override
+    public void onBackPressed() {
+        startActivity(
+                new Intent(ViewNearestGasActivity.this, MainPage.class)
+        );
+        super.onStop();
     }
 }

@@ -67,7 +67,7 @@ public class FindGasActivity extends AppCompatActivity {
         setLocationRequest();
         setLocation();
         setOnLocationUpdate();
-        listGas();
+//        listGas();
     }
 
     private void setLocationRequest() {
@@ -89,29 +89,29 @@ public class FindGasActivity extends AppCompatActivity {
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
     }
 
-    private void listGas() {
-        vulcanizeRef = FirebaseDatabase.getInstance()
-                .getReference("Shops")
-                .child("Gasoline Station");
-        mListGas = findViewById(R.id.list_gas_station);
-
-        firebaseAdapter = new FirebaseRecyclerAdapter<Shop, ListGasViewHolder>
-                (Shop.class, R.layout.listview_nearest_gas, ListGasViewHolder.class, vulcanizeRef) {
-            @Override
-            protected void populateViewHolder(ListGasViewHolder viewHolder, Shop model, int position) {
-                Toast.makeText(
-                        FindGasActivity.this,
-                        "Test",
-                        Toast.LENGTH_SHORT
-                ).show();
-                viewHolder.bindListGas(model);
-            }
-        };
-        mListGas.setHasFixedSize(true);
-        mLayoutManager = new LinearLayoutManager(this);
-        mListGas.setLayoutManager(mLayoutManager);
-        mListGas.setAdapter(firebaseAdapter);
-    }
+//    private void listGas() {
+//        vulcanizeRef = FirebaseDatabase.getInstance()
+//                .getReference("Shops")
+//                .child("Gasoline Station");
+//        mListGas = findViewById(R.id.list_gas_station);
+//
+//        firebaseAdapter = new FirebaseRecyclerAdapter<Shop, ListGasViewHolder>
+//                (Shop.class, R.layout.listview_nearest_gas, ListGasViewHolder.class, vulcanizeRef) {
+//            @Override
+//            protected void populateViewHolder(ListGasViewHolder viewHolder, Shop model, int position) {
+//                Toast.makeText(
+//                        FindGasActivity.this,
+//                        "Test",
+//                        Toast.LENGTH_SHORT
+//                ).show();
+//                viewHolder.bindListGas(model);
+//            }
+//        };
+//        mListGas.setHasFixedSize(true);
+//        mLayoutManager = new LinearLayoutManager(this);
+//        mListGas.setLayoutManager(mLayoutManager);
+//        mListGas.setAdapter(firebaseAdapter);
+//    }
 
     private void setOnLocationUpdate() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -200,6 +200,7 @@ public class FindGasActivity extends AppCompatActivity {
     private Boolean foundGas = false, isFirst = true;
     private String shopId;
     private Double shopLat, shopLng;
+    private Float shopDistance;
     private void getClosestGasStation() {
         DatabaseReference gasLocation = FirebaseDatabase
                 .getInstance()
@@ -220,18 +221,19 @@ public class FindGasActivity extends AppCompatActivity {
                 if( ! foundGas) {
                     foundGas = true;
                 }
-                shopId = key;
                 if(isFirst) {
+                    shopId = key;
                     shopLat = location.latitude;
                     shopLng = location.longitude;
+                    shopDistance = getDistanceFromUser(shopLat, shopLng);
                     isFirst = false;
                 } else {
-                    if(isCloser(
-                            location.latitude, location.longitude,
-                            shopLat, shopLng
-                    )) {
+                    float newDistance = getDistanceFromUser(location.latitude, location.longitude);
+                    if ( newDistance < shopDistance ) {
+                        shopId = key;
                         shopLat = location.latitude;
                         shopLng = location.longitude;
+                        shopDistance = newDistance;
                     }
                 }
             }
@@ -259,6 +261,7 @@ public class FindGasActivity extends AppCompatActivity {
                 i.putExtra("shopType", "gasStation");
                 i.putExtra("shopLat", shopLat);
                 i.putExtra("shopLng", shopLng);
+                i.putExtra("shopDistance", shopDistance);
                 startActivity(i);
             }
 
@@ -274,18 +277,28 @@ public class FindGasActivity extends AppCompatActivity {
     }
 
     public Boolean isCloser(Double lat1, Double lng1, Double lat2, Double lng2) {
-        Location location1 = new Location("");
-        location1.setLatitude(lat1);
-        location1.setLongitude(lng1);
+        Location currentNearest = new Location("");
+        currentNearest.setLatitude(lat1);
+        currentNearest.setLongitude(lng1);
 
-        Location location2 = new Location("");
-        location2.setLatitude(lat2);
-        location2.setLongitude(lng2);
+        Location newLocation = new Location("");
+        newLocation.setLatitude(lat2);
+        newLocation.setLongitude(lng2);
 
-        float distanceInMeters1 = mLastLocation.distanceTo(location1);
-        float distanceInMeters2 = mLastLocation.distanceTo(location2);
-
+        float distanceInMeters1 = mLastLocation.distanceTo(currentNearest);
+        float distanceInMeters2 = mLastLocation.distanceTo(newLocation);
         return distanceInMeters2 < distanceInMeters1;
     }
 
+    public Float getDistanceFromUser(Double lat, Double lng) {
+        Location newLocation = new Location("");
+        newLocation.setLatitude(lat);
+        newLocation.setLongitude(lng);
+        return mLastLocation.distanceTo(newLocation);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+    }
 }
