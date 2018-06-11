@@ -200,8 +200,6 @@ public class FindGasActivity extends AppCompatActivity {
     private Boolean foundGas = false, isFirst = true;
     private String shopId;
     private Double shopLat, shopLng;
-    private String shopIdCounter;
-    private Double shopLatCounter, shopLngCounter;
     private void getClosestGasStation() {
         DatabaseReference gasLocation = FirebaseDatabase
                 .getInstance()
@@ -237,6 +235,7 @@ public class FindGasActivity extends AppCompatActivity {
                     }
                 }
             }
+
 
             @Override
             public void onKeyExited(String key) {
@@ -285,10 +284,8 @@ public class FindGasActivity extends AppCompatActivity {
 
         float distanceInMeters1 = mLastLocation.distanceTo(location1);
         float distanceInMeters2 = mLastLocation.distanceTo(location2);
-        if (distanceInMeters1 > distanceInMeters2) {
-            return false;
-        }
-        return true;
+
+        return distanceInMeters2 < distanceInMeters1;
     }
 
 }

@@ -50,20 +50,6 @@ public class SignUpActivity extends AppCompatActivity {
         progressBar = (ProgressBar) findViewById(R.id.progress_bar);
         populateUserType();
 
-        btnResetPassword.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(SignUpActivity.this, ResetPasswordActivity.class));
-            }
-        });
-
-        btnLinkToSignIn.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(SignUpActivity.this, MainActivity.class));
-            }
-        });
-
         btnSignUp.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
