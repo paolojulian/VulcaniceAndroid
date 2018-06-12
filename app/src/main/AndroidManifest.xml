@@ -55,6 +55,11 @@
             android:label="Account Information" />
 
         <activity
+            android:name=".TrackShopActivity"
+            android:theme="@style/AppTheme"
+            android:label="Tracking Shop" />
+
+        <activity
             android:name=".FindGasActivity"
             android:theme="@style/AppTheme"
             android:label="Finding nearest gas station" />

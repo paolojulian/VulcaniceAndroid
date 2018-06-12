@@ -9,6 +9,8 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatTextView;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -29,19 +31,21 @@ import com.google.firebase.database.ValueEventListener;
 import com.vulcanice.vulcanice.Model.Shop;
 
 public class ViewNearestGasActivity extends AppCompatActivity {
-    FirebaseDatabase mDatabase;
-    FirebaseAuth mAuth;
-    FirebaseUser currentUser;
+    private FirebaseDatabase mDatabase;
+    private FirebaseAuth mAuth;
+    private FirebaseUser currentUser;
     //STRINGS
-    String shopId, shopType;
-    Float currentShopDistance;
-    AppCompatTextView shopName, shopAddress, constShopType, shopDistance;
-    Double shopLat, shopLng;
+    private String shopId, shopType;
+    private Float currentShopDistance;
+    private Double shopLat, shopLng;
+    //VIEW
+    private AppCompatTextView shopName, shopAddress, constShopType, shopDistance;
+    private Button btnTrackGas;
     //MODEL
-    Shop shopModel;
+    private Shop shopModel;
     //LOCATION
     protected FusedLocationProviderClient mFusedLocationClient;
-    protected Location mLastLocation, locationUser;
+    protected Location mLastLocation;
     protected LocationCallback locationCallback;
     protected LocationRequest mLocationRequest;
     //INTERVAL
@@ -54,6 +58,7 @@ public class ViewNearestGasActivity extends AppCompatActivity {
         setContentView(R.layout.activity_view_nearest_shop);
 
         initData();
+        eventTrackGas();
 
         setLocationRequest();
         setLocation();
@@ -74,10 +79,26 @@ public class ViewNearestGasActivity extends AppCompatActivity {
         shopName = findViewById(R.id.shop_name);
         shopAddress = findViewById(R.id.shop_address);
         shopDistance = findViewById(R.id.shop_distance);
+        btnTrackGas = findViewById(R.id.btn_track_gas);
         //database
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
         mDatabase = FirebaseDatabase.getInstance();
+    }
+
+    private void eventTrackGas() {
+        btnTrackGas.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(
+                        ViewNearestGasActivity.this,
+                        TrackShopActivity.class
+                );
+                i.putExtra("shopLat", shopLat);
+                i.putExtra("shopLng", shopLng);
+                startActivity(i);
+            }
+        });
     }
 
     private void setLocationRequest() {
@@ -161,6 +182,8 @@ public class ViewNearestGasActivity extends AppCompatActivity {
                 }
                 shopName.setText(shopModel.getName());
                 shopAddress.setText(shopModel.getDescription());
+                shopLat = Double.valueOf(shopModel.getLatitude());
+                shopLng = Double.valueOf(shopModel.getLongitude());
             }
 
             @Override
@@ -205,7 +228,6 @@ public class ViewNearestGasActivity extends AppCompatActivity {
         super.onResume();
         startLocationUpdates();
     }
-
     @Override
     protected void onStop() {
         super.onStop();

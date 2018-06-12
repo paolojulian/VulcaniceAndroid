@@ -83,6 +83,7 @@
 
         <Button
             android:text="Track Gas Station"
+            android:id="@+id/btn_track_gas"
             android:textColor="@color/colorLight"
             android:background="@color/colorPrimaryDark"
             android:layout_marginTop="30dp"
