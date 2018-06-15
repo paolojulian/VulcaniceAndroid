@@ -61,12 +61,12 @@ public class TrackShopActivity extends AppCompatActivity implements RoutingListe
     private MarkerOptions userMarker, shopMarker;
     //ROUTE DISPLAY
     private List<Polyline> polylines;
-    private static final int[] COLORS = new int[]{R.color.colorPrimaryDark,R.color.colorPrimary,R.color.colorLight,R.color.colorAccent,R.color.primary_dark_material_light};
+    private static final int[] COLORS = new int[]{R.color.colorPrimaryDark,R.color.colorSemiLight,R.color.colorLight,R.color.colorAccent,R.color.primary_dark_material_light};
     //PERMISSION
     private static final int PERMISSION_REQUEST_CODE = 7171;
     //INTERVAL
-    private long UPDATE_INTERVAL = 10 * 1000; /* 10 seconds */
-    private long FASTEST_INTERVAL = 5 * 1000; /* 2 seconds */
+    private long UPDATE_INTERVAL = 5 * 1000; /* 10 seconds */
+    private long FASTEST_INTERVAL = 2 * 1000; /* 2 seconds */
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -152,10 +152,6 @@ public class TrackShopActivity extends AppCompatActivity implements RoutingListe
         startLocationUpdates();
     }
 
-    private void updateRoute() {
-
-    }
-
     private void setupMap() {
         mapFragment = (MapFragment) getFragmentManager()
                 .findFragmentById(R.id.map_track_shop);
@@ -164,16 +160,25 @@ public class TrackShopActivity extends AppCompatActivity implements RoutingListe
 
     private void getRouteToShop() {
         LatLng userLocation = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+        drawMarker(userLocation);
+        drawRoute(userLocation);
+    }
+
+    private void drawMarker(LatLng userLocation) {
         mMap.addMarker(userMarker.position(userLocation).title("Current Location"));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 15));
+    }
+
+    private void drawRoute(LatLng userLocation) {
         Routing routing = new Routing.Builder()
                 .travelMode(AbstractRouting.TravelMode.DRIVING)
                 .withListener(this)
-                .alternativeRoutes(false)
+                .alternativeRoutes(true)
                 .waypoints(userLocation, shopLocation)
                 .build();
         routing.execute();
     }
+
 
     @Override
     public void onRoutingFailure(RouteException e) {
