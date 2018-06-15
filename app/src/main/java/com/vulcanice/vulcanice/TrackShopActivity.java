@@ -1,7 +1,9 @@
 package com.vulcanice.vulcanice;
 
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.location.LocationListener;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -28,7 +30,9 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
@@ -41,7 +45,7 @@ import java.util.List;
  * Created by User on 11/06/2018.
  */
 
-public class TrackShopActivity extends AppCompatActivity implements RoutingListener, GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, OnMapReadyCallback {
+public class TrackShopActivity extends AppCompatActivity implements RoutingListener, com.google.android.gms.location.LocationListener, GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, OnMapReadyCallback {
     //DATABASE
     private LatLng shopLocation;
     //MAP
@@ -53,6 +57,8 @@ public class TrackShopActivity extends AppCompatActivity implements RoutingListe
     protected Location mLastLocation;
     protected LocationCallback locationCallback;
     protected LocationRequest mLocationRequest;
+    //MARKER
+    private MarkerOptions userMarker, shopMarker;
     //ROUTE DISPLAY
     private List<Polyline> polylines;
     private static final int[] COLORS = new int[]{R.color.colorPrimaryDark,R.color.colorPrimary,R.color.colorLight,R.color.colorAccent,R.color.primary_dark_material_light};
@@ -64,11 +70,38 @@ public class TrackShopActivity extends AppCompatActivity implements RoutingListe
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_find_nearest_gas);
+        setContentView(R.layout.activity_track_shop);
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[] {
+                    android.Manifest.permission.ACCESS_COARSE_LOCATION,
+                    android.Manifest.permission.ACCESS_FINE_LOCATION,
+                    android.Manifest.permission.INTERNET
+            },PERMISSION_REQUEST_CODE);
+        }
+
+        setDatas();
+
         setupMap();
         setLocationRequest();
         setLocation();
         setOnLocationUpdate();
+    }
+
+    private void setDatas() {
+        polylines = new ArrayList<>();
+        getIntentData();
+        userMarker = new MarkerOptions();
+        shopMarker = new MarkerOptions()
+                .position(shopLocation)
+                .snippet("Shop Location")
+                .icon(BitmapDescriptorFactory.fromResource(R.mipmap.baseline_ev_station_black_24));
+    }
+
+    private void getIntentData() {
+        Intent i = getIntent();
+        Double shopLng = i.getExtras().getDouble("shopLng");
+        Double shopLat = i.getExtras().getDouble("shopLat");
+        shopLocation = new LatLng(shopLat, shopLng);
     }
 
     private void setLocationRequest() {
@@ -102,7 +135,7 @@ public class TrackShopActivity extends AppCompatActivity implements RoutingListe
                             return;
                         }
                         mLastLocation = location;
-                        updateRoute();
+                        getRouteToShop();
                     }
                 });
         // Used for repeating request
@@ -113,7 +146,7 @@ public class TrackShopActivity extends AppCompatActivity implements RoutingListe
                 for (Location location : locationResult.getLocations()) {
                     mLastLocation = location;
                 }
-                updateRoute();
+                getRouteToShop();
             }
         };
         startLocationUpdates();
@@ -126,15 +159,18 @@ public class TrackShopActivity extends AppCompatActivity implements RoutingListe
     private void setupMap() {
         mapFragment = (MapFragment) getFragmentManager()
                 .findFragmentById(R.id.map_track_shop);
-        mapFragment.getMapAsync(this);
+        mapFragment.getMapAsync(TrackShopActivity.this);
     }
 
     private void getRouteToShop() {
+        LatLng userLocation = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+        mMap.addMarker(userMarker.position(userLocation).title("Current Location"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 15));
         Routing routing = new Routing.Builder()
                 .travelMode(AbstractRouting.TravelMode.DRIVING)
                 .withListener(this)
-                .alternativeRoutes(true)
-                .waypoints(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()), shopLocation)
+                .alternativeRoutes(false)
+                .waypoints(userLocation, shopLocation)
                 .build();
         routing.execute();
     }
@@ -237,8 +273,8 @@ public class TrackShopActivity extends AppCompatActivity implements RoutingListe
         }
         mMap = googleMap;
         mMap.setMyLocationEnabled(true);
+        mMap.addMarker(shopMarker);
         buildGoogleApiClient();
-        getRouteToShop();
     }
 
     protected synchronized void buildGoogleApiClient() {
@@ -273,5 +309,10 @@ public class TrackShopActivity extends AppCompatActivity implements RoutingListe
     protected void onResume() {
         super.onResume();
         startLocationUpdates();
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+
     }
 }
