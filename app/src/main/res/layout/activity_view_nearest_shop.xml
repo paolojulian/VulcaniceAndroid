@@ -82,14 +82,33 @@
         </LinearLayout>
 
         <Button
-            android:text="Track Gas Station"
-            android:id="@+id/btn_track_gas"
+            android:text="Track Shop"
+            android:id="@+id/btn_track_shop"
             android:textColor="@color/colorLight"
             android:background="@color/colorPrimaryDark"
             android:layout_marginTop="30dp"
             android:layout_gravity="bottom"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
+
+        <Button
+            android:text="Request for tracking"
+            android:id="@+id/btn_request_shop"
+            android:textColor="@color/colorLight"
+            android:background="@color/colorAccent"
+            android:layout_marginTop="5dp"
+            android:layout_gravity="bottom"
+            android:layout_width="match_parent"
+            android:visibility="gone"
+            android:layout_height="wrap_content" />
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            android:layout_width="30dp"
+            android:layout_marginTop="30dp"
+            android:layout_gravity="center|bottom"
+            android:visibility="gone"
+            android:layout_height="30dp" />
+
     </LinearLayout>
 
 

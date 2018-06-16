@@ -58,10 +58,23 @@ public class MainPage extends AppCompatActivity {
     }
 
     private void eventGetClosestGas() {
+        final Intent iFindShop = new Intent(MainPage.this, FindShopActivity.class);
+        final String dbGas = this.getString(R.string.db_gas);
+        final String dbVul = this.getString(R.string.db_vul);
+
         BtnFindGas.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MainPage.this, FindGasActivity.class));
+                iFindShop.putExtra("shopType", dbGas);
+                startActivity(iFindShop);
+            }
+        });
+
+        BtnFindVul.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                iFindShop.putExtra("shopType", dbVul);
+                startActivity(iFindShop);
             }
         });
     }

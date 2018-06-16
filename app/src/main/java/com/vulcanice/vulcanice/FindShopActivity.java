@@ -4,14 +4,13 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Looper;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.firebase.geofire.GeoFire;
@@ -29,33 +28,28 @@ import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
 import com.vulcanice.vulcanice.Model.Shop;
-import com.vulcanice.vulcanice.Model.VCN_User;
-
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class FindShopActivity extends AppCompatActivity {
     //DATABASE
     protected FirebaseUser user;
-    protected DatabaseReference vulcanizeRef;
-    protected Query vulcanizeQuery;
-    //RECYCLER
-    private RecyclerView mListGas;
-    private RecyclerView.LayoutManager mLayoutManager;
-    protected FirebaseRecyclerAdapter<Shop, ListGasViewHolder> firebaseAdapter;
+    //VIEW
+    protected ProgressBar progressBar;
     //LOCATION
     protected FusedLocationProviderClient mFusedLocationClient;
     protected Location mLastLocation;
     protected LocationCallback locationCallback;
     protected LocationRequest mLocationRequest;
     //TYPE
-    protected String shopType;
+    protected String shopType, dbGas, dbVul;
+    /*
+    * gasStation
+    * vulcanizeStation
+    * */
     //INTERVAL
     private long UPDATE_INTERVAL = 10 * 1000; /* 10 seconds */
     private long FASTEST_INTERVAL = 5 * 1000; /* 2 seconds */
@@ -66,17 +60,29 @@ public class FindShopActivity extends AppCompatActivity {
         setContentView(R.layout.activity_find_nearest_shop);
         checkIfLoggedIn();
         setData();
+        setActivityTitle();
         //GET LOCATION
         setLocationRequest();
         setLocation();
         setOnLocationUpdate();
-        listGas();
+//        listGas();
     }
 
     private void setData() {
         Intent i = getIntent();
         //extra
         shopType = i.getExtras().getString("shopType");
+        dbGas = this.getString(R.string.db_gas);
+        dbVul = this.getString(R.string.db_vul);
+    }
+
+    private void setActivityTitle() {
+        if (shopType.equals(dbGas)) {
+            setTitle("Finding nearest Gas Station");
+            return;
+        }
+        setTitle("Finding nearest Vulcanizing Station");
+
     }
 
     private void setLocationRequest() {
@@ -98,30 +104,6 @@ public class FindShopActivity extends AppCompatActivity {
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
     }
 
-    private void listGas() {
-        vulcanizeRef = FirebaseDatabase.getInstance()
-                .getReference("Shops")
-                .child(shopType);
-        mListGas = findViewById(R.id.list_shop);
-
-        firebaseAdapter = new FirebaseRecyclerAdapter<Shop, ListGasViewHolder>
-                (Shop.class, R.layout.listview_nearest_gas, ListGasViewHolder.class, vulcanizeRef) {
-            @Override
-            protected void populateViewHolder(ListGasViewHolder viewHolder, Shop model, int position) {
-                Toast.makeText(
-                        FindShopActivity.this,
-                        "Test",
-                        Toast.LENGTH_SHORT
-                ).show();
-                viewHolder.bindListGas(model);
-            }
-        };
-        mListGas.setHasFixedSize(true);
-        mLayoutManager = new LinearLayoutManager(this);
-        mListGas.setLayoutManager(mLayoutManager);
-        mListGas.setAdapter(firebaseAdapter);
-    }
-
     private void setOnLocationUpdate() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             responseNoLocation();
@@ -136,7 +118,7 @@ public class FindShopActivity extends AppCompatActivity {
                             return;
                         }
                         mLastLocation = location;
-                        getClosestGasStation();
+                        getClosestShop();
                         Toast.makeText(
                                 FindShopActivity.this,
                                 "Lat: " + mLastLocation.getLatitude() +
@@ -209,12 +191,12 @@ public class FindShopActivity extends AppCompatActivity {
     private Boolean foundGas = false, isFirst = true;
     private String shopId;
     private Double shopLat, shopLng;
-    private void getClosestGasStation() {
+    private void getClosestShop() {
         DatabaseReference gasLocation = FirebaseDatabase
                 .getInstance()
                 .getReference()
                 .child("Locations")
-                .child("gasStation");
+                .child(shopType);
 
         GeoFire geoFire = new GeoFire(gasLocation);
         GeoQuery geoQuery = geoFire.queryAtLocation(
@@ -226,49 +208,40 @@ public class FindShopActivity extends AppCompatActivity {
         geoQuery.addGeoQueryEventListener(new GeoQueryEventListener() {
             @Override
             public void onKeyEntered(String key, GeoLocation location) {
-                if( ! foundGas) {
-                    foundGas = true;
-                }
+                setFoundGas();
                 shopId = key;
-                if(isFirst) {
-                    shopLat = location.latitude;
-                    shopLng = location.longitude;
-                    isFirst = false;
-                } else {
-                    if(isCloser(
-                            location.latitude, location.longitude,
-                            shopLat, shopLng
-                    )) {
-                        shopLat = location.latitude;
-                        shopLng = location.longitude;
-                    }
-                }
+                setNewClosestShop(location);
             }
 
 
             @Override
             public void onKeyExited(String key) {
-
+                Toast.makeText(
+                        FindShopActivity.this,
+                        "Shop has been removed",
+                        Toast.LENGTH_SHORT
+                ).show();
+                startActivity(new Intent(FindShopActivity.this, MainPage.class));
             }
 
             @Override
             public void onKeyMoved(String key, GeoLocation location) {
-                Log.d("geoFireMoved", "Lat: " + location.latitude);
+                Toast.makeText(
+                        FindShopActivity.this,
+                        "Shop has been moved",
+                        Toast.LENGTH_SHORT
+                ).show();
+                startActivity(new Intent(FindShopActivity.this, MainPage.class));
             }
 
             @Override
             public void onGeoQueryReady() {
                 if ( ! foundGas) {
                     radius++;
-                    getClosestGasStation();
+                    getClosestShop();
                     return;
                 }
-                Intent i = new Intent(FindShopActivity.this, ViewNearestGasActivity.class);
-                i.putExtra("shopId", shopId);
-                i.putExtra("shopType", "gasStation");
-                i.putExtra("shopLat", shopLat);
-                i.putExtra("shopLng", shopLng);
-                startActivity(i);
+                viewShop();
             }
 
             @Override
@@ -280,6 +253,40 @@ public class FindShopActivity extends AppCompatActivity {
                 ).show();
             }
         });
+    }
+
+    private void setFoundGas() {
+        if(foundGas) {
+            return;
+        }
+        foundGas = true;
+    }
+
+    private void setNewClosestShop(GeoLocation location) {
+        if(isFirst) {
+            shopLat = location.latitude;
+            shopLng = location.longitude;
+            isFirst = false;
+            return;
+        }
+        setIfCloser(location);
+    }
+
+    private void setIfCloser(GeoLocation location) {
+        if( isCloser(location.latitude, location.longitude, shopLat, shopLng) ) {
+            shopLat = location.latitude;
+            shopLng = location.longitude;
+        }
+    }
+
+    private void viewShop() {
+        Intent i = new Intent(FindShopActivity.this, ViewNearestShopActivity.class);
+        i.putExtra("shopId", shopId);
+        i.putExtra("shopType", shopType);
+        i.putExtra("shopLat", shopLat);
+        i.putExtra("shopLng", shopLng);
+        startActivity(i);
+
     }
 
     public Boolean isCloser(Double lat1, Double lng1, Double lat2, Double lng2) {

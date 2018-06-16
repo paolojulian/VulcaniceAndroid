@@ -30,7 +30,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.vulcanice.vulcanice.Model.Shop;
 
-public class ViewNearestGasActivity extends AppCompatActivity {
+public class ViewNearestShopActivity extends AppCompatActivity {
     private FirebaseDatabase mDatabase;
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
@@ -40,8 +40,9 @@ public class ViewNearestGasActivity extends AppCompatActivity {
     private Double shopLat, shopLng;
     //VIEW
     private AppCompatTextView shopName, shopAddress, constShopType, shopDistance;
-    private Button btnTrackGas;
+    private Button btnTrackShop, btnRequestShop;
     //MODEL
+    private String dbGas, dbVul;
     private Shop shopModel;
     //LOCATION
     protected FusedLocationProviderClient mFusedLocationClient;
@@ -58,7 +59,8 @@ public class ViewNearestGasActivity extends AppCompatActivity {
         setContentView(R.layout.activity_view_nearest_shop);
 
         initData();
-        eventTrackGas();
+        eventTrackShop();
+        eventRequestShop();
 
         setLocationRequest();
         setLocation();
@@ -68,37 +70,99 @@ public class ViewNearestGasActivity extends AppCompatActivity {
     }
 
     protected void initData() {
+        setupDbNames();
+        setupExtras();
+        setupView();
+        setupFirebase();
+        setActivityTitle();
+    }
+
+    private void setupDbNames() {
+        dbGas = this.getString(R.string.db_gas);
+        dbVul = this.getString(R.string.db_vul);
+    }
+
+    private void setupExtras() {
         Intent i = getIntent();
-        //extra
         shopId = i.getExtras().getString("shopId");
         shopType = i.getExtras().getString("shopType");
         shopLat = i.getExtras().getDouble("shopLat");
         shopLng = i.getExtras().getDouble("shopLng");
         currentShopDistance = i.getExtras().getFloat("shopDistance");
-        //view
+    }
+
+    private void setupView() {
         shopName = findViewById(R.id.shop_name);
         shopAddress = findViewById(R.id.shop_address);
         shopDistance = findViewById(R.id.shop_distance);
-        btnTrackGas = findViewById(R.id.btn_track_shop);
-        //database
+        btnTrackShop = findViewById(R.id.btn_track_shop);
+        btnRequestShop = findViewById(R.id.btn_request_shop);
+        viewBtnRequest();
+    }
+
+    private void viewBtnRequest() {
+        if (shopType.equals(dbVul)) {
+            btnRequestShop.setVisibility(View.VISIBLE);
+            return;
+        }
+        if (shopType.equals(dbGas)) {
+            btnRequestShop.setVisibility(View.GONE);
+            return;
+        }
+    }
+
+    private void setupFirebase() {
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
         mDatabase = FirebaseDatabase.getInstance();
     }
 
-    private void eventTrackGas() {
-        btnTrackGas.setOnClickListener(new View.OnClickListener() {
+    protected void setActivityTitle() {
+        if (shopType.equals(dbGas)) {
+            setTitle("Nearest Gas Station");
+            return;
+        }
+        setTitle("Nearest Vulcanizing Station");
+    }
+
+    private void eventTrackShop() {
+        btnTrackShop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(
-                        ViewNearestGasActivity.this,
-                        TrackShopActivity.class
-                );
-                i.putExtra("shopLat", shopLat);
-                i.putExtra("shopLng", shopLng);
-                startActivity(i);
+                trackShop();
             }
         });
+    }
+
+    private void trackShop() {
+        Intent i = new Intent(
+                ViewNearestShopActivity.this,
+                TrackShopActivity.class
+        );
+        i.putExtra("shopLat", shopLat);
+        i.putExtra("shopLng", shopLng);
+        startActivity(i);
+    }
+
+    private void eventRequestShop() {
+        if (shopType.equals(dbGas)) {
+            return;
+        }
+        btnRequestShop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                requestShop();
+            }
+        });
+    }
+
+    private void requestShop() {
+        Intent i = new Intent(
+                ViewNearestShopActivity.this,
+                RequestShopActivity.class
+        );
+        i.putExtra("shopId", shopId);
+        startActivity(i);
     }
 
     private void setLocationRequest() {
@@ -188,14 +252,14 @@ public class ViewNearestGasActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                Toast.makeText(ViewNearestGasActivity.this, "@string/db_error", Toast.LENGTH_SHORT).show();
+                Toast.makeText(ViewNearestShopActivity.this, "@string/db_error", Toast.LENGTH_SHORT).show();
             }
         });
 
     }
     protected void responseNoLocation() {
         Toast.makeText(
-                ViewNearestGasActivity.this,
+                ViewNearestShopActivity.this,
                 "Could not get Location\n" +
                         "Please wait to connect",
                 Toast.LENGTH_SHORT
@@ -235,8 +299,9 @@ public class ViewNearestGasActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         startActivity(
-                new Intent(ViewNearestGasActivity.this, MainPage.class)
+                new Intent(ViewNearestShopActivity.this, MainPage.class)
         );
         super.onStop();
     }
 }
+
