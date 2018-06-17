@@ -135,12 +135,12 @@ public class MainPage extends AppCompatActivity {
     }
 
     private void setupToolbar() {
-        mToolbar = (Toolbar) findViewById(R.id.nav_action);
+        mToolbar = findViewById(R.id.nav_action);
         setSupportActionBar(mToolbar);
     }
 
     private void setupDrawer() {
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerLayout = findViewById(R.id.drawer_layout);
         mToggleDrawer = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.vcn_open, R.string.vcn_close);
         mDrawerLayout.addDrawerListener(mToggleDrawer);
         mToggleDrawer.syncState();
