@@ -8,10 +8,12 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.model.Dash;
@@ -41,7 +43,8 @@ public class MainPage extends AppCompatActivity {
     private ActionBarDrawerToggle mToggleDrawer;
     private NavigationView mNavigationView;
 
-    private Button BtnFindGas, BtnFindVul;
+    private ImageButton BtnFindGas, BtnFindVul;
+    private ImageButton ImgBtnFindGas;
 
     private Toolbar mToolbar;
 
@@ -80,8 +83,8 @@ public class MainPage extends AppCompatActivity {
     }
 
     protected void setupBtn() {
-        BtnFindGas = findViewById(R.id.btn_find_gas);
-        BtnFindVul = findViewById(R.id.btn_find_vul);
+        BtnFindGas = findViewById(R.id.imgbtn_find_gas);
+        BtnFindVul = findViewById(R.id.imgbtn_find_vul);
     }
 
     protected void getUserType() {

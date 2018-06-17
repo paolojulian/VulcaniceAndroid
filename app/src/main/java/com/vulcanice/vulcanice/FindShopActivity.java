@@ -51,8 +51,8 @@ public class FindShopActivity extends AppCompatActivity {
     * vulcanizeStation
     * */
     //INTERVAL
-    private long UPDATE_INTERVAL = 10 * 1000; /* 10 seconds */
-    private long FASTEST_INTERVAL = 5 * 1000; /* 2 seconds */
+    private long UPDATE_INTERVAL = 5 * 1000; /* 10 seconds */
+    private long FASTEST_INTERVAL = 2 * 1000; /* 2 seconds */
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
