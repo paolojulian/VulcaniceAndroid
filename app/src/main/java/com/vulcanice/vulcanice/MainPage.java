@@ -53,6 +53,7 @@ public class MainPage extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_page);
 
+        setupToolbar();
         setupBtn();
         mAuth = FirebaseAuth.getInstance();
         eventGetClosestGas();
@@ -135,7 +136,7 @@ public class MainPage extends AppCompatActivity {
     }
 
     private void setupToolbar() {
-        mToolbar = findViewById(R.id.nav_action);
+        mToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
     }
 

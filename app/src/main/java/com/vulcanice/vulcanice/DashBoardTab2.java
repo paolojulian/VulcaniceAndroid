@@ -38,6 +38,7 @@ public class DashBoardTab2 extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_dash_board_2, container, false);
         listShop();
+        getActivity().setTitle("Gas Station/s");
         return view;
     }
 
@@ -51,7 +52,7 @@ public class DashBoardTab2 extends Fragment {
         mListShop = view.findViewById(R.id.list_gas_station);
 
         firebaseAdapter = new FirebaseRecyclerAdapter<Shop, ListShopViewHolder>
-                (Shop.class, R.layout.listview_shop, ListShopViewHolder.class, vulcanizeQuery ) {
+                (Shop.class, R.layout.layout_list_gas, ListShopViewHolder.class, vulcanizeQuery ) {
             @Override
             protected void populateViewHolder(ListShopViewHolder viewHolder, Shop model, int position) {
                 viewHolder.bindListShop(model);

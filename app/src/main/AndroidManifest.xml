@@ -18,7 +18,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -41,7 +42,7 @@
 
         <activity
             android:name=".MainPage"
-            android:theme="@style/AppTheme"
+            android:theme="@style/AppTheme.NoActionBar"
             android:label="Vulca-Nice" />
 
         <activity
@@ -81,7 +82,7 @@
             android:name=".MapTracking"
             android:label="@string/title_activity_map_tracking" />
         <activity
-            android:theme="@style/AppTheme"
+            android:theme="@style/AppTheme.NoActionBar"
             android:name=".DashBoard"
             android:label="Lists" />
         <activity

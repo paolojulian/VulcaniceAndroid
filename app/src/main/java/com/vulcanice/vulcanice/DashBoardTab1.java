@@ -47,7 +47,6 @@ public class DashBoardTab1 extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_dash_board_1, container, false);
-//
         listShop();
 
         return view;

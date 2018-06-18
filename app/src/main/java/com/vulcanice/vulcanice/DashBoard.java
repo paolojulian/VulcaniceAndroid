@@ -10,6 +10,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -29,6 +30,7 @@ public class DashBoard extends AppCompatActivity {
     private ActionBarDrawerToggle mToggleDrawer;
     private NavigationView mNavigationView;
 
+    private Toolbar mToolbar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,6 +38,7 @@ public class DashBoard extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
 
         //INPUTS
+        setupToolBar();
         setupTabs();
         setupInputs();
         //DRAWER
@@ -43,6 +46,11 @@ public class DashBoard extends AppCompatActivity {
         setupMenu();
         //EVENTS
         eventCreateShop();
+    }
+
+    private void setupToolBar() {
+        mToolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(mToolbar);
     }
 
     private void eventCreateShop() {

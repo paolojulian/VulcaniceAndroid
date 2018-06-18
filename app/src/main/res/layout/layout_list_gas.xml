@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/card_view_list_shop"
+    android:layout_width="match_parent"
+    android:layout_height="70dp"
+    card_view:cardElevation="3dp"
+    card_view:cardBackgroundColor="#854442"
+    card_view:contentPadding="5dp"
+    card_view:contentPaddingLeft="10dp"
+    android:layout_marginHorizontal="0dp"
+    android:layout_margin="2dp"
+    android:clickable="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/shop_title"
+            android:text="Shop Name"
+            android:textSize="24dp"
+            android:textColor="@color/colorLight"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/shop_description"
+            android:text="Shop Desc"
+            android:textSize="14dp"
+            android:textColor="@color/colorLight"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+</android.support.v7.widget.CardView>
