@@ -204,15 +204,8 @@ public class ListShops extends AppCompatActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.actionJoin:
-                User user = new User();
-                user.setEmail(FirebaseAuth.getInstance().getCurrentUser().getEmail());
-                user.setStatus(online);
-                counterRef.child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-                        .setValue(user);
-                break;
-            case R.id.actionLogout:
-                currentUserRef.removeValue();
+            case R.id.action_check_requests:
+                Toast.makeText(ListShops.this, "test", Toast.LENGTH_SHORT).show();
                 break;
         }
         return super.onOptionsItemSelected(item);

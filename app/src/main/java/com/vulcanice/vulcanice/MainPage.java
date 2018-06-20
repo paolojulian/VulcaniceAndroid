@@ -9,11 +9,14 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.model.Dash;
@@ -44,7 +47,8 @@ public class MainPage extends AppCompatActivity {
     private NavigationView mNavigationView;
 
     private ImageButton BtnFindGas, BtnFindVul;
-    private ImageButton ImgBtnFindGas;
+    private ImageButton BtnNotification;
+    private TextView notifCount;
 
     private Toolbar mToolbar;
 
@@ -132,7 +136,43 @@ public class MainPage extends AppCompatActivity {
         if (mToggleDrawer.onOptionsItemSelected(item)) {
             return true;
         }
-        return super.onOptionsItemSelected(item);
+        switch (item.getItemId()) {
+            case R.id.action_check_requests:
+                Log.d("test", "test");
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.main_menu, menu);
+
+        setupMenuItems(menu);
+        return true;
+    }
+
+    private void setupMenuItems(Menu menu) {
+        MenuItem menuItem = menu.findItem(R.id.action_check_requests);
+
+        eventNotificationCount(menuItem);
+        eventClickNotification(menuItem);
+    }
+
+    private void eventClickNotification(MenuItem menuItem) {
+        BtnNotification = menuItem.getActionView().findViewById(R.id.btn_notif);
+        BtnNotification.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d("test", notifCount.getText().toString());
+            }
+        });
+    }
+
+    private void eventNotificationCount(MenuItem menuItem) {
+        notifCount = menuItem.getActionView().findViewById(R.id.notif_count);
     }
 
     private void setupToolbar() {
@@ -203,6 +243,21 @@ public class MainPage extends AppCompatActivity {
     }
     protected void gotoSignIn() {
         startActivity(new Intent(MainPage.this, MainActivity.class));
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+    }
+
+    @Override
+    public void onBackPressed() {
+        gotoHome();
+        super.onStop();
+    }
+
+    private void gotoHome() {
+        startActivity(new Intent(MainPage.this, MainPage.class));
     }
 }
 

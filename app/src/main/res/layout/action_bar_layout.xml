@@ -10,7 +10,7 @@
         android:layout_height="wrap_content">
 
         <ImageButton
-            android:id="@+id/cart_ic_image"
+            android:id="@+id/btn_notif"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_alignParentLeft="true"
