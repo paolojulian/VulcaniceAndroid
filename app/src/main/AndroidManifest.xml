@@ -46,6 +46,11 @@
             android:label="Vulca-Nice" />
 
         <activity
+            android:name=".ViewRequestsActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:label="Requests" />
+
+        <activity
             android:name=".ViewNearestShopActivity"
             android:theme="@style/AppTheme"/>
 

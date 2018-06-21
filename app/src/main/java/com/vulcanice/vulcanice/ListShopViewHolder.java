@@ -37,33 +37,6 @@ public class ListShopViewHolder extends RecyclerView.ViewHolder implements View.
     }
     @Override
     public void onClick(View view) {
-//        final ArrayList<Shop> shops = new ArrayList<>();
-//
-//        DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
-//        ref.addListenerForSingleValueEvent(new ValueEventListener() {
-//
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-//                    shops.add(snapshot.getValue(Shop.class));
-//                }
-//
-//                int itemPosition = getLayoutPosition();
-//
-//                Intent intent = new Intent(mContext, EditShopActivity.class);
-//                intent.putExtra("name", itemPosition + "");
-//                intent.putExtra("description", itemPosition + "");
-//                intent.putExtra("latitude", itemPosition + "");
-//                intent.putExtra("longitude", itemPosition + "");
-//                intent.putExtra("name", itemPosition + "");
-//
-//                mContext.startActivity(intent);
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//            }
-//        });
     }
 }
 

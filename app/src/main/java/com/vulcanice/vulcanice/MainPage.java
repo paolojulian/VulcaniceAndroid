@@ -151,7 +151,26 @@ public class MainPage extends AppCompatActivity {
         menuInflater.inflate(R.menu.main_menu, menu);
 
         setupMenuItems(menu);
+        displayNotifCount();
         return true;
+    }
+
+    private void displayNotifCount() {
+        DatabaseReference notifReference = mDatabase.getReference()
+                                                .child("Request")
+                                                .child(currentUser.getUid());
+        notifReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                long count = dataSnapshot.getChildrenCount();
+                notifCount.setText(Long.toString(count));
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     private void setupMenuItems(Menu menu) {
@@ -166,7 +185,10 @@ public class MainPage extends AppCompatActivity {
         BtnNotification.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d("test", notifCount.getText().toString());
+                if (notifCount.getText().toString().equals("0")) {
+                    return;
+                }
+                startActivity(new Intent(MainPage.this, ViewRequestsActivity.class));
             }
         });
     }
