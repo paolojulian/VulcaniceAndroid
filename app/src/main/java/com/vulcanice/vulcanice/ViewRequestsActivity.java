@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
@@ -18,7 +19,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
 import com.vulcanice.vulcanice.Model.Request;
 
 /**
@@ -60,6 +60,7 @@ public class ViewRequestsActivity extends AppCompatActivity{
                 (Request.class, R.layout.layout_request, ListRequestViewHolder.class, requestList) {
             @Override
             protected void populateViewHolder(ListRequestViewHolder viewHolder, Request model, int position) {
+                Log.d("position", position + "");
                 viewHolder.bindListRequest(model);
             }
         };
