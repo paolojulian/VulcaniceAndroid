@@ -46,7 +46,7 @@ public class MainPage extends AppCompatActivity {
     private ActionBarDrawerToggle mToggleDrawer;
     private NavigationView mNavigationView;
 
-    private ImageButton BtnFindGas, BtnFindVul;
+    private Button BtnFindGas, BtnFindVul;
     private ImageButton BtnNotification;
     private TextView notifCount;
 
@@ -88,8 +88,8 @@ public class MainPage extends AppCompatActivity {
     }
 
     protected void setupBtn() {
-        BtnFindGas = findViewById(R.id.imgbtn_find_gas);
-        BtnFindVul = findViewById(R.id.imgbtn_find_vul);
+        BtnFindGas = findViewById(R.id.btn_find_gas);
+        BtnFindVul = findViewById(R.id.btn_find_vul);
     }
 
     protected void getUserType() {
