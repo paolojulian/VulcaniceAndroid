@@ -5,7 +5,7 @@ package com.vulcanice.vulcanice.Model;
  */
 
 public class Request {
-    protected String description, clientName;
+    protected String description, clientName, clientUid;
     protected Boolean isValid;
     public Request () {
     }
@@ -32,5 +32,13 @@ public class Request {
 
     public void setValid(boolean b) {
         isValid = b;
+    }
+
+    public String getClientUid() {
+        return clientUid;
+    }
+
+    public void setClientUid(String clientUid) {
+        this.clientUid = clientUid;
     }
 }

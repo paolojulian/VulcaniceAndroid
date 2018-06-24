@@ -46,6 +46,11 @@
             android:label="Vulca-Nice" />
 
         <activity
+            android:name=".TrackRequestActivity"
+            android:theme="@style/AppTheme"
+            android:label="Tracking Client" />
+
+        <activity
             android:name=".ViewRequestsActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:label="Requests" />

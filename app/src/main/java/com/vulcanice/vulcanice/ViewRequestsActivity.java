@@ -14,13 +14,9 @@ import android.util.Log;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.vulcanice.vulcanice.Model.Request;
-
 /**
  * Created by User on 21/06/2018.
  */
@@ -55,13 +51,13 @@ public class ViewRequestsActivity extends AppCompatActivity{
         displayList(requestList);
     }
 
-    private void displayList(Query requestList) {
+    private void displayList(final Query requestList) {
         firebaseAdapter = new FirebaseRecyclerAdapter<Request, ListRequestViewHolder>
                 (Request.class, R.layout.layout_request, ListRequestViewHolder.class, requestList) {
             @Override
             protected void populateViewHolder(ListRequestViewHolder viewHolder, Request model, int position) {
                 Log.d("position", position + "");
-                viewHolder.bindListRequest(model);
+                viewHolder.bindListRequest(model, position);
             }
         };
         mListRequest = findViewById(R.id.list_request);

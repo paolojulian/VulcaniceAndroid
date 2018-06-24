@@ -3,13 +3,11 @@ package com.vulcanice.vulcanice;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.location.LocationListener;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.directions.route.AbstractRouting;
@@ -32,11 +30,14 @@ import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,8 +47,12 @@ import java.util.List;
  */
 
 public class TrackRequestActivity extends AppCompatActivity implements RoutingListener, com.google.android.gms.location.LocationListener, GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, OnMapReadyCallback {
-    //DATABASE
-    private LatLng shopLocation;
+    //MODEL
+    private DatabaseReference mDatabase;
+    private FirebaseUser owner;
+    private String clientUid;
+    //LOCATION
+    private LatLng userLocation, ownerLocation;
     //MAP
     private MapFragment mapFragment;
     private GoogleMap mMap;
@@ -58,7 +63,7 @@ public class TrackRequestActivity extends AppCompatActivity implements RoutingLi
     protected LocationCallback locationCallback;
     protected LocationRequest mLocationRequest;
     //MARKER
-    private MarkerOptions userMarker, shopMarker;
+    private MarkerOptions clientMarker, ownerMarker;
     //ROUTE DISPLAY
     private List<Polyline> polylines;
     private static final int[] COLORS = new int[]{R.color.colorPrimaryDark,R.color.colorSemiLight,R.color.colorLight,R.color.colorAccent,R.color.primary_dark_material_light};
@@ -79,29 +84,38 @@ public class TrackRequestActivity extends AppCompatActivity implements RoutingLi
             },PERMISSION_REQUEST_CODE);
         }
 
-        setDatas();
-
+        getIntentData();
+        getClientLocation();
+        setupMarker();
+        setupDatabase();
         setupMap();
         setLocationRequest();
         setLocation();
         setOnLocationUpdate();
     }
 
-    private void setDatas() {
+    private void getClientLocation() {
+        DatabaseReference clientRef = mDatabase.child("clientLocation")
+                .child(clientUid);
+    }
+
+    private void setupDatabase() {
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        owner = FirebaseAuth.getInstance().getCurrentUser();
+    }
+
+    private void setupMarker() {
         polylines = new ArrayList<>();
-        getIntentData();
-        userMarker = new MarkerOptions();
-        shopMarker = new MarkerOptions()
-                .position(shopLocation)
+        clientMarker = new MarkerOptions();
+        ownerMarker = new MarkerOptions()
+                .position(ownerLocation)
                 .snippet("Shop Location")
                 .icon(BitmapDescriptorFactory.fromResource(R.mipmap.baseline_ev_station_black_24));
     }
 
     private void getIntentData() {
         Intent i = getIntent();
-        Double shopLng = i.getExtras().getDouble("shopLng");
-        Double shopLat = i.getExtras().getDouble("shopLat");
-        shopLocation = new LatLng(shopLat, shopLng);
+        clientUid = i.getExtras().getString("clientUid");
     }
 
     private void setLocationRequest() {
@@ -159,22 +173,23 @@ public class TrackRequestActivity extends AppCompatActivity implements RoutingLi
     }
 
     private void getRouteToShop() {
-        LatLng userLocation = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-        drawMarker(userLocation);
-        drawRoute(userLocation);
+        userLocation = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+        drawMarker();
+        drawRoute();
     }
 
-    private void drawMarker(LatLng userLocation) {
-        mMap.addMarker(userMarker.position(userLocation).title("Current Location"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 15));
+    private void drawMarker() {
+        mMap.addMarker(clientMarker.position(userLocation).title("Client Location"));
+        mMap.addMarker(ownerMarker.position(ownerLocation).title("Current Location"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(ownerLocation, 15));
     }
 
-    private void drawRoute(LatLng userLocation) {
+    private void drawRoute() {
         Routing routing = new Routing.Builder()
                 .travelMode(AbstractRouting.TravelMode.DRIVING)
                 .withListener(this)
                 .alternativeRoutes(true)
-                .waypoints(userLocation, shopLocation)
+                .waypoints(userLocation, ownerLocation)
                 .build();
         routing.execute();
     }
@@ -278,7 +293,7 @@ public class TrackRequestActivity extends AppCompatActivity implements RoutingLi
         }
         mMap = googleMap;
         mMap.setMyLocationEnabled(true);
-        mMap.addMarker(shopMarker);
+        mMap.addMarker(ownerMarker);
         buildGoogleApiClient();
     }
 
