@@ -54,7 +54,7 @@ import java.util.List;
 
 public class TrackRequestActivity extends AppCompatActivity implements RoutingListener, com.google.android.gms.location.LocationListener, GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, OnMapReadyCallback {
     //MODEL
-    private DatabaseReference mDatabaseRef;
+    private DatabaseReference mDatabaseRef, ownerLocationRef;
     private FirebaseUser owner;
     private String clientUid;
     //LOCATION
@@ -102,6 +102,7 @@ public class TrackRequestActivity extends AppCompatActivity implements RoutingLi
 
     private void setupClientLocation() {
         DatabaseReference clientRef = mDatabaseRef.child("clientLocation")
+                .child(owner.getUid())
                 .child(clientUid);
 
         clientRef.addValueEventListener(new ValueEventListener() {
@@ -131,6 +132,10 @@ public class TrackRequestActivity extends AppCompatActivity implements RoutingLi
     private void setupDatabase() {
         mDatabaseRef = FirebaseDatabase.getInstance().getReference();
         owner = FirebaseAuth.getInstance().getCurrentUser();
+        ownerLocationRef = FirebaseDatabase.getInstance()
+                .getReference("ownerLocation")
+                .child(owner.getUid())
+                .child(clientUid);
     }
 
     private void setupMarker() {
@@ -183,6 +188,7 @@ public class TrackRequestActivity extends AppCompatActivity implements RoutingLi
                             return;
                         }
                         mLastLocation = location;
+                        updateFirebaseClientLocation();
                         setupMarker();
                         getRouteToShop();
                     }
@@ -202,6 +208,13 @@ public class TrackRequestActivity extends AppCompatActivity implements RoutingLi
         startLocationUpdates();
     }
 
+    private void updateFirebaseClientLocation() {
+        ownerLocation = new mLocation();
+        ownerLocation.setLatitude(mLastLocation.getLatitude());
+        ownerLocation.setLongitude(mLastLocation.getLongitude());
+        ownerLocationRef.setValue(ownerLocation);
+    }
+
     private void setupMap() {
         mapFragment = (MapFragment) getFragmentManager()
                 .findFragmentById(R.id.map_track_shop);
@@ -215,12 +228,19 @@ public class TrackRequestActivity extends AppCompatActivity implements RoutingLi
     }
 
     private void drawMarker() {
-        mMap.addMarker(clientMarker.position(clientLatLng).title("Client Location"));
-        mMap.addMarker(ownerMarker.position(ownerLatLng).title("Current Location"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(ownerLatLng, 15));
+        if (clientMarker != null) {
+            mMap.addMarker(clientMarker.position(clientLatLng).title("Client Location"));
+        }
+        if (ownerMarker != null) {
+            mMap.addMarker(ownerMarker.position(ownerLatLng).title("Current Location"));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(ownerLatLng, 15));
+        }
     }
 
     private void drawRoute() {
+        if (clientMarker == null || ownerMarker == null) {
+            return;
+        }
         Routing routing = new Routing.Builder()
                 .travelMode(AbstractRouting.TravelMode.DRIVING)
                 .withListener(this)
