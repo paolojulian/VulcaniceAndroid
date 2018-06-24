@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.directions.route.AbstractRouting;
@@ -36,8 +37,13 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.vulcanice.vulcanice.Model.mLocation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,11 +54,12 @@ import java.util.List;
 
 public class TrackRequestActivity extends AppCompatActivity implements RoutingListener, com.google.android.gms.location.LocationListener, GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, OnMapReadyCallback {
     //MODEL
-    private DatabaseReference mDatabase;
+    private DatabaseReference mDatabaseRef;
     private FirebaseUser owner;
     private String clientUid;
     //LOCATION
-    private LatLng userLocation, ownerLocation;
+    private mLocation clientLocation, ownerLocation;
+    private LatLng clientLatLng, ownerLatLng;
     //MAP
     private MapFragment mapFragment;
     private GoogleMap mMap;
@@ -84,33 +91,60 @@ public class TrackRequestActivity extends AppCompatActivity implements RoutingLi
             },PERMISSION_REQUEST_CODE);
         }
 
+        polylines = new ArrayList<>();
         getIntentData();
-        getClientLocation();
-        setupMarker();
         setupDatabase();
+        setupOwnerLocation();
+        setupClientLocation();
+        setupMarker();
         setupMap();
+    }
+
+    private void setupClientLocation() {
+        DatabaseReference clientRef = mDatabaseRef.child("clientLocation")
+                .child(clientUid);
+
+        clientRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if ( ! dataSnapshot.exists()) {
+                    return;
+                }
+                clientLocation = dataSnapshot.getValue(mLocation.class);
+                clientLatLng = new LatLng(clientLocation.getLatitude(), clientLocation.getLongitude());
+                setupMarker();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+
+    }
+
+    private void setupOwnerLocation() {
         setLocationRequest();
         setLocation();
         setOnLocationUpdate();
     }
 
-    private void getClientLocation() {
-        DatabaseReference clientRef = mDatabase.child("clientLocation")
-                .child(clientUid);
-    }
-
     private void setupDatabase() {
-        mDatabase = FirebaseDatabase.getInstance().getReference();
+        mDatabaseRef = FirebaseDatabase.getInstance().getReference();
         owner = FirebaseAuth.getInstance().getCurrentUser();
     }
 
     private void setupMarker() {
-        polylines = new ArrayList<>();
-        clientMarker = new MarkerOptions();
+        if (clientLatLng == null || ownerLatLng == null) {
+            return;
+        }
+        clientMarker = new MarkerOptions()
+                .position(clientLatLng)
+                .snippet("Client Location")
+                .icon(BitmapDescriptorFactory.fromResource(R.mipmap.baseline_person_black_24));
         ownerMarker = new MarkerOptions()
-                .position(ownerLocation)
-                .snippet("Shop Location")
-                .icon(BitmapDescriptorFactory.fromResource(R.mipmap.baseline_ev_station_black_24));
+                .position(ownerLatLng)
+                .snippet("Your Location");
+        mMap.addMarker(ownerMarker);
     }
 
     private void getIntentData() {
@@ -149,6 +183,7 @@ public class TrackRequestActivity extends AppCompatActivity implements RoutingLi
                             return;
                         }
                         mLastLocation = location;
+                        setupMarker();
                         getRouteToShop();
                     }
                 });
@@ -160,6 +195,7 @@ public class TrackRequestActivity extends AppCompatActivity implements RoutingLi
                 for (Location location : locationResult.getLocations()) {
                     mLastLocation = location;
                 }
+                setupMarker();
                 getRouteToShop();
             }
         };
@@ -173,15 +209,15 @@ public class TrackRequestActivity extends AppCompatActivity implements RoutingLi
     }
 
     private void getRouteToShop() {
-        userLocation = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+        ownerLatLng = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
         drawMarker();
         drawRoute();
     }
 
     private void drawMarker() {
-        mMap.addMarker(clientMarker.position(userLocation).title("Client Location"));
-        mMap.addMarker(ownerMarker.position(ownerLocation).title("Current Location"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(ownerLocation, 15));
+        mMap.addMarker(clientMarker.position(clientLatLng).title("Client Location"));
+        mMap.addMarker(ownerMarker.position(ownerLatLng).title("Current Location"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(ownerLatLng, 15));
     }
 
     private void drawRoute() {
@@ -189,7 +225,7 @@ public class TrackRequestActivity extends AppCompatActivity implements RoutingLi
                 .travelMode(AbstractRouting.TravelMode.DRIVING)
                 .withListener(this)
                 .alternativeRoutes(true)
-                .waypoints(userLocation, ownerLocation)
+                .waypoints(clientLatLng, ownerLatLng)
                 .build();
         routing.execute();
     }
@@ -293,7 +329,6 @@ public class TrackRequestActivity extends AppCompatActivity implements RoutingLi
         }
         mMap = googleMap;
         mMap.setMyLocationEnabled(true);
-        mMap.addMarker(ownerMarker);
         buildGoogleApiClient();
     }
 

@@ -114,6 +114,7 @@ public class RequestShopActivity extends AppCompatActivity{
         request.setDescription(nClientDescription);
         request.setValid(true);
         request.setClientUid(currentUser.getUid());
+        request.setIsAccepted("1");
 
         progressBar.setVisibility(View.VISIBLE);
         DatabaseReference requestReference = mDatabase.getReference()

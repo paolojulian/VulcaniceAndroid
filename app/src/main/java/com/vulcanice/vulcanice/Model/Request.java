@@ -5,9 +5,17 @@ package com.vulcanice.vulcanice.Model;
  */
 
 public class Request {
-    protected String description, clientName, clientUid;
+    protected String description, clientName, clientUid, isAccepted;
     protected Boolean isValid;
     public Request () {
+    }
+
+    public String getIsAccepted() {
+        return isAccepted;
+    }
+
+    public void setIsAccepted(String isAccepted) {
+        this.isAccepted = isAccepted;
     }
 
     public String getDescription() {
