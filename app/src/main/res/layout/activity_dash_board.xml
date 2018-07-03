@@ -69,6 +69,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end|bottom"
+            android:background="@color/colorAccent"
             android:src="@mipmap/baseline_control_point_white_24"
             android:layout_margin="16dp" />
     </android.support.design.widget.CoordinatorLayout>

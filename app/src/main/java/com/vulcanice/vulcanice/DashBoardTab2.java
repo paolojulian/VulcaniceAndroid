@@ -38,7 +38,6 @@ public class DashBoardTab2 extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_dash_board_2, container, false);
         listShop();
-        getActivity().setTitle("Gas Station/s");
         return view;
     }
 
@@ -62,5 +61,13 @@ public class DashBoardTab2 extends Fragment {
         mLayoutManager = new LinearLayoutManager(getActivity());
         mListShop.setLayoutManager(mLayoutManager);
         mListShop.setAdapter(firebaseAdapter);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+//        ((DashBoard) getActivity())
+//                .setActionBarTitle("Gasoline Stations");
+        getActivity().setTitle("Gasoline Stations");
     }
 }

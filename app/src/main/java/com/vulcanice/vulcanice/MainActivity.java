@@ -19,7 +19,6 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseUser user;
     //STATIC_VALUES
     private static final int PERMISSION_REQUEST_CODE = 7171;
-    private static final int PLAY_SERVICES_RES_REQUEST = 7172;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

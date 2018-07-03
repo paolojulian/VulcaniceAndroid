@@ -134,20 +134,20 @@ public class CreateShopActivity extends AppCompatActivity implements OnMapReadyC
         Log.d("ShopType", shopType);
         if (shopType.equals("Gasoline Station")) {
             return "gasStation";
-        } else {
+        } else if (shopType.equals("Vulcanizing Station")){
             return "vulcanizeStation";
+        } else {
+            return "both";
         }
     }
 
     private void saveShop() {
         String shopType = getShopType(mShop.getType());
-
         mDatabase = FirebaseDatabase.getInstance().getReference();
         DatabaseReference shopReference = mDatabase.child("Shops")
-                .child(shopType);
+                .child(shopType).child(user.getUid() + "_" + mShop.getName());
 
-        shopReference.child(user.getUid() + "_" + mShop.getName())
-                .setValue(mShop)
+        shopReference.setValue(mShop)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {

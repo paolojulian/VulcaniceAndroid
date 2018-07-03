@@ -5,14 +5,20 @@ package com.vulcanice.vulcanice.Model;
  */
 
 public class VCN_User {
-    public String name, email, user_type;
+    public String name, mobile, email, user_type;
 
     public VCN_User() {}
 
-    public VCN_User(String name, String email, String user_type) {
+    public VCN_User(String name, String mobile, String email, String user_type) {
         this.name = name;
+        this.mobile = mobile;
         this.email = email;
         this.user_type = user_type;
+    }
+
+
+    public String getMobile() {
+        return mobile;
     }
 
     public String getName() {

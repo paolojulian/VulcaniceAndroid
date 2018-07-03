@@ -14,21 +14,36 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.google.android.gms.maps.model.Dash;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.vulcanice.vulcanice.Model.VCN_User;
 
 public class DashBoard extends AppCompatActivity {
 
     private ViewPager mViewPager;
     private SectionsPageAdapter mSectionsPageAdapter;
     private FloatingActionButton fabCreateShop;
+    //MODELS
+    private VCN_User userModel;
     //FIREBASE
     private FirebaseAuth mAuth;
+    private FirebaseDatabase mDatabase;
+    private FirebaseUser currentUser;
+    private DatabaseReference mRef;
     //NAVIGATION
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mToggleDrawer;
     private NavigationView mNavigationView;
+
+    private TextView notifCount, navName, navEmail, navMobile;
 
     private Toolbar mToolbar;
     @Override
@@ -36,6 +51,7 @@ public class DashBoard extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dash_board);
         mAuth = FirebaseAuth.getInstance();
+        currentUser = mAuth.getCurrentUser();
 
         //INPUTS
         setupToolBar();
@@ -44,8 +60,40 @@ public class DashBoard extends AppCompatActivity {
         //DRAWER
         setupDrawer();
         setupMenu();
+        setupText();
         //EVENTS
         eventCreateShop();
+    }
+
+    private void setupText() {
+        View headerLayout = mNavigationView.getHeaderView(0);
+        navEmail = headerLayout.findViewById(R.id.navigation_email);
+        navMobile = headerLayout.findViewById(R.id.navigation_mobile);
+        navName = headerLayout.findViewById(R.id.navigation_name);
+
+        DatabaseReference ref = mDatabase.getInstance().getReference("Users")
+                .child(currentUser.getUid());
+        ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                userModel = dataSnapshot.getValue(VCN_User.class);
+                if (userModel == null) {
+                    return;
+                }
+                navEmail.setText(userModel.getEmail());
+                navMobile.setText(userModel.getMobile());
+                navName.setText(userModel.getName());
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public void setActionBarTitle(String title) {
+        getSupportActionBar().setTitle(title);
     }
 
     private void setupToolBar() {
@@ -81,6 +129,7 @@ public class DashBoard extends AppCompatActivity {
         SectionsPageAdapter adapter = new SectionsPageAdapter(getSupportFragmentManager());
         adapter.addFragment(new DashBoardTab1(), "Vulcanize");
         adapter.addFragment(new DashBoardTab2(), "Gas");
+        adapter.addFragment(new DashBoardTab3(), "Both");
         viewPager.setAdapter(adapter);
     }
 

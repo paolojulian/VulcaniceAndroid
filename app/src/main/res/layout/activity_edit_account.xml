@@ -23,9 +23,24 @@
             android:layout_width="match_parent">
             <EditText
                 android:id="@+id/user_name"
+                android:inputType="text"
                 android:focusableInTouchMode="true"
                 android:maxLines="1"
                 android:hint="@string/vcn_name_hint"
+                android:textColor="@color/colorPrimaryDark"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent">
+            <EditText
+                android:id="@+id/mobile_number"
+                android:focusableInTouchMode="true"
+                android:maxLines="1"
+                android:inputType="phone"
+                android:hint="Enter your Mobile Number"
                 android:textColor="@color/colorPrimaryDark"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>

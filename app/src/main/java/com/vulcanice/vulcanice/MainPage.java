@@ -1,9 +1,14 @@
 package com.vulcanice.vulcanice;
 
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -15,9 +20,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -25,6 +32,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.Picasso;
 import com.vulcanice.vulcanice.Model.VCN_User;
 
 /**
@@ -37,18 +47,32 @@ public class MainPage extends AppCompatActivity {
     private FirebaseDatabase mDatabase;
     private FirebaseUser currentUser;
     private String userType;
+    //MODELS
+    private VCN_User userModel;
 
     private VCN_User user;
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mToggleDrawer;
     private NavigationView mNavigationView;
 
-    private Button BtnFindGas, BtnFindVul;
+    private Button BtnFindGas, BtnFindVul, BtnFindBoth;
     private ImageButton BtnNotification;
-    private TextView notifCount;
+    private TextView notifCount, navName, navEmail, navMobile;
+    private ImageView navImg;
 
     private Toolbar mToolbar;
+    //NOTIFICATION
+    private NotificationCompat.Builder mBuilder;
+    private PendingIntent pendingIntent;
+    private NotificationManager mNotificationManager;
 
+    private FirebaseStorage storage;
+    private StorageReference storageReference;
+    private static final int PERMISSION_REQUEST_CODE = 7171;
+    private Uri filePath;
+
+    private String IMG_URL;
+    private final int PICK_IMAGE_REQUEST = 71;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,30 +80,55 @@ public class MainPage extends AppCompatActivity {
 
         setupToolbar();
         setupBtn();
+//        setupNotification();
         mAuth = FirebaseAuth.getInstance();
+        currentUser = mAuth.getCurrentUser();
         eventGetClosestGas();
         setupDrawer();
         setupMenu();
+
+        View headerLayout = mNavigationView.getHeaderView(0);
+        navEmail = headerLayout.findViewById(R.id.navigation_email);
+        navMobile = headerLayout.findViewById(R.id.navigation_mobile);
+        navName = headerLayout.findViewById(R.id.navigation_name);
+        navImg = headerLayout.findViewById(R.id.navigation_img_user);
+
+//        setupUserImage();
+        setupText();
     }
 
-    private void eventGetClosestGas() {
-        final Intent iFindShop = new Intent(MainPage.this, FindShopActivity.class);
-        final String dbGas = this.getString(R.string.db_gas);
-        final String dbVul = this.getString(R.string.db_vul);
+//    private void setupUserImage() {
+//        StorageReference storageReference = FirebaseStorage.getInstance().getReference("images").child(currentUser.getUid());
+//
+////        Picasso.with(MainPage.this)
+////                .load(storageReference)
+////                .into(navImg);
+////        // Load the image using Glide
+//        Glide.with(MainPage.this /* context */)
+//                .load(storageReference)
+//                .into(navImg);
+//    }
 
-        BtnFindGas.setOnClickListener(new View.OnClickListener() {
+    private void setupText() {
+
+
+        DatabaseReference ref = mDatabase.getInstance().getReference("Users")
+                .child(currentUser.getUid());
+        ref.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onClick(View v) {
-                iFindShop.putExtra("shopType", dbGas);
-                startActivity(iFindShop);
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                userModel = dataSnapshot.getValue(VCN_User.class);
+                if (userModel == null) {
+                    return;
+                }
+                navEmail.setText(userModel.getEmail());
+                navMobile.setText(userModel.getMobile());
+                navName.setText(userModel.getName());
             }
-        });
 
-        BtnFindVul.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                iFindShop.putExtra("shopType", dbVul);
-                startActivity(iFindShop);
+            public void onCancelled(DatabaseError databaseError) {
+
             }
         });
     }
@@ -87,6 +136,61 @@ public class MainPage extends AppCompatActivity {
     protected void setupBtn() {
         BtnFindGas = findViewById(R.id.btn_find_gas);
         BtnFindVul = findViewById(R.id.btn_find_vul);
+        BtnFindBoth = findViewById(R.id.btn_find_both);
+    }
+
+    private void setupNotification() {
+        mBuilder = new NotificationCompat.Builder(this);
+        mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        Intent intent = new Intent(MainPage.this, ViewRequestsActivity.class);
+        pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
+        mBuilder.setContentIntent(pendingIntent);
+
+        setupNotificationActions();
+        mBuilder.setSmallIcon(R.drawable.vulcanice_logo);
+        mBuilder.setContentTitle("My notification");
+        mBuilder.setContentText("Hello World!");
+    }
+
+    private void setupNotificationActions() {
+        NotificationCompat.Action accept_request = new NotificationCompat.Action.Builder(
+                R.mipmap.ic_launcher, "Accept", pendingIntent
+        ).build();
+        NotificationCompat.Action decline_request = new NotificationCompat.Action.Builder(
+                R.mipmap.ic_launcher, "Decline", pendingIntent
+        ).build();
+
+        mBuilder.addAction(accept_request);
+        mBuilder.addAction(decline_request);
+    }
+
+    private void eventGetClosestGas() {
+        final Intent iFindShop = new Intent(MainPage.this, FindShopActivity.class);
+
+        BtnFindGas.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                iFindShop.putExtra("shopType", "gasStation");
+                startActivity(iFindShop);
+            }
+        });
+
+        BtnFindVul.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                iFindShop.putExtra("shopType", "vulcanizeStation");
+                startActivity(iFindShop);
+            }
+        });
+
+        BtnFindBoth.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                iFindShop.putExtra("shopType", "both");
+                startActivity(iFindShop);
+            }
+        });
     }
 
     protected void getUserType() {
@@ -112,7 +216,6 @@ public class MainPage extends AppCompatActivity {
 
     @Override
     protected void onStart() {
-        currentUser = mAuth.getCurrentUser();
         if (currentUser == null) {
             gotoSignIn();
         }
@@ -159,8 +262,14 @@ public class MainPage extends AppCompatActivity {
         notifReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                long count = dataSnapshot.getChildrenCount();
-                notifCount.setText(Long.toString(count));
+                int count = 0;
+                for (DataSnapshot item: dataSnapshot.getChildren()) {
+                    if (item.child("isAccepted").getValue().toString().equals("0")) {
+                        count ++;
+                    }
+                }
+                notifCount.setText(Integer.toString(count));
+//                mNotificationManager.notify(001, mBuilder.build());
             }
 
             @Override
@@ -209,16 +318,13 @@ public class MainPage extends AppCompatActivity {
     }
 
     private void setupMenu() {
-        mNavigationView = (NavigationView) findViewById(R.id.navigation_view);
+        mNavigationView =  findViewById(R.id.navigation_view);
         mNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
 
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.manage_account:
-                        if ( ! isConnected()) {
-                            return true;
-                        }
                         startActivity(new Intent(MainPage.this, EditAccountActivity.class));
                         return true;
 
@@ -271,8 +377,7 @@ public class MainPage extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        gotoHome();
-        super.onStop();
+        return;
     }
 
     private void gotoHome() {

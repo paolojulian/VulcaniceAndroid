@@ -13,10 +13,6 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <!--<include-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--layout="@layout/navigation_action"/>-->
         <android.support.design.widget.AppBarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -30,41 +26,49 @@
                 app:popupTheme="@style/AppTheme.PopupOverlay" />
 
         </android.support.design.widget.AppBarLayout>
+        <LinearLayout
+            android:paddingHorizontal="20dp"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <TextView
+                android:textSize="40dp"
+                android:textColor="#000"
+                android:textAllCaps="true"
+                android:gravity="center"
+                android:text="Find the nearest Stations"
+                android:layout_marginBottom="40dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+            <Button
+                android:text="Vulcanizing shop"
+                android:id="@+id/btn_find_vul"
+                android:layout_width="fill_parent"
+                android:textStyle="bold"
+                android:background="@color/colorPrimaryDark"
+                android:textColor="@color/colorLight"
+                android:layout_height="wrap_content" />
+            <Button
+                android:text="Gas station"
+                android:id="@+id/btn_find_gas"
+                android:layout_width="fill_parent"
+                android:textStyle="bold"
+                android:background="@color/colorPrimaryDark"
+                android:layout_marginTop="10dp"
+                android:textColor="@color/colorLight"
+                android:layout_height="wrap_content" />
+            <Button
+                android:text="Vulcanizing and Gas Station"
+                android:id="@+id/btn_find_both"
+                android:layout_width="fill_parent"
+                android:textStyle="bold"
+                android:background="@color/colorPrimaryDark"
+                android:layout_marginTop="10dp"
+                android:textColor="@color/colorLight"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
 
-        <Button
-            android:text="Vulcanizing shop"
-            android:id="@+id/btn_find_vul"
-            android:layout_width="fill_parent"
-            android:textStyle="bold"
-            android:background="@color/colorAccent"
-            android:textColor="@color/colorLight"
-            android:layout_height="wrap_content" />
-        <!--<ImageButton-->
-            <!--android:id="@+id/imgbtn_find_vul"-->
-            <!--android:src="@drawable/vulcanice_vul_btn_blurred"-->
-            <!--android:layout_weight="1"-->
-            <!--android:background="@null"-->
-            <!--android:scaleType="fitXY"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="fill_parent" />-->
-        <!--<ImageButton-->
-            <!--android:id="@+id/imgbtn_find_gas"-->
-            <!--android:src="@drawable/vulcanice_gas_btn_blurred"-->
-            <!--android:layout_weight="1"-->
-            <!--android:scaleType="fitXY"-->
-            <!--android:background="@null"-->
-            <!--android:layout_margin="-10dp"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="fill_parent" />-->
-        <Button
-            android:text="Gas station"
-            android:id="@+id/btn_find_gas"
-            android:layout_width="fill_parent"
-            android:textStyle="bold"
-            android:background="@color/colorAccent"
-            android:layout_marginTop="10dp"
-            android:textColor="@color/colorLight"
-            android:layout_height="wrap_content" />
     </LinearLayout>
 
     <android.support.design.widget.NavigationView

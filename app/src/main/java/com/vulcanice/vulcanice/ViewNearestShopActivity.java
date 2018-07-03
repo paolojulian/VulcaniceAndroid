@@ -42,7 +42,7 @@ public class ViewNearestShopActivity extends AppCompatActivity {
     private AppCompatTextView shopName, shopAddress, constShopType, shopDistance;
     private Button btnTrackShop, btnRequestShop;
     //MODEL
-    private String dbGas, dbVul;
+    private String dbGas, dbVul, dbBoth;
     private Shop shopModel;
     //LOCATION
     protected FusedLocationProviderClient mFusedLocationClient;
@@ -80,35 +80,30 @@ public class ViewNearestShopActivity extends AppCompatActivity {
     private void setupDbNames() {
         dbGas = this.getString(R.string.db_gas);
         dbVul = this.getString(R.string.db_vul);
+        dbBoth = "both";
     }
 
     private void setupExtras() {
-        Intent i = getIntent();
-        shopId = i.getExtras().getString("shopId");
-        shopType = i.getExtras().getString("shopType");
-        shopLat = i.getExtras().getDouble("shopLat");
-        shopLng = i.getExtras().getDouble("shopLng");
-        currentShopDistance = i.getExtras().getFloat("shopDistance");
+        Intent i                = getIntent();
+        shopId                  = i.getExtras().getString("shopId");
+        shopType                = i.getExtras().getString("shopType");
+        shopLat                 = i.getExtras().getDouble("shopLat");
+        shopLng                 = i.getExtras().getDouble("shopLng");
+        currentShopDistance     = i.getExtras().getFloat("shopDistance");
     }
 
     private void setupView() {
-        shopName = findViewById(R.id.shop_name);
-        shopAddress = findViewById(R.id.shop_address);
-        shopDistance = findViewById(R.id.shop_distance);
-        btnTrackShop = findViewById(R.id.btn_track_shop);
-        btnRequestShop = findViewById(R.id.btn_request_shop);
-        viewBtnRequest();
-    }
+        shopName        = findViewById(R.id.shop_name);
+        shopAddress     = findViewById(R.id.shop_address);
+        shopDistance    = findViewById(R.id.shop_distance);
+        btnTrackShop    = findViewById(R.id.btn_track_shop);
+        btnRequestShop  = findViewById(R.id.btn_request_shop);
 
-    private void viewBtnRequest() {
-        if (shopType.equals(dbVul)) {
-            btnRequestShop.setVisibility(View.VISIBLE);
-            return;
-        }
         if (shopType.equals(dbGas)) {
             btnRequestShop.setVisibility(View.GONE);
             return;
         }
+        btnRequestShop.setVisibility(View.VISIBLE);
     }
 
     private void setupFirebase() {
@@ -122,7 +117,11 @@ public class ViewNearestShopActivity extends AppCompatActivity {
             setTitle("Nearest Gas Station");
             return;
         }
-        setTitle("Nearest Vulcanizing Station");
+        if (shopType.equals(dbVul)) {
+            setTitle("Nearest Vulcanizing Station");
+            return;
+        }
+        setTitle("Nearest Station");
     }
 
     private void eventTrackShop() {
@@ -162,6 +161,7 @@ public class ViewNearestShopActivity extends AppCompatActivity {
                 RequestShopActivity.class
         );
         i.putExtra("shopId", shopId);
+        i.putExtra("shopName", shopName.getText().toString());
         startActivity(i);
     }
 

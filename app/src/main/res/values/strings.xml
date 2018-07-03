@@ -22,6 +22,7 @@
     <string-array name="vcn_shop_type">
         <item>Vulcanizing Station</item>
         <item>Gasoline Station</item>
+        <item>Both</item>
     </string-array>
     <string name="vcn_shop_create">Create Shop</string>
     <string name="db_gas">gasStation</string>

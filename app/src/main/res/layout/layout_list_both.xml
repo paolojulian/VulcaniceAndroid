@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="70dp"
     card_view:cardElevation="3dp"
-    card_view:cardBackgroundColor="@color/colorAccent"
+    card_view:cardBackgroundColor="@color/colorLight"
     card_view:contentPadding="5dp"
     card_view:contentPaddingLeft="10dp"
     android:layout_marginHorizontal="0dp"
@@ -21,14 +21,14 @@
             android:id="@+id/shop_title"
             android:text="Shop Name"
             android:textSize="24dp"
-            android:textColor="@color/colorLight"
+            android:textColor="@color/colorPrimaryDark"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
         <TextView
             android:id="@+id/shop_description"
             android:text="Shop Desc"
             android:textSize="14dp"
-            android:textColor="@color/colorLight"
+            android:textColor="@color/colorPrimaryDark"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     </LinearLayout>

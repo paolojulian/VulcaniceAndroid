@@ -3,6 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
     android:layout_height="match_parent">
     <LinearLayout
+        android:id="@+id/process_request"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -11,13 +12,19 @@
         android:paddingRight="24dp">
         <!-- Description Label -->
         <TextView
-            android:id="@+id/text_shop_name"
-            android:text="Shop Name"
+            android:visibility="gone"
+            android:id="@+id/txt_shop_name"
+            android:text="You are now requesting a Service"
+            android:textSize="16dp"
+            android:layout_marginTop="60dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
         <TextView
+            android:layout_marginTop="30dp"
             android:id="@+id/text_shop_address"
-            android:text="Shop Address"
+            android:textColor="#000"
+            android:textSize="20dp"
+            android:text="What do you want to repair?"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
         <ScrollView
@@ -38,7 +45,6 @@
             android:background="@color/colorPrimary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-
         </Button>
         <ProgressBar
             android:id="@+id/progress_bar"
@@ -47,6 +53,28 @@
             android:layout_marginTop="30dp"
             android:layout_gravity="center|bottom"
             android:layout_height="30dp" />
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/waiting_request"
+        android:visibility="gone"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingTop="10dp"
+        android:paddingLeft="24dp"
+        android:paddingRight="24dp">
+        <TextView
+            android:text="Please wait while the shop owner is processing your Request"
+            android:textSize="30dp"
+            android:textColor="@color/colorPrimaryDark"
+            android:layout_gravity="top"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <ProgressBar
+            android:layout_width="match_parent"
+            android:layout_marginTop="30dp"
+            android:layout_gravity="center|bottom"
+            android:layout_height="wrap_content" />
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>

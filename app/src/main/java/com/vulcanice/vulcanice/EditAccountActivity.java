@@ -33,7 +33,7 @@ public class EditAccountActivity extends AppCompatActivity{
     //MODELS
     private VCN_User userModel;
     //FIELDS
-    private EditText userName;
+    private EditText userName, mobile;
     private Spinner userType;
     private ProgressBar progressBar;
     private Button btnUpdateAccount;
@@ -45,13 +45,13 @@ public class EditAccountActivity extends AppCompatActivity{
 
         userType = findViewById(R.id.user_type);
         userName = findViewById(R.id.user_name);
+        mobile = findViewById(R.id.mobile_number);
         btnUpdateAccount = findViewById(R.id.btn_update_account);
 
         mRef = mDatabase.getInstance().getReference();
 
         checkIfLoggedIn();
         getUserInfo();
-
     }
 
     protected void getUserInfo() {
@@ -95,6 +95,7 @@ public class EditAccountActivity extends AppCompatActivity{
     protected void submitUpdateAccount() {
         VCN_User vcn_user = new VCN_User(
             userName.getText().toString().trim(),
+            mobile.getText().toString().trim(),
             user.getEmail(),
             userType.getSelectedItem().toString().trim()
         );
@@ -147,6 +148,7 @@ public class EditAccountActivity extends AppCompatActivity{
 
     protected void populateFields() {
         userName.setText(userModel.getName());
+        mobile.setText(userModel.getMobile());
     }
 
     protected void checkIfLoggedIn() {

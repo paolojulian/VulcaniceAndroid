@@ -2,12 +2,20 @@ package com.vulcanice.vulcanice;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.vulcanice.vulcanice.Model.Request;
 
 import java.util.ArrayList;
@@ -20,6 +28,11 @@ public class ListRequestViewHolder extends RecyclerView.ViewHolder implements Vi
     View mView;
     protected Button btnAccept, btnDecline;
     private ArrayList<String> requestIds;
+    private Context context;
+    private Integer id;
+    private Integer pos;
+    private String clientUid;
+    private String userUid;
 
     public ListRequestViewHolder(View itemView) {
         super(itemView);
@@ -41,17 +54,85 @@ public class ListRequestViewHolder extends RecyclerView.ViewHolder implements Vi
         btnDecline.setOnClickListener(this);
     }
 
+    public void setUserUid(String userUid) {
+        this.userUid = userUid;
+    }
+
     @Override
     public void onClick(View view) {
-        Context context = view.getContext();
-        Integer id = view.getId();
-        Integer pos = getAdapterPosition();
-        String clientUid = requestIds.get(pos);
+        context = view.getContext();
+        id = view.getId();
+        pos = getAdapterPosition();
+        clientUid = requestIds.get(pos);
+
         if (id == btnAccept.getId()) {
-            Intent i = new Intent(view.getContext(), TrackRequestActivity.class);
-            i.putExtra("clientUid", clientUid);
-            context.startActivity(i);
+            acceptRequest();
         } else if (id == btnDecline.getId()) {
+            declineRequest();
+        } else {
+            return;
         }
+    }
+
+    private void acceptRequest() {
+        DatabaseReference requestRef = FirebaseDatabase.getInstance().getReference()
+                .child("Request").child(userUid).child(clientUid).child("isAccepted");
+
+        requestRef.setValue(1)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Toast.makeText(
+                                context,
+                                "Accepted Request",
+                                Toast.LENGTH_SHORT
+                        ).show();
+                        Intent i = new Intent(context, TrackRequestActivity.class);
+                        i.putExtra("id", clientUid);
+                        i.putExtra("type", "owner");
+                        context.startActivity(i);
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(
+                                context,
+                                "Unable to accept request\nPlease try again later",
+                                Toast.LENGTH_SHORT
+                        ).show();
+                    }
+                });
+    }
+
+    private void declineRequest() {
+        DatabaseReference requestRef = FirebaseDatabase.getInstance().getReference()
+                .child("Request").child(userUid).child(clientUid).child("isAccepted");
+
+        requestRef.setValue(2)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Toast.makeText(
+                                context,
+                                "Declined Successfully",
+                                Toast.LENGTH_SHORT
+                        ).show();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(
+                                context,
+                                "Unable to decline request\nPlease try again later",
+                                Toast.LENGTH_SHORT
+                        ).show();
+                    }
+                });
+    }
+
+    private void removeFromView() {
+
     }
 }

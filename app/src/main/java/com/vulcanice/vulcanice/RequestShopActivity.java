@@ -4,8 +4,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,23 +34,19 @@ public class RequestShopActivity extends AppCompatActivity{
     private FirebaseDatabase mDatabase;
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
+    private DatabaseReference requestReference;
 
     protected Button btnRequest;
-    protected TextView clientDescription;
+    protected TextView clientDescription, mShopName;
     protected ProgressBar progressBar;
     protected Request request;
     protected VCN_User vcnUser;
-    protected String shopId;
+    protected String shopId, shopName;
 
     private OnSuccessListener onRequestSuccess = new OnSuccessListener() {
         @Override
         public void onSuccess(Object o) {
-            Intent gotoTrackRequest = new Intent(
-                   RequestShopActivity.this,
-                    TrackRequestActivity.class
-            );
-            gotoTrackRequest.putExtra("shopId", shopId);
-//            startActivity(gotoTrackRequest);
+            listenForRequest();
         }
     };
 
@@ -81,20 +79,68 @@ public class RequestShopActivity extends AppCompatActivity{
         eventRequestShop();
     }
 
+    private void listenForRequest() {
+        LinearLayout waitingRequest = findViewById(R.id.waiting_request);
+        LinearLayout processRequest = findViewById(R.id.process_request);
+
+        waitingRequest.setVisibility(View.VISIBLE);
+        processRequest.setVisibility(View.GONE);
+
+        DatabaseReference isAcceptedReference = requestReference.child("isAccepted");
+        isAcceptedReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if ( ! dataSnapshot.exists()) {
+                    return;
+                }
+                if (isRequestDeclined(dataSnapshot)) {
+                    Toast.makeText(RequestShopActivity.this, "Your request have been declined", Toast.LENGTH_SHORT)
+                            .show();
+                    gotoMainPage();
+                    return;
+                }
+                if (isRequestAccepted(dataSnapshot)) {
+                    Intent intent = new Intent(RequestShopActivity.this, TrackRequestActivity.class);
+                    intent.putExtra("id", shopId);
+                    intent.putExtra("type", "client");
+                    startActivity(intent);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private boolean isRequestAccepted(DataSnapshot dataSnapshot) {
+        return dataSnapshot.getValue().toString().equals("1");
+    }
+
+    private boolean isRequestDeclined(DataSnapshot dataSnapshot) {
+        return dataSnapshot.getValue().toString().equals("2");
+    }
+
     private void setupView() {
         btnRequest = findViewById(R.id.btn_request);
         clientDescription = findViewById(R.id.user_description);
         progressBar = findViewById(R.id.progress_bar);
+        mShopName = findViewById(R.id.txt_shop_name);
 
         Intent i = getIntent();
         shopId = i.getExtras().getString("shopId");
+        shopName = i.getExtras().getString("shopName");
+
         shopId = shopId.split("_")[0];
+        getSupportActionBar().setTitle(shopName);
     }
 
     private void eventRequestShop() {
         View.OnClickListener onClickRequest = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Log.d("is_logged_in", (vcnUser == null) + "");
                 if (vcnUser == null) {
                     return;
                 }
@@ -114,10 +160,10 @@ public class RequestShopActivity extends AppCompatActivity{
         request.setDescription(nClientDescription);
         request.setValid(true);
         request.setClientUid(currentUser.getUid());
-        request.setIsAccepted("1");
+        request.setIsAccepted(0);
 
         progressBar.setVisibility(View.VISIBLE);
-        DatabaseReference requestReference = mDatabase.getReference()
+        requestReference = mDatabase.getReference()
                 .child("Request").child(shopId).child(currentUser.getUid());
 
         requestReference.setValue(request)
@@ -134,6 +180,7 @@ public class RequestShopActivity extends AppCompatActivity{
 
     private void getUserInfo() {
         request = new Request();
+        Log.d("current_user", currentUser.getUid());
         DatabaseReference shopReference = mDatabase.getReference()
                 .child("Users").child(currentUser.getUid());
 
@@ -163,16 +210,30 @@ public class RequestShopActivity extends AppCompatActivity{
         ).show();
     }
 
+    public void gotoMainPage() {
+        startActivity(new Intent(RequestShopActivity.this, MainPage.class));
+    }
+
     @Override
     protected void onStop() {
+        removeRequest();
         super.onStop();
+    }
+
+    private void removeRequest() {
+        DatabaseReference reqRef = mDatabase.getReference()
+            .child("Request").child(shopId).child(currentUser.getUid());
+
+        reqRef.child("isAccepted").setValue(3);
     }
 
     @Override
     public void onBackPressed() {
+        removeRequest();
         startActivity(
                 new Intent(RequestShopActivity.this, MainPage.class)
         );
         super.onStop();
     }
+
 }

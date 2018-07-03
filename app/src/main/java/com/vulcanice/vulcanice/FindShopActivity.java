@@ -45,7 +45,7 @@ public class FindShopActivity extends AppCompatActivity {
     protected LocationCallback locationCallback;
     protected LocationRequest mLocationRequest;
     //TYPE
-    protected String shopType, dbGas, dbVul;
+    protected String shopType, dbGas, dbVul, dbBoth;
     /*
     * gasStation
     * vulcanizeStation
@@ -74,6 +74,7 @@ public class FindShopActivity extends AppCompatActivity {
         shopType = i.getExtras().getString("shopType");
         dbGas = this.getString(R.string.db_gas);
         dbVul = this.getString(R.string.db_vul);
+        dbBoth = "both";
     }
 
     private void setActivityTitle() {
@@ -81,7 +82,11 @@ public class FindShopActivity extends AppCompatActivity {
             setTitle("Finding nearest Gas Station");
             return;
         }
-        setTitle("Finding nearest Vulcanizing Station");
+        if (shopType.equals(dbVul)) {
+            setTitle("Finding nearest Vulcanizing Station");
+            return;
+        }
+        setTitle("Finding nearest Station");
 
     }
 
@@ -192,13 +197,13 @@ public class FindShopActivity extends AppCompatActivity {
     private String shopId;
     private Double shopLat, shopLng;
     private void getClosestShop() {
-        DatabaseReference gasLocation = FirebaseDatabase
+        DatabaseReference shopLocationRef = FirebaseDatabase
                 .getInstance()
                 .getReference()
                 .child("Locations")
                 .child(shopType);
 
-        GeoFire geoFire = new GeoFire(gasLocation);
+        GeoFire geoFire = new GeoFire(shopLocationRef);
         GeoQuery geoQuery = geoFire.queryAtLocation(
                 new GeoLocation(mLastLocation.getLatitude(), mLastLocation.getLongitude()),
                 radius
@@ -236,6 +241,10 @@ public class FindShopActivity extends AppCompatActivity {
 
             @Override
             public void onGeoQueryReady() {
+                if (radius == 10) {
+                    Toast.makeText(FindShopActivity.this, "No Shop/s Found", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 if ( ! foundGas) {
                     radius++;
                     getClosestShop();
@@ -286,7 +295,6 @@ public class FindShopActivity extends AppCompatActivity {
         i.putExtra("shopLat", shopLat);
         i.putExtra("shopLng", shopLng);
         startActivity(i);
-
     }
 
     public Boolean isCloser(Double lat1, Double lng1, Double lat2, Double lng2) {
@@ -303,6 +311,4 @@ public class FindShopActivity extends AppCompatActivity {
 
         return distanceInMeters2 < distanceInMeters1;
     }
-
 }
-

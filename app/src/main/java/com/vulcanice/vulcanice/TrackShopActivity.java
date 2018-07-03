@@ -10,6 +10,9 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.directions.route.AbstractRouting;
@@ -52,6 +55,10 @@ public class TrackShopActivity extends AppCompatActivity implements RoutingListe
     private MapFragment mapFragment;
     private GoogleMap mMap;
     private GoogleApiClient mGoogleApiClient;
+    //LABELS
+    private TextView routeLabel, routeDistance, routeDuration;
+    private TextView routeLabel2, routeDistance2, routeDuration2;
+    private LinearLayout route2;
     //USER LOCATION
     protected FusedLocationProviderClient mFusedLocationClient;
     protected Location mLastLocation;
@@ -61,7 +68,7 @@ public class TrackShopActivity extends AppCompatActivity implements RoutingListe
     private MarkerOptions userMarker, shopMarker;
     //ROUTE DISPLAY
     private List<Polyline> polylines;
-    private static final int[] COLORS = new int[]{R.color.colorPrimaryDark,R.color.colorSemiLight,R.color.colorLight,R.color.colorAccent,R.color.primary_dark_material_light};
+    private static final int[] COLORS = new int[]{R.color.colorPrimaryDark,R.color.colorAccent,R.color.colorPrimaryDark,R.color.colorAccent,R.color.primary_dark_material_light};
     //PERMISSION
     private static final int PERMISSION_REQUEST_CODE = 7171;
     //INTERVAL
@@ -80,7 +87,6 @@ public class TrackShopActivity extends AppCompatActivity implements RoutingListe
         }
 
         setDatas();
-
         setupMap();
         setLocationRequest();
         setLocation();
@@ -95,6 +101,15 @@ public class TrackShopActivity extends AppCompatActivity implements RoutingListe
                 .position(shopLocation)
                 .snippet("Shop Location")
                 .icon(BitmapDescriptorFactory.fromResource(R.mipmap.baseline_ev_station_black_24));
+        routeLabel = findViewById(R.id.label_1);
+        routeDistance = findViewById(R.id.distance_1);
+        routeDuration = findViewById(R.id.duration_1);
+
+        routeLabel2 = findViewById(R.id.label_2);
+        routeDistance2 = findViewById(R.id.distance_2);
+        routeDuration2 = findViewById(R.id.duration_2);
+
+        route2 = findViewById(R.id.route_2);
     }
 
     private void getIntentData() {
@@ -135,7 +150,9 @@ public class TrackShopActivity extends AppCompatActivity implements RoutingListe
                             return;
                         }
                         mLastLocation = location;
-                        getRouteToShop();
+                        LatLng userLocation = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+                        drawMarker(userLocation);
+                        drawMarker(userLocation);
                     }
                 });
         // Used for repeating request
@@ -146,7 +163,8 @@ public class TrackShopActivity extends AppCompatActivity implements RoutingListe
                 for (Location location : locationResult.getLocations()) {
                     mLastLocation = location;
                 }
-                getRouteToShop();
+                LatLng userLocation = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+                drawRoute(userLocation);
             }
         };
         startLocationUpdates();
@@ -159,9 +177,6 @@ public class TrackShopActivity extends AppCompatActivity implements RoutingListe
     }
 
     private void getRouteToShop() {
-        LatLng userLocation = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-        drawMarker(userLocation);
-        drawRoute(userLocation);
     }
 
     private void drawMarker(LatLng userLocation) {
@@ -206,7 +221,10 @@ public class TrackShopActivity extends AppCompatActivity implements RoutingListe
         polylines = new ArrayList<>();
         //add route(s) to the map.
         for (int i = 0; i <route.size(); i++) {
-
+            //Only 2 routes is available
+            if (i == 2) {
+                break;
+            }
             //In case of more than 5 alternative routes
             int colorIndex = i % COLORS.length;
 
@@ -217,9 +235,56 @@ public class TrackShopActivity extends AppCompatActivity implements RoutingListe
             Polyline polyline = mMap.addPolyline(polyOptions);
             polylines.add(polyline);
 
-            Toast.makeText(getApplicationContext(),"Route "+ (i+1) +": distance - "+ route.get(i).getDistanceValue()+": duration - "+ route.get(i).getDurationValue(),Toast.LENGTH_SHORT).show();
+            displayRoute(i, route.get(i));
         }
+    }
 
+    private void displayRoute(int i, Route route) {
+        String rLabel = "Route " + (i+1);
+        String rDistance = "Distance: - " + route.getDistanceValue() + "m";
+        String rDuration = "Duration: - " + convertToTime(route.getDurationValue());
+
+        if (i == 1) {
+            route2.setVisibility(View.VISIBLE);
+            routeLabel2.setText(rLabel);
+            routeDistance2.setText(rDistance);
+            routeDuration2.setText(rDuration);
+            return;
+        }
+        routeLabel.setText(rLabel);
+        routeDistance.setText(rDistance);
+        routeDuration.setText(rDuration);
+    }
+
+    private String convertToTime(Integer seconds) {
+        String time = "";
+        Integer hour = 0, min = 0;
+        Boolean hasHour = false, hasMin = false;
+        if (seconds >= 3600) {
+            hour = (int) Math.floor(seconds / 3600);
+            seconds = seconds - (hour * 3600);
+            hasHour = true;
+        }
+        if (seconds >= 60) {
+            min = (int) Math.floor(seconds / 60);
+            seconds = seconds - (min * 60);
+            hasMin = true;
+        }
+        if (hasHour) {
+            if (hour < 10) {
+                time += "0" + hour + ":";
+            } else {
+                time += hour + ":";
+            }
+        }
+        if (hasMin) {
+            if (min < 10) {
+                time += "0" + min + ":";
+            } else {
+                time += min + ":";
+            }
+        }
+        return time += seconds;
     }
 
     @Override
@@ -239,7 +304,9 @@ public class TrackShopActivity extends AppCompatActivity implements RoutingListe
         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
                 mGoogleApiClient);
         if (mLastLocation != null) {
-            getRouteToShop();
+            LatLng userLocation = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+            drawMarker(userLocation);
+            drawMarker(userLocation);
         }
     }
 

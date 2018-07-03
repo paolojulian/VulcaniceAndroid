@@ -28,6 +28,7 @@ public class ViewRequestsActivity extends AppCompatActivity{
     protected FirebaseRecyclerAdapter<Request, ListRequestViewHolder> firebaseAdapter;
 
     private RecyclerView.LayoutManager mLayoutManager;
+    private Query requestList;
     RecyclerView mListRequest;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -47,17 +48,24 @@ public class ViewRequestsActivity extends AppCompatActivity{
     }
 
     private void listRequests() {
-        Query requestList = mDatabase.getReference("Request").child(currentUser.getUid());
-        displayList(requestList);
+        requestList = mDatabase.getReference("Request")
+                .child(currentUser.getUid())
+                .orderByChild("isAccepted")
+                .equalTo(0);
+        displayList();
     }
 
-    private void displayList(final Query requestList) {
+    private boolean isFirst = true;
+    private void displayList() {
         firebaseAdapter = new FirebaseRecyclerAdapter<Request, ListRequestViewHolder>
                 (Request.class, R.layout.layout_request, ListRequestViewHolder.class, requestList) {
             @Override
             protected void populateViewHolder(ListRequestViewHolder viewHolder, Request model, int position) {
-                Log.d("position", position + "");
                 viewHolder.bindListRequest(model, position);
+                if (isFirst) {
+                    viewHolder.setUserUid(currentUser.getUid());
+                    isFirst = false;
+                }
             }
         };
         mListRequest = findViewById(R.id.list_request);
