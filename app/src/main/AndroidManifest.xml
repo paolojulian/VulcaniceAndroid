@@ -95,6 +95,11 @@
             android:label="Create Station" />
 
         <activity
+            android:name=".ViewListShopActivity"
+            android:theme="@style/AppTheme"
+            android:label="Station List" />
+
+        <activity
             android:name=".MapTracking"
             android:label="@string/title_activity_map_tracking" />
         <activity

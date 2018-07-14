@@ -144,7 +144,7 @@ public class CreateShopActivity extends AppCompatActivity implements OnMapReadyC
     private void saveShop() {
         String shopType = getShopType(mShop.getType());
         mDatabase = FirebaseDatabase.getInstance().getReference();
-        DatabaseReference shopReference = mDatabase.child("Shops")
+        DatabaseReference shopReference = mDatabase.child("PendingShops")
                 .child(shopType).child(user.getUid() + "_" + mShop.getName());
 
         shopReference.setValue(mShop)

@@ -138,7 +138,7 @@ public class EditAccountActivity extends AppCompatActivity{
                 R.array.vcn_user_types, android.R.layout.simple_list_item_activated_1);
         userType.setAdapter(adapter);
         Integer userTypeIndex;
-        if(userModel.getUser_type() == "Client") {
+        if(userModel.getUser_type().equals("Client")) {
             userTypeIndex = 0;
         } else {
             userTypeIndex = 1;

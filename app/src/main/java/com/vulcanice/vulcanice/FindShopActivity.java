@@ -242,7 +242,7 @@ public class FindShopActivity extends AppCompatActivity {
             @Override
             public void onGeoQueryReady() {
                 if (radius == 10) {
-                    Toast.makeText(FindShopActivity.this, "No Shop/s Found", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(FindShopActivity.this, "No Shop/s Found\n within 10km", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 if ( ! foundGas) {

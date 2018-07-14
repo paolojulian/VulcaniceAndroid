@@ -55,7 +55,7 @@ public class MainPage extends AppCompatActivity {
     private ActionBarDrawerToggle mToggleDrawer;
     private NavigationView mNavigationView;
 
-    private Button BtnFindGas, BtnFindVul, BtnFindBoth;
+    private Button BtnFindGas, BtnFindVul, BtnFindBoth, BtnListShop;
     private ImageButton BtnNotification;
     private TextView notifCount, navName, navEmail, navMobile;
     private ImageView navImg;
@@ -137,6 +137,7 @@ public class MainPage extends AppCompatActivity {
         BtnFindGas = findViewById(R.id.btn_find_gas);
         BtnFindVul = findViewById(R.id.btn_find_vul);
         BtnFindBoth = findViewById(R.id.btn_find_both);
+        BtnListShop = findViewById(R.id.btn_test);
     }
 
     private void setupNotification() {
@@ -189,6 +190,15 @@ public class MainPage extends AppCompatActivity {
             public void onClick(View view) {
                 iFindShop.putExtra("shopType", "both");
                 startActivity(iFindShop);
+
+            }
+        });
+        BtnListShop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(MainPage.this, ViewListShopActivity.class);
+                i.putExtra("shopType", "vulcanizeStation");
+                startActivity(i);
             }
         });
     }

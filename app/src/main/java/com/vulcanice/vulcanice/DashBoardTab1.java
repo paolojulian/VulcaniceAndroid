@@ -92,7 +92,5 @@ public class DashBoardTab1 extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-
-        getActivity().setTitle("Vulcanizing Stations");
     }
 }

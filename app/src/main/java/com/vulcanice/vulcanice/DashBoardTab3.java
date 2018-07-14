@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.google.android.gms.maps.model.Dash;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -66,9 +67,6 @@ public class DashBoardTab3 extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-//        ((DashBoard) getActivity())
-//                .setActionBarTitle("Vulcanizing/Gas Stations");
-        getActivity().setTitle("Vulcanizing/Gas Stations");
     }
 }
 

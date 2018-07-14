@@ -66,8 +66,5 @@ public class DashBoardTab2 extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-//        ((DashBoard) getActivity())
-//                .setActionBarTitle("Gasoline Stations");
-        getActivity().setTitle("Gasoline Stations");
     }
 }

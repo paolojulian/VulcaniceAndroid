@@ -63,6 +63,16 @@
                 android:id="@+id/btn_find_both"
                 android:layout_width="fill_parent"
                 android:textStyle="bold"
+                android:layout_marginBottom="30dp"
+                android:background="@color/colorPrimaryDark"
+                android:layout_marginTop="10dp"
+                android:textColor="@color/colorLight"
+                android:layout_height="wrap_content" />
+            <Button
+                android:text="List Vulcanizing Shop"
+                android:id="@+id/btn_test"
+                android:layout_width="fill_parent"
+                android:textStyle="bold"
                 android:background="@color/colorPrimaryDark"
                 android:layout_marginTop="10dp"
                 android:textColor="@color/colorLight"
