@@ -20,6 +20,7 @@ import com.vulcanice.vulcanice.Model.ShopList;
 import com.vulcanice.vulcanice.Model.VCN_User;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ListShopAdapter extends RecyclerView.Adapter<ViewShopViewHolder>{
@@ -31,12 +32,17 @@ public class ListShopAdapter extends RecyclerView.Adapter<ViewShopViewHolder>{
     ViewShopViewHolder mHolder;
     Location mLocation;
     Double mDistance;
+    private String shopType;
     private Map<String, GeoLocation> shopArray;
+    private List<String> shopKeys;
     private ShopList[] shopListArray;
 
-    public ListShopAdapter(Context c, ShopList[] shopListArray, Location myLocation) {
+    public ListShopAdapter(Context c, List<String> shopKeys, Location myLocation, String shopType) {
         this.c = c;
-        this.shopListArray = shopListArray;
+//        this.shopListArray = shopListArray;
+//        this.shopArray = shopArray;
+        this.shopKeys = shopKeys;
+        this.shopType = shopType;
         mDatabase = FirebaseDatabase.getInstance();
         mLocation = myLocation;
     }
@@ -50,25 +56,35 @@ public class ListShopAdapter extends RecyclerView.Adapter<ViewShopViewHolder>{
     @Override
     public void onBindViewHolder(ViewShopViewHolder holder, int position) {
         mHolder = holder;
-        if (shopListArray[position] == null) {
+        if (shopKeys.get(position) == null) {
             return;
         }
-        String key = shopListArray[position].getShop_key();
-        GeoLocation shopGeoLocation  = shopListArray[position].getShop_location();
-        mHolder.shopDistance.setText(distanceToUser(shopGeoLocation.latitude, shopGeoLocation.longitude) + " m");
+        String key = shopKeys.get(position);
+//        GeoLocation shopGeoLocation  = shopListArray[position].getShop_location();
+//        mHolder.shopDistance.setText(distanceToUser(shopGeoLocation.latitude, shopGeoLocation.longitude) + " m");
 
         DatabaseReference shopReference = mDatabase.getReference()
-                .child("Shops").child(c.getString(R.string.db_vul)).child(key);
+                .child("Shops").child(shopType).child(key);
 
         shopReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 shopModel = dataSnapshot.getValue(Shop.class);
-                if (shopModel == null) {
-                    return;
-                }
+                Log.d("test", shopModel + "");
+//                if (shopModel == null) {
+//                    return;
+//                }
                 mHolder.shopName.setText(shopModel.getName());
                 mHolder.shopDescription.setText(shopModel.getDescription());
+                Double lat = Double.parseDouble(shopModel.getLatitude());
+                Double lng = Double.parseDouble(shopModel.getLongitude());
+                mHolder.shopLat.setText(lat + "");
+                mHolder.shopLng.setText(lng + "");
+                mHolder.shopDistance.setText(distanceToUser(lat, lng) + " m");
+
+                if ( ! shopModel.getType().equals("Gasoline Station")) {
+                    mHolder.BtnRequestShop.setVisibility(View.VISIBLE);
+                }
 
                 DatabaseReference ownerReference = mDatabase.getReference()
                         .child("Users").child(shopModel.getOwner());
@@ -103,7 +119,7 @@ public class ListShopAdapter extends RecyclerView.Adapter<ViewShopViewHolder>{
     }
     @Override
     public int getItemCount() {
-        return shopListArray.length;
+        return shopKeys.size();
 //        return 1;
     }
 }

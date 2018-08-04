@@ -109,8 +109,7 @@ public class CreateShopActivity extends AppCompatActivity implements OnMapReadyC
         mShop.setDescription(shopDescription.getText().toString().trim());
         mShop.setType(shopType.getSelectedItem().toString().trim());
         mShop.setOwner(user.getUid());
-        if ( ! mShop.is_valid())
-        {
+        if ( ! mShop.is_valid()) {
             Toast.makeText(
                     CreateShopActivity.this,
                     "Please fill up the missing fields",
@@ -119,8 +118,7 @@ public class CreateShopActivity extends AppCompatActivity implements OnMapReadyC
             return;
         }
 
-        if ( ! mShop.is_location_valid())
-        {
+        if ( ! mShop.is_location_valid()) {
             Toast.makeText(
                     CreateShopActivity.this,
                     "Invalid Location",
@@ -134,7 +132,7 @@ public class CreateShopActivity extends AppCompatActivity implements OnMapReadyC
         Log.d("ShopType", shopType);
         if (shopType.equals("Gasoline Station")) {
             return "gasStation";
-        } else if (shopType.equals("Vulcanizing Station")){
+        } else if (shopType.equals("Vulcanizing Station")) {
             return "vulcanizeStation";
         } else {
             return "both";
@@ -153,9 +151,12 @@ public class CreateShopActivity extends AppCompatActivity implements OnMapReadyC
                     public void onSuccess(Void aVoid) {
                         Toast.makeText(
                                 CreateShopActivity.this,
-                                "Shop was successfully added!",
+                                "Successfully Requested Shop\nPlease wait for Authorized users to Confirm your Shop",
                                 Toast.LENGTH_SHORT
                         ).show();
+                        startActivity(
+                                new Intent(CreateShopActivity.this, DashBoard.class)
+                        );
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -174,24 +175,24 @@ public class CreateShopActivity extends AppCompatActivity implements OnMapReadyC
                         progressBar.setVisibility(View.GONE);
                     }
                 });
-        DatabaseReference mLocationRef = mDatabase.child("Locations")
-                .child(shopType);
-        GeoFire geoFire = new GeoFire(mLocationRef);
-        geoFire.setLocation(
-                user.getUid() + "_" + mShop.getName(),
-                new GeoLocation(
-                        Double.parseDouble(mShop.getLatitude()),
-                        Double.parseDouble(mShop.getLongitude())
-                ),
-                new GeoFire.CompletionListener() {
-                    @Override
-                    public void onComplete(String key, DatabaseError error) {
-                        startActivity(
-                                new Intent(CreateShopActivity.this, DashBoard.class)
-                        );
-                    }
-                }
-        );
+//        DatabaseReference mLocationRef = mDatabase.child("Locations")
+//                .child(shopType);
+//        GeoFire geoFire = new GeoFire(mLocationRef);
+//        geoFire.setLocation(
+//                user.getUid() + "_" + mShop.getName(),
+//                new GeoLocation(
+//                        Double.parseDouble(mShop.getLatitude()),
+//                        Double.parseDouble(mShop.getLongitude())
+//                ),
+//                new GeoFire.CompletionListener() {
+//                    @Override
+//                    public void onComplete(String key, DatabaseError error) {
+//                        startActivity(
+//                                new Intent(CreateShopActivity.this, DashBoard.class)
+//                        );
+//                    }
+//                }
+//        );
     }
 
     @Override

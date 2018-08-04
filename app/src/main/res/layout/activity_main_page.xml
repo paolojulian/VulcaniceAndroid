@@ -33,12 +33,12 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
             <TextView
-                android:textSize="40dp"
+                android:textSize="25dp"
                 android:textColor="#000"
                 android:textAllCaps="true"
                 android:gravity="center"
                 android:text="Find the nearest Stations"
-                android:layout_marginBottom="40dp"
+                android:layout_marginBottom="10dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
             <Button
@@ -68,11 +68,39 @@
                 android:layout_marginTop="10dp"
                 android:textColor="@color/colorLight"
                 android:layout_height="wrap_content" />
+            <TextView
+                android:textSize="25dp"
+                android:textColor="#000"
+                android:textAllCaps="true"
+                android:gravity="center"
+                android:text="View Nearest Stations"
+                android:layout_marginBottom="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
             <Button
-                android:text="List Vulcanizing Shop"
-                android:id="@+id/btn_test"
+                android:text="Vulcanizing Shop"
+                android:id="@+id/btn_list_vul"
                 android:layout_width="fill_parent"
                 android:textStyle="bold"
+                android:background="@color/colorPrimaryDark"
+                android:layout_marginTop="10dp"
+                android:textColor="@color/colorLight"
+                android:layout_height="wrap_content" />
+            <Button
+                android:text="Gas station"
+                android:id="@+id/btn_list_gas"
+                android:layout_width="fill_parent"
+                android:textStyle="bold"
+                android:background="@color/colorPrimaryDark"
+                android:layout_marginTop="10dp"
+                android:textColor="@color/colorLight"
+                android:layout_height="wrap_content" />
+            <Button
+                android:text="Vulcanizing and Gas Station"
+                android:id="@+id/btn_list_both"
+                android:layout_width="fill_parent"
+                android:textStyle="bold"
+                android:layout_marginBottom="30dp"
                 android:background="@color/colorPrimaryDark"
                 android:layout_marginTop="10dp"
                 android:textColor="@color/colorLight"

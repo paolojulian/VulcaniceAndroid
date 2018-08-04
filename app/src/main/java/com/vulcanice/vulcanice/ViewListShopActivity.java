@@ -35,7 +35,9 @@ import com.google.firebase.database.ValueEventListener;
 import com.vulcanice.vulcanice.Model.Shop;
 import com.vulcanice.vulcanice.Model.ShopList;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ViewListShopActivity extends AppCompatActivity {
@@ -50,12 +52,12 @@ public class ViewListShopActivity extends AppCompatActivity {
     private String dbGas, dbVul, dbBoth;
     private Shop shopModel;
     //SHOP
-    private Integer radius = 2;
+    private Integer radius = 9;
     private Boolean foundGas = false;
     private String shopId, shopType;
     private Double shopLat, shopLng;
     private Map<String, GeoLocation> shopArray;
-    private ShopList[] shopListArray;
+    private List<String> shopKeys;
     //LAYOUT
     private RecyclerView recyclerView;
     ListShopAdapter mAdapter;
@@ -85,7 +87,8 @@ public class ViewListShopActivity extends AppCompatActivity {
 
     private void initData() {
         shopArray = new HashMap<String, GeoLocation>();
-        shopListArray = new ShopList[10];
+//        shopListArray = new ArrayList<>();
+        shopKeys = new ArrayList<>();
         Intent i = getIntent();
         //extra
         shopType = i.getExtras().getString("shopType");
@@ -122,8 +125,10 @@ public class ViewListShopActivity extends AppCompatActivity {
                 }
                 shopId = key;
                 Log.d("key", key + " " + location);
-                shopListArray[counter] = new ShopList(key, location);
-                shopArray.put(key, location);
+//                shopListArray
+//                shopListArray[counter] = new ShopList(key, location);
+                shopKeys.add(key);
+//                shopArray.put(key, location);
                 counter ++;
 
                 if (!foundGas) foundGas = true;
@@ -161,7 +166,8 @@ public class ViewListShopActivity extends AppCompatActivity {
                     getShops();
                     return;
                 }
-                mAdapter = new ListShopAdapter(ViewListShopActivity.this, shopListArray, mLastLocation);
+//                Log.d("key_array", shopListArray.size() + "");
+                mAdapter = new ListShopAdapter(ViewListShopActivity.this, shopKeys, mLastLocation, shopType);
                 recyclerView.setAdapter(mAdapter);
                 Log.d("location",  shopArray + "");
             }
@@ -262,7 +268,6 @@ public class ViewListShopActivity extends AppCompatActivity {
 
     }
 
-
     private void startLocationUpdates() {
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
@@ -271,9 +276,28 @@ public class ViewListShopActivity extends AppCompatActivity {
                 mLocationRequest, locationCallback, null
         );
     }
+
+    private void stopLocationUpdates() {
+        mFusedLocationClient.removeLocationUpdates(locationCallback);
+    }
+
     @Override
     protected void onStop() {
         super.onStop();
         geoQuery.removeAllListeners();
+        stopLocationUpdates();
+    }
+
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        stopLocationUpdates();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        startLocationUpdates();
     }
 }

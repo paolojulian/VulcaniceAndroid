@@ -56,7 +56,7 @@ import java.util.List;
 
 public class TrackRequestActivity extends AppCompatActivity implements RoutingListener, com.google.android.gms.location.LocationListener, GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, OnMapReadyCallback {
     //MODEL
-    private DatabaseReference mDatabaseRef, myLocationRef;
+    private DatabaseReference mDatabaseRef, myLocationRef, clientRef;
     private FirebaseUser currentUser;
     private String theirUid;
     private String locationReference;
@@ -146,7 +146,6 @@ public class TrackRequestActivity extends AppCompatActivity implements RoutingLi
     }
 
     private void setupTheirLocation() {
-        DatabaseReference clientRef;
         if (mType.equals("client")) {
             clientRef = mDatabaseRef.child("ownerLocation")
                     .child(theirUid)
@@ -434,6 +433,7 @@ public class TrackRequestActivity extends AppCompatActivity implements RoutingLi
             mGoogleApiClient.disconnect();
         }
         super.onStop();
+        mFusedLocationClient.removeLocationUpdates(locationCallback);
     }
 
     @Override

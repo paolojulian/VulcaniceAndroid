@@ -172,6 +172,12 @@ public class FindShopActivity extends AppCompatActivity {
         stopLocationUpdates();
     }
 
+    @Override
+    protected void onStop() {
+        geoQuery.removeAllListeners();
+        super.onStop();
+    }
+
     private void stopLocationUpdates() {
         mFusedLocationClient.removeLocationUpdates(locationCallback);
     }
@@ -196,6 +202,7 @@ public class FindShopActivity extends AppCompatActivity {
     private Boolean foundGas = false, isFirst = true;
     private String shopId;
     private Double shopLat, shopLng;
+    private GeoQuery geoQuery;
     private void getClosestShop() {
         DatabaseReference shopLocationRef = FirebaseDatabase
                 .getInstance()
@@ -204,7 +211,7 @@ public class FindShopActivity extends AppCompatActivity {
                 .child(shopType);
 
         GeoFire geoFire = new GeoFire(shopLocationRef);
-        GeoQuery geoQuery = geoFire.queryAtLocation(
+        geoQuery = geoFire.queryAtLocation(
                 new GeoLocation(mLastLocation.getLatitude(), mLastLocation.getLongitude()),
                 radius
         );

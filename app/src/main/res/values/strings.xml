@@ -65,4 +65,6 @@
     <string name="vcn_open">Open</string>
     <string name="vcn_close">Close</string>
 
+    <string name="image_url">gs://vulcanice-72c4e.appspot.com/images/</string>
+
 </resources>

@@ -25,6 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -43,6 +44,7 @@ import com.vulcanice.vulcanice.Model.VCN_User;
 
 public class MainPage extends AppCompatActivity {
 
+    private Context context = MainPage.this;
     private FirebaseAuth mAuth;
     private FirebaseDatabase mDatabase;
     private FirebaseUser currentUser;
@@ -55,7 +57,8 @@ public class MainPage extends AppCompatActivity {
     private ActionBarDrawerToggle mToggleDrawer;
     private NavigationView mNavigationView;
 
-    private Button BtnFindGas, BtnFindVul, BtnFindBoth, BtnListShop;
+    private Button BtnFindGas, BtnFindVul, BtnFindBoth,
+            BtnListVul, BtnListGas, BtnListBoth;
     private ImageButton BtnNotification;
     private TextView notifCount, navName, navEmail, navMobile;
     private ImageView navImg;
@@ -66,7 +69,7 @@ public class MainPage extends AppCompatActivity {
     private PendingIntent pendingIntent;
     private NotificationManager mNotificationManager;
 
-    private FirebaseStorage storage;
+    public FirebaseStorage storage;
     private StorageReference storageReference;
     private static final int PERMISSION_REQUEST_CODE = 7171;
     private Uri filePath;
@@ -93,21 +96,25 @@ public class MainPage extends AppCompatActivity {
         navName = headerLayout.findViewById(R.id.navigation_name);
         navImg = headerLayout.findViewById(R.id.navigation_img_user);
 
-//        setupUserImage();
+        setupUserImage();
         setupText();
     }
 
-//    private void setupUserImage() {
-//        StorageReference storageReference = FirebaseStorage.getInstance().getReference("images").child(currentUser.getUid());
-//
-////        Picasso.with(MainPage.this)
-////                .load(storageReference)
-////                .into(navImg);
-////        // Load the image using Glide
-//        Glide.with(MainPage.this /* context */)
-//                .load(storageReference)
-//                .into(navImg);
-//    }
+    private void setupUserImage() {
+        storageReference = FirebaseStorage.getInstance().getReference("images").child(currentUser.getUid());
+
+        storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                GlideApp
+                        .with(context)
+                        .load(uri.toString())
+                        .placeholder(R.drawable.default_prof_pic)
+                        .into(navImg);
+            }
+        });
+
+    }
 
     private void setupText() {
 
@@ -137,7 +144,9 @@ public class MainPage extends AppCompatActivity {
         BtnFindGas = findViewById(R.id.btn_find_gas);
         BtnFindVul = findViewById(R.id.btn_find_vul);
         BtnFindBoth = findViewById(R.id.btn_find_both);
-        BtnListShop = findViewById(R.id.btn_test);
+        BtnListVul = findViewById(R.id.btn_list_vul);
+        BtnListGas = findViewById(R.id.btn_list_gas);
+        BtnListBoth = findViewById(R.id.btn_list_both);
     }
 
     private void setupNotification() {
@@ -193,11 +202,27 @@ public class MainPage extends AppCompatActivity {
 
             }
         });
-        BtnListShop.setOnClickListener(new View.OnClickListener() {
+        BtnListVul.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent i = new Intent(MainPage.this, ViewListShopActivity.class);
                 i.putExtra("shopType", "vulcanizeStation");
+                startActivity(i);
+            }
+        });
+        BtnListGas.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(MainPage.this, ViewListShopActivity.class);
+                i.putExtra("shopType", "gasStation");
+                startActivity(i);
+            }
+        });
+        BtnListBoth.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(MainPage.this, ViewListShopActivity.class);
+                i.putExtra("shopType", "both");
                 startActivity(i);
             }
         });

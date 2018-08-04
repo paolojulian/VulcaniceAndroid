@@ -1,6 +1,8 @@
 package com.vulcanice.vulcanice;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -14,9 +16,11 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.model.Dash;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -24,9 +28,12 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.vulcanice.vulcanice.Model.VCN_User;
 
 public class DashBoard extends AppCompatActivity {
+    private Context context = DashBoard.this;
 
     private ViewPager mViewPager;
     private SectionsPageAdapter mSectionsPageAdapter;
@@ -42,6 +49,7 @@ public class DashBoard extends AppCompatActivity {
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mToggleDrawer;
     private NavigationView mNavigationView;
+    private ImageView navImg;
 
     private TextView notifCount, navName, navEmail, navMobile;
 
@@ -53,6 +61,7 @@ public class DashBoard extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
 
+
         //INPUTS
         setupToolBar();
         setupTabs();
@@ -61,6 +70,7 @@ public class DashBoard extends AppCompatActivity {
         setupDrawer();
         setupMenu();
         setupText();
+        setupUserImage();
         //EVENTS
         eventCreateShop();
     }
@@ -70,6 +80,7 @@ public class DashBoard extends AppCompatActivity {
         navEmail = headerLayout.findViewById(R.id.navigation_email);
         navMobile = headerLayout.findViewById(R.id.navigation_mobile);
         navName = headerLayout.findViewById(R.id.navigation_name);
+        navImg = headerLayout.findViewById(R.id.navigation_img_user);
 
         DatabaseReference ref = mDatabase.getInstance().getReference("Users")
                 .child(currentUser.getUid());
@@ -149,6 +160,23 @@ public class DashBoard extends AppCompatActivity {
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
+
+    private void setupUserImage() {
+        StorageReference storageReference = FirebaseStorage.getInstance().getReference("images").child(currentUser.getUid());
+
+        storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                GlideApp
+                        .with(context)
+                        .load(uri.toString())
+                        .placeholder(R.drawable.default_prof_pic)
+                        .into(navImg);
+            }
+        });
+
+    }
+
     private void setupMenu() {
         mNavigationView = findViewById(R.id.dash_board_navigation);
         mNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener(){
