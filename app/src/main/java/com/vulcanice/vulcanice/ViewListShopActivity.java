@@ -249,22 +249,22 @@ public class ViewListShopActivity extends AppCompatActivity {
                     }
                 });
         // Used for repeating request
-        locationCallback = new LocationCallback() {
-            @Override
-            public void onLocationResult(LocationResult locationResult) {
-                super.onLocationResult(locationResult);
-                for (Location location : locationResult.getLocations()) {
-                    mLastLocation = location;
-                    Toast.makeText(
-                            ViewListShopActivity.this,
-                            "Lat: " + mLastLocation.getLatitude() +
-                                    "\nLon: " + mLastLocation.getLongitude(),
-                            Toast.LENGTH_SHORT
-                    ).show();
-                }
-            }
-        };
-        startLocationUpdates();
+//        locationCallback = new LocationCallback() {
+//            @Override
+//            public void onLocationResult(LocationResult locationResult) {
+//                super.onLocationResult(locationResult);
+//                for (Location location : locationResult.getLocations()) {
+//                    mLastLocation = location;
+//                    Toast.makeText(
+//                            ViewListShopActivity.this,
+//                            "Lat: " + mLastLocation.getLatitude() +
+//                                    "\nLon: " + mLastLocation.getLongitude(),
+//                            Toast.LENGTH_SHORT
+//                    ).show();
+//                }
+//            }
+//        };
+//        startLocationUpdates();
 
     }
 
@@ -272,13 +272,13 @@ public class ViewListShopActivity extends AppCompatActivity {
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
-        mFusedLocationClient.requestLocationUpdates(
-                mLocationRequest, locationCallback, null
-        );
+//        mFusedLocationClient.requestLocationUpdates(
+//                mLocationRequest, locationCallback, null
+//        );
     }
 
     private void stopLocationUpdates() {
-        mFusedLocationClient.removeLocationUpdates(locationCallback);
+//        mFusedLocationClient.removeLocationUpdates(locationCallback);
     }
 
     @Override
