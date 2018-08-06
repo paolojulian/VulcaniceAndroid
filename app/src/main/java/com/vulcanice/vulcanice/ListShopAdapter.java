@@ -29,6 +29,7 @@ public class ListShopAdapter extends RecyclerView.Adapter<ViewShopViewHolder>{
     Shop shopModel;
     VCN_User mUser;
     FirebaseDatabase mDatabase;
+    DatabaseReference shopReference;
     ViewShopViewHolder mHolder;
     Location mLocation;
     Double mDistance;
@@ -43,8 +44,9 @@ public class ListShopAdapter extends RecyclerView.Adapter<ViewShopViewHolder>{
 //        this.shopArray = shopArray;
         this.shopKeys = shopKeys;
         this.shopType = shopType;
-        mDatabase = FirebaseDatabase.getInstance();
-        mLocation = myLocation;
+        this.mDatabase = FirebaseDatabase.getInstance();
+        this.mLocation = myLocation;
+        this.shopReference = mDatabase.getReference().child("Shops").child(shopType);
     }
 
     @Override
@@ -63,17 +65,14 @@ public class ListShopAdapter extends RecyclerView.Adapter<ViewShopViewHolder>{
 //        GeoLocation shopGeoLocation  = shopListArray[position].getShop_location();
 //        mHolder.shopDistance.setText(distanceToUser(shopGeoLocation.latitude, shopGeoLocation.longitude) + " m");
 
-        DatabaseReference shopReference = mDatabase.getReference()
-                .child("Shops").child(shopType).child(key);
-
-        shopReference.addValueEventListener(new ValueEventListener() {
+        DatabaseReference shopRef = shopReference.child(key);
+        mHolder.shopId = key;
+//
+        shopRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 shopModel = dataSnapshot.getValue(Shop.class);
                 Log.d("test", shopModel + "");
-//                if (shopModel == null) {
-//                    return;
-//                }
                 mHolder.shopName.setText(shopModel.getName());
                 mHolder.shopDescription.setText(shopModel.getDescription());
                 Double lat = Double.parseDouble(shopModel.getLatitude());

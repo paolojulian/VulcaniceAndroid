@@ -16,6 +16,8 @@ public class ViewShopViewHolder extends RecyclerView.ViewHolder implements View.
     TextView shopDistance;
     TextView shopOwner;
     TextView shopLat, shopLng;
+
+    String shopId;
     Button BtnTrackShop, BtnRequestShop;
     private Integer pos;
 
@@ -68,7 +70,13 @@ public class ViewShopViewHolder extends RecyclerView.ViewHolder implements View.
             intent.putExtra("shopLng", lng);
             context.startActivity(intent);
         } else if (id == BtnRequestShop.getId()) {
-
+            Intent i = new Intent(
+                    context,
+                    RequestShopActivity.class
+            );
+            i.putExtra("shopId", shopId);
+            i.putExtra("shopName", shopName.getText().toString());
+            context.startActivity(i);
         } else {
 
         }
