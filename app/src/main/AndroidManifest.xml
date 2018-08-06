@@ -43,6 +43,11 @@
             android:value="@string/google_maps_key" />
 
         <activity
+            android:name=".ViewMapActivity"
+            android:theme="@style/AppTheme"
+            android:label="Vulca-Nice" />
+
+        <activity
             android:name=".testNotification"
             android:theme="@style/AppTheme"
             android:label="Vulca-Nice" />

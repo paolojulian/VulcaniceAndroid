@@ -70,10 +70,10 @@ public class ListShopAdapter extends RecyclerView.Adapter<ViewShopViewHolder>{
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 shopModel = dataSnapshot.getValue(Shop.class);
-                Log.d("test", shopModel + "");
-//                if (shopModel == null) {
-//                    return;
-//                }
+                Log.d("test", shopModel.getName() + "");
+                if (shopModel == null) {
+                    return;
+                }
                 mHolder.shopName.setText(shopModel.getName());
                 mHolder.shopDescription.setText(shopModel.getDescription());
                 Double lat = Double.parseDouble(shopModel.getLatitude());

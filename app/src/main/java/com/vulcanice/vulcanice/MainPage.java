@@ -378,6 +378,13 @@ public class MainPage extends AppCompatActivity {
                         startActivity(new Intent(MainPage.this, DashBoard.class));
                         return true;
 
+                    case R.id.view_map:
+                        if ( ! isConnected()) {
+                            return true;
+                        }
+                        startActivity(new Intent(MainPage.this, ViewMapActivity.class));
+                        return true;
+
                     case R.id.logout:
                         mAuth.signOut();
                         gotoSignIn();
