@@ -11,8 +11,8 @@
             android:layout_height="wrap_content">
             <fragment
                 android:name="com.google.android.gms.maps.MapFragment"
-                android:id="@+id/map_track_shop"
-                android:layout_height="400dp"
+                android:id="@+id/view_map"
+                android:layout_height="500dp"
                 android:layout_width="match_parent"/>
         </FrameLayout>
 
