@@ -4,6 +4,7 @@
     android:layout_height="match_parent">
 
     <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <FrameLayout
@@ -12,10 +13,118 @@
             <fragment
                 android:name="com.google.android.gms.maps.MapFragment"
                 android:id="@+id/view_map"
-                android:layout_height="500dp"
+                android:layout_height="400dp"
                 android:layout_width="match_parent"/>
         </FrameLayout>
+        <LinearLayout
+            android:id="@+id/view_map_legend"
+            android:padding="10dp"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <RelativeLayout
+                android:layout_weight="1"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <ImageView
+                    android:id="@+id/legend_gas"
+                    android:src="@mipmap/baseline_ev_station_black_24"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <TextView
+                    android:text="Gasoline Station"
+                    android:layout_toEndOf="@+id/legend_gas"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </RelativeLayout>
+            <RelativeLayout
+                android:layout_weight="1"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <ImageView
+                    android:id="@+id/legend_vul"
+                    android:src="@mipmap/baseline_local_car_wash_black_24"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <TextView
+                    android:text="Vulcanizing Station"
+                    android:layout_toEndOf="@+id/legend_vul"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </RelativeLayout>
+            <RelativeLayout
+                android:layout_weight="1"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <ImageView
+                    android:id="@+id/legend_both"
+                    android:src="@mipmap/baseline_store_mall_directory_black_24"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <TextView
+                    android:text="Gas/Vulcanizing Station"
+                    android:layout_toEndOf="@+id/legend_both"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </RelativeLayout>
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/view_map_shop"
+            android:visibility="gone"
+            android:padding="10dp"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <TextView
+                android:id="@+id/view_map_shop_name"
+                android:text="Shop name"
+                android:textStyle="bold"
+                android:textAllCaps="true"
+                android:layout_weight="2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:id="@+id/view_map_shop_owner"
+                android:text="Owner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <LinearLayout
+                android:orientation="horizontal"
+                android:padding="5dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <Button
+                    android:id="@+id/view_map_track"
+                    android:text="Track Shop"
+                    android:textColor="@color/colorLight"
+                    android:background="@color/colorPrimaryDark"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent" />
+                <Button
+                    android:id="@+id/view_map_request"
+                    android:text="Request"
+                    android:textColor="@color/colorLight"
+                    android:background="@color/colorAccent"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent" />
+                <TextView
+                    android:id="@+id/view_map_tracking"
+                    android:text="Tracking..."
+                    android:textStyle="bold"
+                    android:textColor="#000"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
 
-    </LinearLayout>
+        </LinearLayout>
+        
+        </LinearLayout>
+
 
 </android.support.constraint.ConstraintLayout>

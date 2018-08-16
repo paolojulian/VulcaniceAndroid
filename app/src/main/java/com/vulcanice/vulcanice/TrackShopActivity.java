@@ -48,7 +48,9 @@ import java.util.List;
  * Created by User on 11/06/2018.
  */
 
-public class TrackShopActivity extends AppCompatActivity implements RoutingListener, com.google.android.gms.location.LocationListener, GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, OnMapReadyCallback {
+public class TrackShopActivity extends AppCompatActivity
+        implements RoutingListener, com.google.android.gms.location.LocationListener,
+            GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, OnMapReadyCallback {
     //DATABASE
     private LatLng shopLocation;
     //MAP
@@ -152,7 +154,6 @@ public class TrackShopActivity extends AppCompatActivity implements RoutingListe
                         mLastLocation = location;
                         LatLng userLocation = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
                         drawMarker(userLocation);
-                        drawMarker(userLocation);
                     }
                 });
         // Used for repeating request
@@ -174,9 +175,6 @@ public class TrackShopActivity extends AppCompatActivity implements RoutingListe
         mapFragment = (MapFragment) getFragmentManager()
                 .findFragmentById(R.id.map_track_shop);
         mapFragment.getMapAsync(TrackShopActivity.this);
-    }
-
-    private void getRouteToShop() {
     }
 
     private void drawMarker(LatLng userLocation) {
