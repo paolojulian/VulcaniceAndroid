@@ -1,7 +1,6 @@
 package com.vulcanice.vulcanice;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -11,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -50,8 +50,8 @@ public class VerifyPhoneNumberActivity extends AppCompatActivity
     private static final int STATE_CODE_SENT = 2;
     private static final int STATE_VERIFY_FAILED = 3;
     private static final int STATE_VERIFY_SUCCESS = 4;
-    private static final int STATE_SIGNIN_FAILED = 5;
-    private static final int STATE_SIGNIN_SUCCESS = 6;
+    private static final int STATE_SIGNUP_FAILED = 5;
+    private static final int STATE_SIGNUP_SUCCESS = 6;
     // EXTRAS
     private String name, email, password, mobile, usertype;
     private Uri filePath;
@@ -59,8 +59,10 @@ public class VerifyPhoneNumberActivity extends AppCompatActivity
     private EditText txtVerificationCode;
     private Button btnResendVerificationCode;
     private Button btnVerifyMobile;
+    private ProgressBar progressBar;
     // Firebase
     private FirebaseAuth mAuth;
+    private FirebaseDatabase mDatabase;
     private FirebaseStorage storage;
     private StorageReference storageReference;
     // Callbacks
@@ -80,10 +82,11 @@ public class VerifyPhoneNumberActivity extends AppCompatActivity
     }
 
     private void initialProcess() {
-        // Save layouts
+        // layouts
         txtVerificationCode = findViewById(R.id.txt_verification_code);
         btnResendVerificationCode = findViewById(R.id.btn_resend_verification_code);
         btnVerifyMobile = findViewById(R.id.btn_verify_mobile);
+        progressBar = findViewById(R.id.progress_bar);
         // Assign Click Listeners
         btnResendVerificationCode.setOnClickListener(this);
         btnVerifyMobile.setOnClickListener(this);
@@ -99,6 +102,7 @@ public class VerifyPhoneNumberActivity extends AppCompatActivity
         }
         // Firebase
         mAuth = FirebaseAuth.getInstance();
+        mDatabase = FirebaseDatabase.getInstance();
         storage = FirebaseStorage.getInstance();
         storageReference = storage.getReference();
     }
@@ -111,7 +115,7 @@ public class VerifyPhoneNumberActivity extends AppCompatActivity
 
                 mVerificationInProgress = false;
 
-                updateUI(STATE_VERIFY_SUCCESS, phoneAuthCredential);
+                updateUI(STATE_VERIFY_SUCCESS, phoneAuthCredential, null);
                 signInWithPhoneAuthCredential(phoneAuthCredential);
             }
 
@@ -139,11 +143,6 @@ public class VerifyPhoneNumberActivity extends AppCompatActivity
                 // Save verification ID and resending token so we can use them later
                 mVerificationId = verificationId;
                 mResendToken = token;
-
-                // [START_EXCLUDE]
-                // Update UI
-//                updateUI(STATE_CODE_SENT);
-                // [END_EXCLUDE]
             }
         };
     }
@@ -192,29 +191,23 @@ public class VerifyPhoneNumberActivity extends AppCompatActivity
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
-
-                            signInUser(credential);
+                            // Immediately signout user, verification is the only thing needed
+                            mAuth.signOut();
+                            createUser();
                         } else {
                             // Sign in failed, display a message and update the UI
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
-                            if (task.getException() instanceof FirebaseAuthInvalidCredentialsException) {
-                                // The verification code entered was invalid
-                                Toast.makeText(
-                                        VerifyPhoneNumberActivity.this,
-                                        "Invalid verification code",
-                                        Toast.LENGTH_SHORT).show();
-                            }
+                            updateUI(STATE_VERIFY_FAILED, credential, task);
                         }
                     }
                 });
     }
 
-    private void signInUser(PhoneAuthCredential credential) {
+    private void createUser() {
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(VerifyPhoneNumberActivity.this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-//                        progressBar.setVisibility(View.GONE);
 
                         if ( ! task.isSuccessful()) {
                             Toast.makeText(
@@ -224,65 +217,35 @@ public class VerifyPhoneNumberActivity extends AppCompatActivity
                             ).show();
                             return;
                         }
-                        AuthCredential credential = EmailAuthProvider.getCredential(email, password);
-                        setAdditionalFields(
-                            new VCN_User(
-                                name,
-                                mobile,
-                                email,
-                                usertype
-                            ),
-                            credential
-                        );
+                        setAdditionalFields();
                         uploadImage();
-                        finish();
                     }
                 });
-
-        Toast.makeText(
-                VerifyPhoneNumberActivity.this,
-                "Registration Successful",
-                Toast.LENGTH_SHORT
-        ).show();
-
-        Intent i = new Intent(
-                VerifyPhoneNumberActivity.this,
-                MainActivity.class
-        );
-        startActivity(i);
     }
 
-    protected void setAdditionalFields(VCN_User user, final AuthCredential credential) {
-        FirebaseDatabase.getInstance().getReference("Users")
-                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+    protected void setAdditionalFields() {
+        final AuthCredential credential = EmailAuthProvider.getCredential(email, password);
+        VCN_User user = new VCN_User(
+            name,
+            mobile,
+            email,
+            usertype
+        );
+
+        Log.d("User: ", mAuth.getCurrentUser().getUid());
+        mDatabase.getReference("Users")
+                .child(mAuth.getCurrentUser().getUid())
                 .setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
-                if ( ! task.isSuccessful())
-                {
-                    Toast.makeText(
-                            VerifyPhoneNumberActivity.this,
-                            "Authentication Failed!",
-                            Toast.LENGTH_SHORT
-                    ).show();
-                    final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                    user.reauthenticate(credential)
-                            .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    user.delete();
-                                }
-                            });
+                progressBar.setVisibility(View.GONE);
+
+                if ( ! task.isSuccessful()) {
+                    signupFailed(credential);
                     return;
                 }
-                Toast.makeText(
-                        VerifyPhoneNumberActivity.this,
-                        "Registration Successful",
-                        Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(
-                        VerifyPhoneNumberActivity.this,
-                        MainActivity.class));
-                finish();
+
+                signupSuccess();
             }
         });
     }
@@ -332,8 +295,12 @@ public class VerifyPhoneNumberActivity extends AppCompatActivity
                     txtVerificationCode.setError("Cannot be empty");
                     return;
                 }
+                disableViews(
+                        btnResendVerificationCode,
+                        btnVerifyMobile
+                );
+                progressBar.setVisibility(View.VISIBLE);
                 verifyPhoneNumberWithCode(mVerificationId, code);
-
                 break;
             case R.id.btn_resend_verification_code:
                 resendVerificationCode(mResendToken);
@@ -344,7 +311,7 @@ public class VerifyPhoneNumberActivity extends AppCompatActivity
     }
 
 
-    private void updateUI(int uiState, PhoneAuthCredential cred) {
+    private void updateUI(int uiState, PhoneAuthCredential cred, Task task) {
         switch(uiState) {
             case STATE_VERIFY_SUCCESS:
                 disableViews(
@@ -358,9 +325,46 @@ public class VerifyPhoneNumberActivity extends AppCompatActivity
 //                    txtVerificationCode.setTextColor(R.color.colorAccent);
                 }
                 break;
+            case STATE_VERIFY_FAILED:
+                if (task.getException() instanceof FirebaseAuthInvalidCredentialsException) {
+                    // The verification code entered was invalid
+                    Toast.makeText(
+                            VerifyPhoneNumberActivity.this,
+                            "Invalid verification code",
+                            Toast.LENGTH_SHORT).show();
+                }
+                break;
             default:
                 break;
         }
+    }
+
+    private void signupFailed(AuthCredential credential) {
+        Toast.makeText(
+                VerifyPhoneNumberActivity.this,
+                "Authentication Failed!",
+                Toast.LENGTH_SHORT
+        ).show();
+        final FirebaseUser user = mAuth.getCurrentUser();
+        user.reauthenticate(credential)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        user.delete();
+                    }
+                });
+    }
+
+    private void signupSuccess() {
+
+        Toast.makeText(
+                VerifyPhoneNumberActivity.this,
+                "Registration Successful",
+                Toast.LENGTH_SHORT).show();
+        startActivity(new Intent(
+                VerifyPhoneNumberActivity.this,
+                MainActivity.class));
+        finish();
     }
 
     /**

@@ -1,57 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
         android:background="@color/colorLight"
         android:orientation="vertical"
-        android:layout_width="fill_parent"
         android:padding="10dp"
-        android:layout_height="fill_parent">
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="60dp">
 
         <android.support.design.widget.TextInputLayout
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent">
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
             <EditText
                 android:id="@+id/txt_verification_code"
-                android:focusableInTouchMode="true"
-                android:maxLines="1"
-                android:inputType="text"
-                android:hint="@string/placeholder_enter_verification_code"
-                android:textColor="@color/colorPrimaryDark"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:focusableInTouchMode="true"
+                android:hint="@string/placeholder_enter_verification_code"
+                android:inputType="text"
+                android:maxLines="1"
+                android:textColor="@color/colorPrimaryDark" />
         </android.support.design.widget.TextInputLayout>
 
         <LinearLayout
-            android:orientation="horizontal"
             android:layout_width="fill_parent"
-            android:padding="10dp"
-            android:layout_height="fill_parent">
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="10dp">
 
             <Button
                 android:id="@+id/btn_resend_verification_code"
                 android:layout_width="fill_parent"
-                android:text="@string/btn_resend_verification_code"
-                android:textStyle="bold"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="@color/colorAccent"
+                android:text="@string/btn_resend_verification_code"
                 android:textColor="@color/colorLight"
-                android:layout_height="wrap_content" />
+                android:textStyle="bold" />
 
             <Button
                 android:id="@+id/btn_verify_mobile"
                 android:layout_width="fill_parent"
-                android:text="@string/btn_verify_mobile"
-                android:textStyle="bold"
+                android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
                 android:layout_weight="1"
                 android:background="@color/colorPrimary"
+                android:text="@string/btn_verify_mobile"
                 android:textColor="@color/colorLight"
-                android:layout_height="wrap_content" />
+                android:textStyle="bold" />
 
         </LinearLayout>
+
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            android:visibility="gone"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center" />
+
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>
