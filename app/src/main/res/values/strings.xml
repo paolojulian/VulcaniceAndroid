@@ -53,6 +53,7 @@
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="title_activity_customer_map">Map</string>
 
+    <string name="instant_validation">(instant validation)</string>
     <!--
         Dashboard_1
     -->
@@ -67,4 +68,10 @@
 
     <string name="image_url">gs://vulcanice-72c4e.appspot.com/images/</string>
 
+    <!--
+        Verify Phone
+    -->
+    <string name="placeholder_enter_verification_code">Enter verification code</string>
+    <string name="btn_resend_verification_code">Resend Code</string>
+    <string name="btn_verify_mobile">Verify</string>
 </resources>

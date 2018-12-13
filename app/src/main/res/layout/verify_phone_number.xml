@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:background="@color/colorLight"
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:padding="10dp"
+        android:layout_height="fill_parent">
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent">
+            <EditText
+                android:id="@+id/txt_verification_code"
+                android:focusableInTouchMode="true"
+                android:maxLines="1"
+                android:inputType="text"
+                android:hint="@string/placeholder_enter_verification_code"
+                android:textColor="@color/colorPrimaryDark"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </android.support.design.widget.TextInputLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:padding="10dp"
+            android:layout_height="fill_parent">
+
+            <Button
+                android:id="@+id/btn_resend_verification_code"
+                android:layout_width="fill_parent"
+                android:text="@string/btn_resend_verification_code"
+                android:textStyle="bold"
+                android:layout_weight="1"
+                android:background="@color/colorAccent"
+                android:textColor="@color/colorLight"
+                android:layout_height="wrap_content" />
+
+            <Button
+                android:id="@+id/btn_verify_mobile"
+                android:layout_width="fill_parent"
+                android:text="@string/btn_verify_mobile"
+                android:textStyle="bold"
+                android:layout_marginLeft="5dp"
+                android:layout_weight="1"
+                android:background="@color/colorPrimary"
+                android:textColor="@color/colorLight"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+</android.support.constraint.ConstraintLayout>

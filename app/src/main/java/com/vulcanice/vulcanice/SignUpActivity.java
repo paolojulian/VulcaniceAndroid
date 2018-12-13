@@ -1,6 +1,7 @@
 package com.vulcanice.vulcanice;
 
 import android.Manifest;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -23,6 +24,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.credentials.HintRequest;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -121,35 +123,45 @@ public class SignUpActivity extends AppCompatActivity {
 
 
                 progressBar.setVisibility(View.VISIBLE);
-                auth.createUserWithEmailAndPassword(inputEmail, inputPassword)
-                        .addOnCompleteListener(SignUpActivity.this, new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-                                progressBar.setVisibility(View.GONE);
-
-                                if ( ! task.isSuccessful()) {
-                                    Toast.makeText(
-                                            SignUpActivity.this,
-                                            "Unable to process your request",
-                                            Toast.LENGTH_SHORT
-                                    ).show();
-                                    return;
-                                }
-                                AuthCredential credential = EmailAuthProvider.getCredential(inputEmail, inputPassword);
-                                setAdditionalFields(
-                                    new VCN_User(
-                                        inputName,
-                                        inputMobile,
-                                        inputEmail,
-                                        inputUserType
-                                    ),
-                                    credential
-                                );
-                                IMG_URL = ("images/" + FirebaseAuth.getInstance().getCurrentUser().getUid());
-                                uploadImage();
-                                finish();
-                            }
-                        });
+                Intent i = new Intent(SignUpActivity.this, VerifyPhoneNumberActivity.class);
+                i.putExtra("name", inputName);
+                i.putExtra("email", inputEmail);
+                i.putExtra("password", inputPassword);
+                i.putExtra("mobile", inputMobile);
+                i.putExtra("usertype", inputUserType);
+                if (filePath != null) {
+                    i.putExtra("filepath", filePath.toString());
+                }
+                startActivity(i);
+//                auth.createUserWithEmailAndPassword(inputEmail, inputPassword)
+//                        .addOnCompleteListener(SignUpActivity.this, new OnCompleteListener<AuthResult>() {
+//                            @Override
+//                            public void onComplete(@NonNull Task<AuthResult> task) {
+//                                progressBar.setVisibility(View.GONE);
+//
+//                                if ( ! task.isSuccessful()) {
+//                                    Toast.makeText(
+//                                            SignUpActivity.this,
+//                                            "Unable to process your request",
+//                                            Toast.LENGTH_SHORT
+//                                    ).show();
+//                                    return;
+//                                }
+//                                AuthCredential credential = EmailAuthProvider.getCredential(inputEmail, inputPassword);
+//                                setAdditionalFields(
+//                                    new VCN_User(
+//                                        inputName,
+//                                        inputMobile,
+//                                        inputEmail,
+//                                        inputUserType
+//                                    ),
+//                                    credential
+//                                );
+//                                IMG_URL = ("images/" + FirebaseAuth.getInstance().getCurrentUser().getUid());
+//                                uploadImage();
+//                                finish();
+//                            }
+//                        });
             }
         });
     }
@@ -259,12 +271,13 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
     protected void populateUserType() {
-        userType = (Spinner) findViewById(R.id.user_type);
+        userType = findViewById(R.id.user_type);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.vcn_user_types, android.R.layout.simple_list_item_activated_1);
         userType.setAdapter(adapter);
         userType.setSelection(0);
     }
+
     @Override
     protected void onResume() {
         super.onResume();

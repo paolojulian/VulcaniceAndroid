@@ -109,6 +109,9 @@
             android:name=".MapTracking"
             android:label="@string/title_activity_map_tracking" />
         <activity
+            android:name=".VerifyPhoneNumberActivity"
+            android:label="Verify Phone Number" />
+        <activity
             android:theme="@style/AppTheme.NoActionBar"
             android:name=".DashBoard"
             android:label="Lists" />

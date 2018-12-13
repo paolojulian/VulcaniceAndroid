@@ -3,7 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/VulcaNice2.iml" filepath="$PROJECT_DIR$/VulcaNice2.iml" />
-      <module fileurl="file://$PROJECT_DIR$/VulcaniceAndroid.iml" filepath="$PROJECT_DIR$/VulcaniceAndroid.iml" />
+      <module fileurl="file://C:\Users\User\AndroidStudioProjects\VulcaNice2\VulcaniceAndroid.iml" filepath="C:\Users\User\AndroidStudioProjects\VulcaNice2\VulcaniceAndroid.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>
