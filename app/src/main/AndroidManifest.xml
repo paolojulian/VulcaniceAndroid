@@ -45,7 +45,7 @@
         <activity
             android:name=".ViewMapActivity"
             android:theme="@style/AppTheme"
-            android:label="Vulca-Nice" />
+            android:label="View Map" />
 
         <activity
             android:name=".testNotification"
@@ -54,6 +54,11 @@
 
         <activity
             android:name=".MainPage"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:label="Vulca-Nice" />
+
+        <activity
+            android:name=".OwnerMainPage"
             android:theme="@style/AppTheme.NoActionBar"
             android:label="Vulca-Nice" />
 

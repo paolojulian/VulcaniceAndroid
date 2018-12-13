@@ -3,6 +3,7 @@ package com.vulcanice.vulcanice;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -21,10 +23,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -35,7 +38,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.squareup.picasso.Picasso;
 import com.vulcanice.vulcanice.Model.VCN_User;
 
 /**
@@ -43,6 +45,8 @@ import com.vulcanice.vulcanice.Model.VCN_User;
  */
 
 public class MainPage extends AppCompatActivity {
+
+    private String TAG = "TAG_MainPage";
 
     private Context context = MainPage.this;
     private FirebaseAuth mAuth;
@@ -62,7 +66,8 @@ public class MainPage extends AppCompatActivity {
     private ImageButton BtnNotification;
     private TextView notifCount, navName, navEmail, navMobile;
     private ImageView navImg;
-
+    private ProgressBar pageLoader;
+    private LinearLayout mLayout;
     private Toolbar mToolbar;
     //NOTIFICATION
     private NotificationCompat.Builder mBuilder;
@@ -81,21 +86,41 @@ public class MainPage extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_page);
 
-        setupToolbar();
-        setupBtn();
-//        setupNotification();
-        mAuth = FirebaseAuth.getInstance();
-        currentUser = mAuth.getCurrentUser();
-        eventGetClosestGas();
-        setupDrawer();
-        setupMenu();
+        initialProcess();
 
+    }
+
+    private void initialProcess() {
+        // Layouts
+        BtnFindGas = findViewById(R.id.btn_find_gas);
+        BtnFindVul = findViewById(R.id.btn_find_vul);
+        BtnFindBoth = findViewById(R.id.btn_find_both);
+        BtnListVul = findViewById(R.id.btn_list_vul);
+        BtnListGas = findViewById(R.id.btn_list_gas);
+        BtnListBoth = findViewById(R.id.btn_list_both);
+        mNavigationView =  findViewById(R.id.navigation_view);
+        mDrawerLayout = findViewById(R.id.drawer_layout);
+        mToolbar = findViewById(R.id.toolbar);
+        pageLoader = findViewById(R.id.page_loader);
+        mLayout = findViewById(R.id.main_page_layout);
         View headerLayout = mNavigationView.getHeaderView(0);
         navEmail = headerLayout.findViewById(R.id.navigation_email);
         navMobile = headerLayout.findViewById(R.id.navigation_mobile);
         navName = headerLayout.findViewById(R.id.navigation_name);
         navImg = headerLayout.findViewById(R.id.navigation_img_user);
+        // Firebase
+        mDatabase = FirebaseDatabase.getInstance();
+        mAuth = FirebaseAuth.getInstance();
+        currentUser = mAuth.getCurrentUser();
 
+        Log.d(TAG, "CurrentUser: " + currentUser);
+//        setupNotification();
+
+        getUserType();
+        setupToolbar();
+        setupDrawer();
+        setupMenu();
+        setCallbacks();
         setupUserImage();
         setupText();
     }
@@ -117,8 +142,6 @@ public class MainPage extends AppCompatActivity {
     }
 
     private void setupText() {
-
-
         DatabaseReference ref = mDatabase.getInstance().getReference("Users")
                 .child(currentUser.getUid());
         ref.addValueEventListener(new ValueEventListener() {
@@ -175,7 +198,7 @@ public class MainPage extends AppCompatActivity {
         mBuilder.addAction(decline_request);
     }
 
-    private void eventGetClosestGas() {
+    private void setCallbacks() {
         final Intent iFindShop = new Intent(MainPage.this, FindShopActivity.class);
 
         BtnFindGas.setOnClickListener(new View.OnClickListener() {
@@ -235,18 +258,31 @@ public class MainPage extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 user = dataSnapshot.getValue(VCN_User.class);
-                if (user == null) {
-                    userType = "Client";
-                    return;
+                pageLoader.setVisibility(View.GONE);
+                if (user == null || user.getUser_type().equals("Client")) {
+                    setupClient();
+                } else {
+                    setupOwner();
                 }
-                userType = user.getUser_type();
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                Toast.makeText(MainPage.this, "@string/db_error", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainPage.this, R.string.db_error, Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void setupClient() {
+        userType = "Client";
+        mLayout.setVisibility(View.VISIBLE);
+    }
+
+    private void setupOwner() {
+        userType = "Shop Owner";
+        Intent i = new Intent(MainPage.this, OwnerMainPage.class);
+        startActivity(i);
+        finish();
     }
 
     @Override
@@ -254,8 +290,6 @@ public class MainPage extends AppCompatActivity {
         if (currentUser == null) {
             gotoSignIn();
         }
-        mDatabase = FirebaseDatabase.getInstance();
-        getUserType();
         super.onStart();
     }
 
@@ -280,13 +314,19 @@ public class MainPage extends AppCompatActivity {
         }
     }
 
+    /**
+     * Menu on top
+     * @param menu
+     * @return
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.main_menu, menu);
-
-        setupMenuItems(menu);
-        displayNotifCount();
+        // setup request notif
+//        MenuInflater menuInflater = getMenuInflater();
+//        menuInflater.inflate(R.menu.main_menu, menu);
+//
+//        setupMenuItems(menu);
+//        displayNotifCount();
         return true;
     }
 
@@ -339,12 +379,10 @@ public class MainPage extends AppCompatActivity {
     }
 
     private void setupToolbar() {
-        mToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
     }
 
     private void setupDrawer() {
-        mDrawerLayout = findViewById(R.id.drawer_layout);
         mToggleDrawer = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.vcn_open, R.string.vcn_close);
         mDrawerLayout.addDrawerListener(mToggleDrawer);
         mToggleDrawer.syncState();
@@ -353,7 +391,6 @@ public class MainPage extends AppCompatActivity {
     }
 
     private void setupMenu() {
-        mNavigationView =  findViewById(R.id.navigation_view);
         mNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
 
             @Override
@@ -416,10 +453,18 @@ public class MainPage extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
     }
-
     @Override
     public void onBackPressed() {
-        return;
+        new AlertDialog.Builder(this)
+                .setTitle("Really Exit?")
+                .setMessage("Are you sure you want to exit?")
+                .setNegativeButton(android.R.string.no, null)
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface arg0, int arg1) {
+                        finish();
+                        System.exit(1);
+                    }
+                }).create().show();
     }
 
     private void gotoHome() {

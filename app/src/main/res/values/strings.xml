@@ -74,4 +74,9 @@
     <string name="placeholder_enter_verification_code">Enter verification code</string>
     <string name="btn_resend_verification_code">Resend Code</string>
     <string name="btn_verify_mobile">Verify</string>
+    <string name="verification_quota_reached">Too many requests, please try again later</string>
+    <!--
+        Requests
+    -->
+    <string name="no_request">No request/s availabel</string>
 </resources>

@@ -213,7 +213,9 @@ public class ViewMapActivity extends AppCompatActivity{
 
     @Override
     protected void onStop() {
-        geoQuery.removeAllListeners();
+        if (geoQuery != null) {
+            geoQuery.removeAllListeners();
+        }
         stopLocationUpdates();
         super.onStop();
     }

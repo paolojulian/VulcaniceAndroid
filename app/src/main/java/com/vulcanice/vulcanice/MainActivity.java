@@ -1,8 +1,10 @@
 package com.vulcanice.vulcanice;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -51,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 startActivityForResult(
                     AuthUI.getInstance().createSignInIntentBuilder()
-                    .setAllowNewEmailAccounts(true)
+                    .setAllowNewEmailAccounts(false)
                     .setTheme(R.style.AppTheme)
                     .build()
                     ,LOGIN_PERMISSION
@@ -74,5 +76,18 @@ public class MainActivity extends AppCompatActivity {
             startActivity( intent );
             finish();
         }
+    }
+    @Override
+    public void onBackPressed() {
+        new AlertDialog.Builder(this)
+                .setTitle("Really Exit?")
+                .setMessage("Are you sure you want to exit?")
+                .setNegativeButton(android.R.string.no, null)
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface arg0, int arg1) {
+                        finish();
+                        System.exit(0);
+                    }
+                }).create().show();
     }
 }

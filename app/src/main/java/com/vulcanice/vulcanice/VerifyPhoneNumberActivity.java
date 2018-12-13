@@ -42,7 +42,7 @@ import java.util.concurrent.TimeUnit;
  */
 
 public class VerifyPhoneNumberActivity extends AppCompatActivity
-        implements View.OnClickListener{
+        implements View.OnClickListener {
 
     private static final String TAG = "TAG_VerifyMobile";
     // STATES
@@ -122,16 +122,21 @@ public class VerifyPhoneNumberActivity extends AppCompatActivity
             @Override
             public void onVerificationFailed(FirebaseException e) {
                 Log.w(TAG, "onVerificationFailed: " + e);
-                if (e instanceof FirebaseAuthInvalidCredentialsException) {
-                    // Invalid request
-                    // ...
-                } else if (e instanceof FirebaseTooManyRequestsException) {
+                if (e instanceof FirebaseTooManyRequestsException) {
                     // The SMS quota for the project has been exceeded
-                    // ...
+                    Toast.makeText(
+                            VerifyPhoneNumberActivity.this,
+                            R.string.verification_quota_reached,
+                            Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(
+                            VerifyPhoneNumberActivity.this,
+                            R.string.db_error,
+                            Toast.LENGTH_SHORT).show();
+                    finish();
                 }
-
-
             }
+
             @Override
             public void onCodeSent(String verificationId,
                                    PhoneAuthProvider.ForceResendingToken token) {
@@ -162,8 +167,10 @@ public class VerifyPhoneNumberActivity extends AppCompatActivity
         mVerificationInProgress = true;
 //        mStatusText.setVisibility(View.INVISIBLE);
     }
+
     /**
      * RESEND VERIFICATION CODE
+     *
      * @param token
      */
     private void resendVerificationCode(PhoneAuthProvider.ForceResendingToken token) {
@@ -209,7 +216,7 @@ public class VerifyPhoneNumberActivity extends AppCompatActivity
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
 
-                        if ( ! task.isSuccessful()) {
+                        if (!task.isSuccessful()) {
                             Toast.makeText(
                                     VerifyPhoneNumberActivity.this,
                                     R.string.db_error,
@@ -226,10 +233,10 @@ public class VerifyPhoneNumberActivity extends AppCompatActivity
     protected void setAdditionalFields() {
         final AuthCredential credential = EmailAuthProvider.getCredential(email, password);
         VCN_User user = new VCN_User(
-            name,
-            mobile,
-            email,
-            usertype
+                name,
+                mobile,
+                email,
+                usertype
         );
 
         Log.d("User: ", mAuth.getCurrentUser().getUid());
@@ -240,7 +247,7 @@ public class VerifyPhoneNumberActivity extends AppCompatActivity
             public void onComplete(@NonNull Task<Void> task) {
                 progressBar.setVisibility(View.GONE);
 
-                if ( ! task.isSuccessful()) {
+                if (!task.isSuccessful()) {
                     signupFailed(credential);
                     return;
                 }
@@ -251,9 +258,7 @@ public class VerifyPhoneNumberActivity extends AppCompatActivity
     }
 
     private void uploadImage() {
-        if (filePath == null) {
-            return;
-        }
+        if (filePath == null) return;
 
 //        final ProgressDialog progressDialog = new ProgressDialog(this);
 //        progressDialog.setTitle("Uploading...");
@@ -273,13 +278,13 @@ public class VerifyPhoneNumberActivity extends AppCompatActivity
                     @Override
                     public void onFailure(@NonNull Exception e) {
 //                        progressDialog.dismiss();
-                        Toast.makeText(VerifyPhoneNumberActivity.this, "Failed "+e.getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(VerifyPhoneNumberActivity.this, "Failed " + e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 })
                 .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-                        double progress = (100.0*taskSnapshot.getBytesTransferred()/taskSnapshot
+                        double progress = (100.0 * taskSnapshot.getBytesTransferred() / taskSnapshot
                                 .getTotalByteCount());
 //                        progressDialog.setMessage("Uploaded "+(int)progress+"%");
                     }
@@ -288,7 +293,7 @@ public class VerifyPhoneNumberActivity extends AppCompatActivity
 
     @Override
     public void onClick(View view) {
-        switch(view.getId()) {
+        switch (view.getId()) {
             case R.id.btn_verify_mobile:
                 String code = txtVerificationCode.getText().toString();
                 if (TextUtils.isEmpty(code)) {
@@ -312,7 +317,7 @@ public class VerifyPhoneNumberActivity extends AppCompatActivity
 
 
     private void updateUI(int uiState, PhoneAuthCredential cred, Task task) {
-        switch(uiState) {
+        switch (uiState) {
             case STATE_VERIFY_SUCCESS:
                 disableViews(
                         btnResendVerificationCode,
@@ -381,5 +386,10 @@ public class VerifyPhoneNumberActivity extends AppCompatActivity
         for (View v : views) {
             v.setEnabled(false);
         }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
     }
 }
