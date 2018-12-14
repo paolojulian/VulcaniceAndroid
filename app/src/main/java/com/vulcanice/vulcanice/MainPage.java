@@ -17,7 +17,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -38,6 +37,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.vulcanice.vulcanice.Model.Session;
 import com.vulcanice.vulcanice.Model.VCN_User;
 
 /**
@@ -47,6 +47,8 @@ import com.vulcanice.vulcanice.Model.VCN_User;
 public class MainPage extends AppCompatActivity {
 
     private String TAG = "TAG_MainPage";
+
+    private Session session;
 
     private Context context = MainPage.this;
     private FirebaseAuth mAuth;
@@ -85,12 +87,12 @@ public class MainPage extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_page);
-
-        initialProcess();
-
+        init();
+        getUser();
     }
 
-    private void initialProcess() {
+    private void init() {
+        session = new Session(context);
         // Layouts
         BtnFindGas = findViewById(R.id.btn_find_gas);
         BtnFindVul = findViewById(R.id.btn_find_vul);
@@ -113,16 +115,8 @@ public class MainPage extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
 
-        Log.d(TAG, "CurrentUser: " + currentUser);
+        Log.d(TAG, "CurrentUser: " + currentUser.getUid());
 //        setupNotification();
-
-        getUserType();
-        setupToolbar();
-        setupDrawer();
-        setupMenu();
-        setCallbacks();
-        setupUserImage();
-        setupText();
     }
 
     private void setupUserImage() {
@@ -251,15 +245,24 @@ public class MainPage extends AppCompatActivity {
         });
     }
 
-    protected void getUserType() {
+    protected void getUser() {
         DatabaseReference ref = mDatabase.getReference("Users")
                 .child(currentUser.getUid());
-        ref.addValueEventListener(new ValueEventListener() {
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 user = dataSnapshot.getValue(VCN_User.class);
+                // set session
+                session.setUser(currentUser.getUid(), user);
+                Log.d(TAG, "User: " + user);
                 pageLoader.setVisibility(View.GONE);
-                if (user == null || user.getUser_type().equals("Client")) {
+                // This usually means there is no data saved for user
+                if (user == null) {
+                    gotoSignIn();
+                    return;
+                }
+
+                if (user.getUser_type().equals("Client")) {
                     setupClient();
                 } else {
                     setupOwner();
@@ -269,6 +272,7 @@ public class MainPage extends AppCompatActivity {
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 Toast.makeText(MainPage.this, R.string.db_error, Toast.LENGTH_SHORT).show();
+                gotoSignIn();
             }
         });
     }
@@ -276,11 +280,18 @@ public class MainPage extends AppCompatActivity {
     private void setupClient() {
         userType = "Client";
         mLayout.setVisibility(View.VISIBLE);
+        setupToolbar();
+        setupDrawer();
+        setupMenu();
+        setCallbacks();
+        setupUserImage();
+        setupText();
     }
 
     private void setupOwner() {
         userType = "Shop Owner";
         Intent i = new Intent(MainPage.this, OwnerMainPage.class);
+        i.putExtra("userType", userType);
         startActivity(i);
         finish();
     }
@@ -423,7 +434,6 @@ public class MainPage extends AppCompatActivity {
                         return true;
 
                     case R.id.logout:
-                        mAuth.signOut();
                         gotoSignIn();
                         return true;
 
@@ -446,6 +456,9 @@ public class MainPage extends AppCompatActivity {
         return true;
     }
     protected void gotoSignIn() {
+        if (mAuth != null) {
+            mAuth.signOut();
+        }
         startActivity(new Intent(MainPage.this, MainActivity.class));
     }
 
