@@ -7,19 +7,19 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.android.gms.maps.model.Dash;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -30,9 +30,12 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.vulcanice.vulcanice.Model.Session;
 import com.vulcanice.vulcanice.Model.VCN_User;
 
 public class DashBoard extends AppCompatActivity {
+    private final String TAG = "TAG_DashBoard";
+    private Session session;
     private Context context = DashBoard.this;
 
     private ViewPager mViewPager;
@@ -46,7 +49,7 @@ public class DashBoard extends AppCompatActivity {
     private FirebaseUser currentUser;
     private DatabaseReference mRef;
     //NAVIGATION
-    private DrawerLayout mDrawerLayout;
+    private DrawerLayout mDrawer;
     private ActionBarDrawerToggle mToggleDrawer;
     private NavigationView mNavigationView;
     private ImageView navImg;
@@ -58,9 +61,12 @@ public class DashBoard extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dash_board);
+
+        Log.d(TAG, "Init");
+
+        session = new Session(context);
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
-
 
         //INPUTS
         setupToolBar();
@@ -81,26 +87,32 @@ public class DashBoard extends AppCompatActivity {
         navMobile = headerLayout.findViewById(R.id.navigation_mobile);
         navName = headerLayout.findViewById(R.id.navigation_name);
         navImg = headerLayout.findViewById(R.id.navigation_img_user);
-
-        DatabaseReference ref = mDatabase.getInstance().getReference("Users")
-                .child(currentUser.getUid());
-        ref.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                userModel = dataSnapshot.getValue(VCN_User.class);
-                if (userModel == null) {
-                    return;
+        if (session.exists()) {
+            navEmail.setText(session.getEmail());
+            navMobile.setText(session.getMobile());
+            navName.setText(session.getName());
+        } else {
+            DatabaseReference ref = mDatabase.getInstance().getReference("Users")
+                    .child(currentUser.getUid());
+            ref.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    userModel = dataSnapshot.getValue(VCN_User.class);
+                    if (userModel == null) {
+                        return;
+                    }
+                    navEmail.setText(userModel.getEmail());
+                    navMobile.setText(userModel.getMobile());
+                    navName.setText(userModel.getName());
                 }
-                navEmail.setText(userModel.getEmail());
-                navMobile.setText(userModel.getMobile());
-                navName.setText(userModel.getName());
-            }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
 
-            }
-        });
+                }
+            });
+        }
+
     }
 
     public void setActionBarTitle(String title) {
@@ -153,9 +165,9 @@ public class DashBoard extends AppCompatActivity {
     }
 
     private void setupDrawer() {
-        mDrawerLayout = findViewById(R.id.dash_board_drawer);
-        mToggleDrawer = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.vcn_open, R.string.vcn_close );
-        mDrawerLayout.addDrawerListener(mToggleDrawer);
+        mDrawer = findViewById(R.id.dash_board_drawer);
+        mToggleDrawer = new ActionBarDrawerToggle(this, mDrawer, R.string.vcn_open, R.string.vcn_close );
+        mDrawer.addDrawerListener(mToggleDrawer);
         mToggleDrawer.syncState();
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -188,7 +200,7 @@ public class DashBoard extends AppCompatActivity {
                         startActivity(new Intent(DashBoard.this, EditAccountActivity.class));
                         return true;
                     case R.id.main_page:
-                        startActivity(new Intent(DashBoard.this, MainPage.class));
+                        startActivity(new Intent(DashBoard.this, OwnerMainPage.class));
                         return true;
                     case R.id.logout:
                         mAuth.signOut();
@@ -202,5 +214,14 @@ public class DashBoard extends AppCompatActivity {
     }
     protected void gotoSignIn() {
         startActivity(new Intent(DashBoard.this, MainActivity.class));
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(mDrawer.isDrawerOpen(GravityCompat.START)) {
+            mDrawer.closeDrawers();
+        } else {
+            startActivity(new Intent(DashBoard.this, OwnerMainPage.class));
+        }
     }
 }

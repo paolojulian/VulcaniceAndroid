@@ -411,21 +411,6 @@ public class MainPage extends AppCompatActivity {
                         startActivity(new Intent(MainPage.this, EditAccountActivity.class));
                         return true;
 
-                    case R.id.manage_shop:
-                        if ( ! isConnected()) {
-                            return true;
-                        }
-                        if (userType.equals("Client")) {
-                            Toast.makeText(
-                                    MainPage.this,
-                                    "Must be a Shop Owner to manage shop",
-                                    Toast.LENGTH_SHORT
-                            ).show();
-                            return true;
-                        }
-                        startActivity(new Intent(MainPage.this, DashBoard.class));
-                        return true;
-
                     case R.id.view_map:
                         if ( ! isConnected()) {
                             return true;

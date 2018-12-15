@@ -76,7 +76,7 @@
     <android.support.design.widget.NavigationView
         android:background="@color/colorLight"
         android:layout_gravity="start"
-        app:menu="@menu/navigation_menu"
+        app:menu="@menu/owner_side_bar"
         app:headerLayout="@layout/navigation_header"
         android:id="@+id/dash_board_navigation"
         android:layout_width="wrap_content"

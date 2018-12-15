@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
     android:background="@color/colorAccent"
     android:padding="20dp"
-    android:layout_height="140dp">
+    android:layout_height="wrap_content">
 
     <LinearLayout
         android:orientation="horizontal"
@@ -25,21 +25,24 @@
                 android:textColor="@color/colorLight"
                 android:id="@+id/navigation_name"
                 android:text="Full Name"
-                android:textSize="30dp"
+                android:textSize="24dp"
+                android:maxLines="1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
             <TextView
                 android:textColor="@color/colorLight"
                 android:id="@+id/navigation_email"
                 android:text="Email"
-                android:textSize="18dp"
+                android:textSize="12dp"
+                android:maxLines="1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
             <TextView
                 android:text="Mobile"
                 android:id="@+id/navigation_mobile"
-                android:textSize="18dp"
+                android:textSize="12dp"
                 android:textColor="@color/colorLight"
+                android:maxLines="1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
         </LinearLayout>

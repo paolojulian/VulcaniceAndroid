@@ -33,12 +33,32 @@ public class Session {
         prefs.edit().putString("IMAGE", image).commit();
     }
 
-    public String getUser(String index) {
-        String hold = prefs.getString(index, "");
-        if (hold == null) {
-            Log.w(TAG, "No com.vulcanice.vulcanice.Model.Session with index of " + index);
-            return "";
-        }
-        return hold;
+    public String getUid() {
+        return prefs.getString("UID", "");
+    }
+
+    public String getEmail() {
+        return prefs.getString("EMAIL", "");
+    }
+
+    public String getName() {
+        return prefs.getString("NAME", "");
+    }
+
+    public String getMobile() {
+        return prefs.getString("MOBILE", "");
+    }
+
+    public String getUser_type() {
+        return prefs.getString("USERTYPE", "");
+    }
+
+    /**
+     * Checks if session exists
+     * @return
+     */
+    public boolean exists() {
+        String uid = prefs.getString("UID", null);
+        return uid != null;
     }
 }

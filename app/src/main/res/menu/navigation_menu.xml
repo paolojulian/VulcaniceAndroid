@@ -10,10 +10,6 @@
         android:icon="@mipmap/baseline_person_black_24"
         android:title="@string/vcn_account_info"/>
 
-    <item android:id="@+id/manage_shop"
-        android:icon="@mipmap/baseline_settings_black_24"
-        android:title="@string/vcn_manage_shop"/>
-
     <item android:id="@+id/view_map"
         android:icon="@mipmap/baseline_place_black_24"
         android:title="View Map"/>

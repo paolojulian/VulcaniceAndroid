@@ -3,9 +3,11 @@ package com.vulcanice.vulcanice;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
@@ -24,12 +26,20 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.vulcanice.vulcanice.Model.Request;
 import com.vulcanice.vulcanice.Model.Session;
+import com.vulcanice.vulcanice.Model.VCN_User;
 
 import java.security.acl.Owner;
 
@@ -103,17 +113,63 @@ public class OwnerMainPage extends AppCompatActivity {
 
         // Extras
         Bundle extras = getIntent().getExtras();
-        mUserType = session.getUser("USERTYPE");
-        Log.d(TAG, "Usertype: " + mUser.getUid());
+        mUserType = session.getUser_type();
+        Log.d(TAG, "Usertype: " + mUserType);
 
         // Toolbar
         setSupportActionBar(mToolbar);
         // Drawer
+        mDrawer.closeDrawers();
         mToggleDrawer = new ActionBarDrawerToggle(this, mDrawer, R.string.vcn_open, R.string.vcn_close);
         mDrawer.addDrawerListener(mToggleDrawer);
         mToggleDrawer.syncState();
+        setupDrawer();
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    }
+
+    private void setupDrawer() {
+        if (session.exists()) {
+            navEmail.setText(session.getEmail());
+            navMobile.setText(session.getMobile());
+            navName.setText(session.getName());
+        } else {
+            DatabaseReference ref = mDatabase.getInstance().getReference("Users")
+                    .child(session.getUid());
+            ref.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    VCN_User user = dataSnapshot.getValue(VCN_User.class);
+                    if (user == null) {
+                        return;
+                    }
+                    navEmail.setText(user.getEmail());
+                    navMobile.setText(user.getMobile());
+                    navName.setText(user.getName());
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    Log.w(TAG, databaseError + "");
+                }
+            });
+        }
+
+        // SETUP IMAGE
+        StorageReference storageReference = FirebaseStorage.getInstance()
+                .getReference("images")
+                .child(session.getUid());
+
+        storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                GlideApp
+                        .with(context)
+                        .load(uri.toString())
+                        .placeholder(R.drawable.default_prof_pic)
+                        .into(navImg);
+            }
+        });
     }
 
     private void sideBarCallBacks() {
@@ -219,15 +275,18 @@ public class OwnerMainPage extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        new AlertDialog.Builder(this)
-                .setTitle("Really Exit?")
-                .setMessage("Are you sure you want to exit?")
-                .setNegativeButton(android.R.string.no, null)
-                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface arg0, int arg1) {
-                        System.exit(1);
-                        finish();
-                    }
-                }).create().show();
+        if(mDrawer.isDrawerOpen(GravityCompat.START)) {
+            mDrawer.closeDrawers();
+        } else {
+            new AlertDialog.Builder(this)
+                    .setTitle("Notice")
+                    .setMessage("Are you sure you want to log out?")
+                    .setNegativeButton(android.R.string.no, null)
+                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface arg0, int arg1) {
+                            gotoSignIn();
+                        }
+                    }).create().show();
+        }
     }
 }

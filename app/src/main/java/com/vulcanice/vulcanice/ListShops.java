@@ -45,6 +45,8 @@ public class ListShops extends AppCompatActivity
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener
 {
+
+    private final String TAG = "TAG_ListShops";
     DatabaseReference locations, onlineShopsRef, currentUserRef, counterRef;
 
     protected int online = 1;
@@ -68,6 +70,8 @@ public class ListShops extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_shops);
+
+        Log.d(TAG, "Init");
 
         listShop = (RecyclerView) findViewById(R.id.listShop);
         listShop.setHasFixedSize(true);
