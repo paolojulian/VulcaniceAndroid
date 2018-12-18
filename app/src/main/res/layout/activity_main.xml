@@ -22,23 +22,25 @@
             android:layout_height="wrap_content" />
         <Button
             android:id="@+id/btnSignIn"
-            android:layout_width="match_parent"
+            android:width="300dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/vcn_signin"
             android:layout_marginTop="5dp"
-            android:layout_gravity="top"
-            android:background="@color/colorPrimaryDark"
+            android:layout_gravity="center"
+            android:background="@drawable/solid_button_primary"
             android:textColor="@color/colorLight"/>
 
         <Button
             android:id="@+id/btnSignUp"
-            android:layout_width="match_parent"
+            android:width="300dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/vcn_signup"
             android:layout_marginTop="5dp"
-            android:layout_gravity="top"
-            android:background="@color/colorAccent"
-            android:textColor="@color/colorLight"/>
+            android:layout_gravity="center"
+            android:background="@drawable/rounded_button_accent"
+            android:textColor="@color/colorAccent"/>
 
     </LinearLayout>
 </android.support.constraint.ConstraintLayout>
