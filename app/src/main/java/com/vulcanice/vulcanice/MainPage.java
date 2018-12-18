@@ -300,6 +300,7 @@ public class MainPage extends AppCompatActivity {
     protected void onStart() {
         if (currentUser == null) {
             gotoSignIn();
+            finish();
         }
         super.onStart();
     }
@@ -406,6 +407,7 @@ public class MainPage extends AppCompatActivity {
 
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                mDrawerLayout.closeDrawers();
                 switch (item.getItemId()) {
                     case R.id.manage_account:
                         startActivity(new Intent(MainPage.this, EditAccountActivity.class));
@@ -445,6 +447,7 @@ public class MainPage extends AppCompatActivity {
             mAuth.signOut();
         }
         startActivity(new Intent(MainPage.this, MainActivity.class));
+        finish();
     }
 
     @Override

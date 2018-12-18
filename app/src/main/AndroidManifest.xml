@@ -45,7 +45,7 @@
         <activity
             android:name=".ViewMapActivity"
             android:theme="@style/AppTheme"
-            android:label="View Map" />
+            android:label="Map" />
 
         <activity
             android:name=".testNotification"

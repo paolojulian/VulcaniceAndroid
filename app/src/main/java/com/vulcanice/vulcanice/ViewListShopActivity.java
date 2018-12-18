@@ -34,18 +34,24 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.vulcanice.vulcanice.Model.Shop;
 import com.vulcanice.vulcanice.Model.ShopList;
+import com.vulcanice.vulcanice.Model.VCN_User;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class ViewListShopActivity extends AppCompatActivity {
+    private final String TAG = "TAG_ViewListShop";
+    // DATABASE
     private FirebaseDatabase mDatabase;
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
     private GeoQuery geoQuery;
     private DatabaseReference shopReference;
+    protected DatabaseReference usersRef, ownerRef;
+    protected VCN_User userModel;
     //STRINGS
     private Float currentShopDistance;
     //MODEL
@@ -58,6 +64,7 @@ public class ViewListShopActivity extends AppCompatActivity {
     private Double shopLat, shopLng;
     private Map<String, GeoLocation> shopArray;
     private List<String> shopKeys;
+    private ArrayList<Shop> shops;
     //LAYOUT
     private RecyclerView recyclerView;
     ListShopAdapter mAdapter;
@@ -76,8 +83,10 @@ public class ViewListShopActivity extends AppCompatActivity {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_list_shop);
+        Log.d(TAG, "Init");
 
         initData();
+        setupReferences();
         //GET SELF LOCATION
         setLocationRequest();
         setLocation();
@@ -85,9 +94,14 @@ public class ViewListShopActivity extends AppCompatActivity {
 
     }
 
+    private void setupReferences() {
+        mDatabase = FirebaseDatabase.getInstance();
+        usersRef = mDatabase.getReference().child("Users");
+    }
+
     private void initData() {
         shopArray = new HashMap<String, GeoLocation>();
-//        shopListArray = new ArrayList<>();
+        shops = new ArrayList<>();
         shopKeys = new ArrayList<>();
         Intent i = getIntent();
         //extra
@@ -106,81 +120,39 @@ public class ViewListShopActivity extends AppCompatActivity {
         DatabaseReference shopLocationRef = FirebaseDatabase
                 .getInstance()
                 .getReference()
-                .child("Locations")
+                .child("Shops")
                 .child(shopType);
 
-        GeoFire geoFire = new GeoFire(shopLocationRef);
-        geoQuery = geoFire.queryAtLocation(
-                new GeoLocation(mLastLocation.getLatitude(), mLastLocation.getLongitude()),
-                radius
-        );
-        geoQuery.removeAllListeners();
-
-        counter = 0;
-        geoQuery.addGeoQueryEventListener(new GeoQueryEventListener() {
+        shopLocationRef.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onKeyEntered(String key, GeoLocation location) {
-                if (counter >= 9) {
-                    return;
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot shopList: dataSnapshot.getChildren()) {
+                    Shop shop = shopList.getValue(Shop.class);
+
+                    Location shopLocation = new Location("shopLocation");
+                    shopLocation.setLatitude(Double.parseDouble(shop.getLatitude()));
+                    shopLocation.setLongitude(Double.parseDouble(shop.getLongitude()));
+                    // km
+                    float distanceToShop = shopLocation.distanceTo(mLastLocation) / 1000;
+
+                    if (shop != null && distanceToShop < 10) {
+                        shops.add(shop);
+                    }
                 }
-                shopId = key;
-                Log.d("key", key + " " + location);
-//                shopListArray
-//                shopListArray[counter] = new ShopList(key, location);
-                shopKeys.add(key);
-//                shopArray.put(key, location);
-                counter ++;
 
-                if (!foundGas) foundGas = true;
-            }
-
-
-            @Override
-            public void onKeyExited(String key) {
-                Toast.makeText(
-                        ViewListShopActivity.this,
-                        "Shop has been removed",
-                        Toast.LENGTH_SHORT
-                ).show();
-                startActivity(new Intent(ViewListShopActivity.this, MainPage.class));
-            }
-
-            @Override
-            public void onKeyMoved(String key, GeoLocation location) {
-                Toast.makeText(
-                        ViewListShopActivity.this,
-                        "Shop has been moved",
-                        Toast.LENGTH_SHORT
-                ).show();
-                startActivity(new Intent(ViewListShopActivity.this, MainPage.class));
-            }
-
-            @Override
-            public void onGeoQueryReady() {
-                if (radius == 10) {
-                    Toast.makeText(ViewListShopActivity.this, "No Shop/s Found\n within 10km", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                if (!foundGas) {
-                    radius++;
-                    getShops();
-                    return;
-                }
-//                Log.d("key_array", shopListArray.size() + "");
-                mAdapter = new ListShopAdapter(ViewListShopActivity.this, shopKeys, mLastLocation, shopType);
+                mAdapter = new ListShopAdapter(ViewListShopActivity.this, shops, mLastLocation);
                 recyclerView.setAdapter(mAdapter);
-                Log.d("location",  shopArray + "");
             }
 
             @Override
-            public void onGeoQueryError(DatabaseError error) {
-                Toast.makeText(
-                        ViewListShopActivity.this,
-                        "@string/db_error",
-                        Toast.LENGTH_SHORT
-                ).show();
+            public void onCancelled(DatabaseError databaseError) {
+
             }
         });
+
+    }
+
+    private void setOwnerName(String ownerId) {
     }
 
     protected void displayShopDetails(String shopId) {
@@ -284,7 +256,6 @@ public class ViewListShopActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        geoQuery.removeAllListeners();
         stopLocationUpdates();
     }
 

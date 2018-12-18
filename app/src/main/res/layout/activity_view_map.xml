@@ -75,17 +75,30 @@
             android:id="@+id/view_map_shop"
             android:visibility="gone"
             android:padding="10dp"
+            android:paddingHorizontal="5dp"
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-            <TextView
-                android:id="@+id/view_map_shop_name"
-                android:text="Shop name"
-                android:textStyle="bold"
-                android:textAllCaps="true"
+            <LinearLayout
+                android:orientation="horizontal"
                 android:layout_weight="2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <TextView
+                    android:id="@+id/view_map_shop_name"
+                    android:text="Shop name"
+                    android:textStyle="bold"
+                    android:textAllCaps="true"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent" />
+                <TextView
+                    android:id="@+id/view_map_distance"
+                    android:text="Distance:"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent" />
+            </LinearLayout>
             <TextView
                 android:id="@+id/view_map_shop_owner"
                 android:text="Owner"

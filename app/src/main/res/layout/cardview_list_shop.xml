@@ -2,14 +2,14 @@
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal" android:layout_width="match_parent"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
-    android:layout_margin="10dp"
-    card_view:cardCornerRadius="5dp"
+    android:layout_marginBottom="5dp"
     card_view:cardElevation="5dp"
     android:layout_height="150dp">
     <LinearLayout
+        android:padding="10dp"
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
         <LinearLayout
             android:layout_weight="1"
             android:orientation="vertical"
@@ -47,6 +47,7 @@
                 android:layout_alignParentLeft="true"
                 />
             <LinearLayout
+                android:visibility="gone"
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
@@ -83,19 +84,18 @@
             <Button
                 android:id="@+id/btn_track_shop"
                 android:text="TRACK"
-                android:textColor="@color/colorLight"
+                android:textColor="@color/colorAccent"
                 android:layout_marginBottom="5dp"
-                android:background="@color/colorAccent"
+                android:background="@drawable/rounded_button_accent"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="40dp" />
             <Button
                 android:id="@+id/btn_request_shop"
                 android:text="Request"
-                android:textColor="@color/colorLight"
-                android:visibility="gone"
-                android:background="@color/colorPrimaryDark"
+                android:textColor="@color/colorPrimary"
+                android:background="@drawable/rounded_button_primary"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="40dp" />
         </LinearLayout>
 
     </LinearLayout>
