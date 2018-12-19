@@ -1,1 +1,2 @@
-# VulcaNice_android
+# Vulcanice
+# School Project
