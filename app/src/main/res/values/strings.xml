@@ -1,4 +1,5 @@
 <resources>
+    <string name="google_server_key">AIzaSyCJMjzg5a3znBQiehayFRY6HGYfqScrvuY</string>
     <string name="app_name">VulcaNice</string>
     <string name="home">Home Page</string>
     <string name="title">Vulcanice</string>

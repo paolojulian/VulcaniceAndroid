@@ -1,5 +1,6 @@
 package com.vulcanice.vulcanice;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -51,6 +52,8 @@ import java.util.List;
 public class TrackShopActivity extends AppCompatActivity
         implements RoutingListener, com.google.android.gms.location.LocationListener,
             GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, OnMapReadyCallback {
+    private final String TAG = "TAG_TrackShop";
+    private Context context;
     //DATABASE
     private LatLng shopLocation;
     //MAP
@@ -68,6 +71,7 @@ public class TrackShopActivity extends AppCompatActivity
     protected LocationRequest mLocationRequest;
     //MARKER
     private MarkerOptions userMarker, shopMarker;
+    private Marker marker;
     //ROUTE DISPLAY
     private List<Polyline> polylines;
     private static final int[] COLORS = new int[]{R.color.colorPrimaryDark,R.color.colorAccent,R.color.colorPrimaryDark,R.color.colorAccent,R.color.primary_dark_material_light};
@@ -80,6 +84,7 @@ public class TrackShopActivity extends AppCompatActivity
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_track_shop);
+        Log.d(TAG, "Init");
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[] {
                     android.Manifest.permission.ACCESS_COARSE_LOCATION,
@@ -87,6 +92,8 @@ public class TrackShopActivity extends AppCompatActivity
                     android.Manifest.permission.INTERNET
             },PERMISSION_REQUEST_CODE);
         }
+
+        context = TrackShopActivity.this;
 
         setDatas();
         setupMap();
@@ -166,6 +173,7 @@ public class TrackShopActivity extends AppCompatActivity
                 }
                 LatLng userLocation = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
                 drawRoute(userLocation);
+                updateMarker(userLocation);
             }
         };
         startLocationUpdates();
@@ -178,14 +186,19 @@ public class TrackShopActivity extends AppCompatActivity
     }
 
     private void drawMarker(LatLng userLocation) {
-        mMap.addMarker(userMarker.position(userLocation).title("Current Location"));
+        marker = mMap.addMarker(userMarker.position(userLocation).title("Current Location"));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 15));
+    }
+
+    private void updateMarker(LatLng userLocation) {
+        marker.setPosition(userLocation);
     }
 
     private void drawRoute(LatLng userLocation) {
         Routing routing = new Routing.Builder()
                 .travelMode(AbstractRouting.TravelMode.DRIVING)
                 .withListener(this)
+                .key(context.getString(R.string.google_server_key))
                 .alternativeRoutes(true)
                 .waypoints(userLocation, shopLocation)
                 .build();
@@ -298,13 +311,6 @@ public class TrackShopActivity extends AppCompatActivity
                     android.Manifest.permission.ACCESS_FINE_LOCATION,
                     android.Manifest.permission.INTERNET
             },PERMISSION_REQUEST_CODE);
-        }
-        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                mGoogleApiClient);
-        if (mLastLocation != null) {
-            LatLng userLocation = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-            drawMarker(userLocation);
-            drawMarker(userLocation);
         }
     }
 

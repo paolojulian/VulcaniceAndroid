@@ -1,5 +1,6 @@
 package com.vulcanice.vulcanice;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -55,6 +56,8 @@ import java.util.List;
  */
 
 public class TrackRequestActivity extends AppCompatActivity implements RoutingListener, com.google.android.gms.location.LocationListener, GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, OnMapReadyCallback {
+    private final String TAG = "TAG_TrackShop";
+    private Context context;
     //MODEL
     private DatabaseReference mDatabaseRef, myLocationRef, clientRef;
     private FirebaseUser currentUser;
@@ -99,7 +102,8 @@ public class TrackRequestActivity extends AppCompatActivity implements RoutingLi
                     android.Manifest.permission.INTERNET
             },PERMISSION_REQUEST_CODE);
         }
-
+        Log.d(TAG, "Init");
+        context = TrackRequestActivity.this;
         polylines = new ArrayList<>();
         getIntentData();
         setupDatabase();
@@ -304,6 +308,7 @@ public class TrackRequestActivity extends AppCompatActivity implements RoutingLi
                 .travelMode(AbstractRouting.TravelMode.DRIVING)
                 .withListener(this)
                 .alternativeRoutes(true)
+                .key(context.getString(R.string.google_server_key))
                 .waypoints(myLatLng, theirLatLng)
                 .build();
         routing.execute();
