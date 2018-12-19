@@ -2,6 +2,7 @@
     <string name="app_name">VulcaNice</string>
     <string name="home">Home Page</string>
     <string name="title">Vulcanice</string>
+    <string name="app_title">VULCANICE</string>
     <string name="db_error">Unable to process your request\nPlease try again later</string>
 
     <string name="vcn_logout">Logout</string>

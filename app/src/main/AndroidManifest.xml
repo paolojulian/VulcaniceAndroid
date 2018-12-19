@@ -50,17 +50,17 @@
         <activity
             android:name=".testNotification"
             android:theme="@style/AppTheme"
-            android:label="Vulca-Nice" />
+            android:label="@string/app_title" />
 
         <activity
             android:name=".MainPage"
             android:theme="@style/AppTheme.NoActionBar"
-            android:label="Vulca-Nice" />
+            android:label="@string/app_title" />
 
         <activity
             android:name=".OwnerMainPage"
             android:theme="@style/AppTheme.NoActionBar"
-            android:label="Vulca-Nice" />
+            android:label="@string/app_title" />
 
         <activity
             android:name=".TrackRequestActivity"
@@ -74,7 +74,7 @@
 
         <activity
             android:name=".ViewNearestShopActivity"
-            android:theme="@style/AppTheme"/>
+            android:theme="@style/AppTheme.NoActionBar"/>
 
         <activity
             android:name=".RequestShopActivity"

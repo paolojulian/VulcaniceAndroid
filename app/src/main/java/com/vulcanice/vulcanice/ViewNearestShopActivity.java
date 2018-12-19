@@ -11,6 +11,7 @@ import android.support.v7.widget.AppCompatTextView;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -31,9 +32,13 @@ import com.google.firebase.database.ValueEventListener;
 import com.vulcanice.vulcanice.Model.Shop;
 
 public class ViewNearestShopActivity extends AppCompatActivity {
+    private final String TAG = "TAG_ViewNearestShop";
     private FirebaseDatabase mDatabase;
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
+    // IMAGES
+    private ImageView imgGas;
+    private ImageView imgVul;
     //STRINGS
     private String shopId, shopType;
     private Float currentShopDistance;
@@ -70,17 +75,14 @@ public class ViewNearestShopActivity extends AppCompatActivity {
     }
 
     protected void initData() {
-        setupDbNames();
+        dbGas = this.getString(R.string.db_gas);
+        dbVul = this.getString(R.string.db_vul);
+        dbBoth = "both";
+
         setupExtras();
         setupView();
         setupFirebase();
         setActivityTitle();
-    }
-
-    private void setupDbNames() {
-        dbGas = this.getString(R.string.db_gas);
-        dbVul = this.getString(R.string.db_vul);
-        dbBoth = "both";
     }
 
     private void setupExtras() {
@@ -98,12 +100,23 @@ public class ViewNearestShopActivity extends AppCompatActivity {
         shopDistance    = findViewById(R.id.shop_distance);
         btnTrackShop    = findViewById(R.id.btn_track_shop);
         btnRequestShop  = findViewById(R.id.btn_request_shop);
+        imgGas = findViewById(R.id.img_gas);
+        imgVul = findViewById(R.id.img_vul);
 
+        Log.d(TAG, "ShopType: " + shopType);
         if (shopType.equals(dbGas)) {
             btnRequestShop.setVisibility(View.GONE);
-            return;
+            imgGas.setVisibility(View.VISIBLE);
+            imgVul.setVisibility(View.GONE);
+        } else if (shopType.equals(dbVul)) {
+            btnRequestShop.setVisibility(View.VISIBLE);
+            imgGas.setVisibility(View.GONE);
+            imgVul.setVisibility(View.VISIBLE);
+        } else {
+            btnRequestShop.setVisibility(View.VISIBLE);
+            imgGas.setVisibility(View.VISIBLE);
+            imgVul.setVisibility(View.VISIBLE);
         }
-        btnRequestShop.setVisibility(View.VISIBLE);
     }
 
     private void setupFirebase() {

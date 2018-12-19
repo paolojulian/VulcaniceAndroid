@@ -1,115 +1,108 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
     android:background="@color/colorLight"
-    android:padding="10dp"
+    android:orientation="vertical"
     android:layout_height="match_parent">
 
-    <LinearLayout
-        android:orientation="vertical"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <!--NAME-->
         <LinearLayout
-            android:paddingLeft="5dp"
-            android:layout_gravity="top"
+            android:background="@drawable/gradient_primary"
             android:orientation="horizontal"
+            android:padding="20dp"
+            android:gravity="center"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <android.support.v7.widget.AppCompatTextView
-                android:text="Name: "
-                android:layout_weight="2"
-                android:textAllCaps="true"
-                android:textSize="20dp"
-                android:textColor="@color/colorPrimaryDark"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-            <android.support.v7.widget.AppCompatTextView
-                android:id="@+id/shop_name"
-                android:layout_weight="1"
-                android:textSize="20dp"
-                android:textColor="@color/colorPrimaryDark"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+            android:layout_height="325dp">
+            <ImageView
+                android:id="@+id/img_vul"
+                android:background="@drawable/ic_local_car_wash_black_150dp"
+                android:layout_width="150dp"
+                android:layout_height="150dp" />
+            <ImageView
+                android:id="@+id/img_gas"
+                android:background="@drawable/ic_local_gas_station_black_150dp"
+                android:layout_width="150dp"
+                android:layout_height="150dp" />
         </LinearLayout>
-        <!--ADDRESS-->
+        <android.support.v7.widget.CardView
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="250dp"
+            android:layout_width="300dp"
+            android:layout_height="110dp">
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <!--NAME-->
+                <android.support.v7.widget.AppCompatTextView
+                    android:id="@+id/shop_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Name"
+                    android:textAlignment="center"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textSize="35dp" />
+
+                <!--ADDRESS-->
+                <android.support.v7.widget.AppCompatTextView
+                    android:id="@+id/shop_address"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/shop_name"
+                    android:layout_alignParentStart="true"
+                    android:text="Address"
+                    android:textAlignment="center"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textSize="20dp" />
+
+                <!--DISTANCE-->
+                <android.support.v7.widget.AppCompatTextView
+                    android:id="@+id/shop_distance"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_below="@id/shop_address"
+                    android:text="Distance"
+                    android:textAlignment="center"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textSize="20dp" />
+            </RelativeLayout>
+        </android.support.v7.widget.CardView>
         <LinearLayout
-            android:paddingLeft="5dp"
-            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="325dp"
+            android:paddingTop="10dp"
+            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <android.support.v7.widget.AppCompatTextView
-                android:text="Address: "
-                android:layout_weight="2"
-                android:textAllCaps="true"
-                android:textSize="20dp"
-                android:textColor="@color/colorPrimaryDark"
-                android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <Button
+                android:text="Track Shop"
+                android:id="@+id/btn_track_shop"
+                android:textColor="@color/colorPrimary"
+                android:background="@drawable/rounded_button_primary"
+                android:layout_marginBottom="10dp"
+                android:layout_width="300dp"
                 android:layout_height="wrap_content" />
 
-            <android.support.v7.widget.AppCompatTextView
-                android:id="@+id/shop_address"
-                android:textSize="20dp"
-                android:layout_weight="1"
-                android:textColor="@color/colorPrimaryDark"
-                android:layout_width="match_parent"
+            <Button
+                android:text="Request for tracking"
+                android:id="@+id/btn_request_shop"
+                android:textColor="@color/colorAccent"
+                android:background="@drawable/rounded_button_accent"
+                android:layout_width="300dp"
+                android:visibility="gone"
                 android:layout_height="wrap_content" />
+            <ProgressBar
+                android:id="@+id/progress_bar"
+                android:layout_width="30dp"
+                android:layout_marginTop="30dp"
+                android:layout_gravity="center|bottom"
+                android:visibility="gone"
+                android:layout_height="30dp" />
         </LinearLayout>
-        <!--DISTANCE-->
-        <LinearLayout
-            android:paddingLeft="5dp"
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <android.support.v7.widget.AppCompatTextView
-                android:text="Distance: "
-                android:layout_weight="2"
-                android:textAllCaps="true"
-                android:textSize="20dp"
-                android:textColor="@color/colorPrimaryDark"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-            <android.support.v7.widget.AppCompatTextView
-                android:id="@+id/shop_distance"
-                android:layout_weight="1"
-                android:textSize="20dp"
-                android:textColor="@color/colorPrimaryDark"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
-
-        <Button
-            android:text="Track Shop"
-            android:id="@+id/btn_track_shop"
-            android:textColor="@color/colorLight"
-            android:background="@color/colorPrimaryDark"
-            android:layout_marginTop="30dp"
-            android:layout_gravity="bottom"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <Button
-            android:text="Request for tracking"
-            android:id="@+id/btn_request_shop"
-            android:textColor="@color/colorLight"
-            android:background="@color/colorAccent"
-            android:layout_marginTop="5dp"
-            android:layout_gravity="bottom"
-            android:layout_width="match_parent"
-            android:visibility="gone"
-            android:layout_height="wrap_content" />
-        <ProgressBar
-            android:id="@+id/progress_bar"
-            android:layout_width="30dp"
-            android:layout_marginTop="30dp"
-            android:layout_gravity="center|bottom"
-            android:visibility="gone"
-            android:layout_height="30dp" />
-
-    </LinearLayout>
-
-
-</android.support.constraint.ConstraintLayout>
+    </RelativeLayout>
+</LinearLayout>

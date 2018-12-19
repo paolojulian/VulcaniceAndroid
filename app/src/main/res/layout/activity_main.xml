@@ -1,46 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="@color/colorLight"
+    android:background="@drawable/gradient_signin"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.vulcanice.vulcanice.MainActivity">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="10dp"
-        android:orientation="vertical">
-        <ImageView
-            android:src="@drawable/vulcanice_logo"
-            android:layout_gravity="center"
-            android:layout_marginTop="80dp"
-            android:layout_marginBottom="50dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-        <Button
-            android:id="@+id/btnSignIn"
-            android:width="300dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/vcn_signin"
-            android:layout_marginTop="5dp"
-            android:layout_gravity="center"
-            android:background="@drawable/solid_button_primary"
-            android:textColor="@color/colorLight"/>
+    <!--<LinearLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:padding="10dp"-->
+        <!--android:orientation="vertical">-->
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/btnSignIn"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center"
+        android:layout_marginBottom="28dp"
+        android:src="@drawable/vulcanice_logo" />
 
-        <Button
-            android:id="@+id/btnSignUp"
-            android:width="300dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/vcn_signup"
-            android:layout_marginTop="5dp"
-            android:layout_gravity="center"
-            android:background="@drawable/rounded_button_accent"
-            android:textColor="@color/colorAccent"/>
+    <Button
+        android:id="@+id/btnSignIn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/btnSignUp"
+        android:layout_alignStart="@+id/btnSignUp"
+        android:layout_gravity="center"
+        android:layout_marginBottom="5dp"
+        android:width="300dp"
+        android:background="@drawable/rounded_button_light"
+        android:text="@string/vcn_signin"
+        android:textColor="@color/colorAccent" />
 
-    </LinearLayout>
-</android.support.constraint.ConstraintLayout>
+    <Button
+        android:id="@+id/btnSignUp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignStart="@+id/imageView2"
+        android:layout_gravity="center"
+        android:layout_marginBottom="57dp"
+        android:width="300dp"
+        android:background="@drawable/solid_button_accent"
+        android:text="@string/vcn_signup"
+        android:textColor="@color/colorLight" />
+
+    <!--</LinearLayout>-->
+</RelativeLayout>

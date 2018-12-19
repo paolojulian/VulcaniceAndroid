@@ -69,6 +69,7 @@ public class ViewMapActivity extends AppCompatActivity
         implements RoutingListener, com.google.android.gms.location.LocationListener,
         GoogleMap.OnMarkerClickListener,
     GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, OnMapReadyCallback {
+    private final String TAG = "TAG_ViewMap";
     // FOR GEOQUERY
     private Integer radius = 2;
     private Boolean foundGas = false, isFirst = true;
@@ -115,6 +116,9 @@ public class ViewMapActivity extends AppCompatActivity
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_map);
+
+        Log.d(TAG, "Init");
+
         setLocation();
         setLocationRequest();
         setOnLocationUpdate();
@@ -209,6 +213,7 @@ public class ViewMapActivity extends AppCompatActivity
             responseNoLocation();
             return;
         }
+
         mFusedLocationClient.getLastLocation()
                 .addOnSuccessListener(this, new OnSuccessListener<Location>() {
                     @Override
@@ -217,15 +222,7 @@ public class ViewMapActivity extends AppCompatActivity
                             responseNoLocation();
                             return;
                         }
-                        mLastLocation = location;
-                        Toast.makeText(
-                                context,
-                                "Lat: " + mLastLocation.getLatitude() +
-                                        "\nLon: " + mLastLocation.getLongitude(),
-                                Toast.LENGTH_SHORT
-                        ).show();
-
-                        userLocation = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+                        setUserLocation(location);
                         userMarker = mMap.addMarker(new MarkerOptions()
                                 .position(userLocation)
                                 .title("Your Location")
@@ -239,15 +236,9 @@ public class ViewMapActivity extends AppCompatActivity
             public void onLocationResult(LocationResult locationResult) {
                 super.onLocationResult(locationResult);
                 for (Location location : locationResult.getLocations()) {
-                    mLastLocation = location;
-                    Toast.makeText(
-                            context,
-                            "Lat: " + mLastLocation.getLatitude() +
-                                    "\nLon: " + mLastLocation.getLongitude(),
-                            Toast.LENGTH_SHORT
-                    ).show();
-                    userLocation = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-                    updateUserLocation(userLocation);
+                    setUserLocation(location);
+                    userMarker.setPosition(userLocation);
+        //        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 15));
                 }
                 if (isTracking) {
                     trackShop();
@@ -255,6 +246,17 @@ public class ViewMapActivity extends AppCompatActivity
             }
         };
         startLocationUpdates();
+    }
+
+    private void setUserLocation(Location location) {
+        mLastLocation = location;
+        Toast.makeText(
+                context,
+                "Lat: " + mLastLocation.getLatitude() +
+                        "\nLon: " + mLastLocation.getLongitude(),
+                Toast.LENGTH_SHORT
+        ).show();
+        userLocation = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
     }
 
     private void setLocation() {
@@ -300,7 +302,9 @@ public class ViewMapActivity extends AppCompatActivity
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                Log.d(TAG, databaseError + "");
+                toast(R.string.db_error + "");
+                finish();
             }
         });
 
@@ -408,11 +412,6 @@ public class ViewMapActivity extends AppCompatActivity
 
             }
         });
-    }
-
-    private void updateUserLocation(LatLng userLocation) {
-        userMarker.setPosition(userLocation);
-//        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 15));
     }
 
     private void startLocationUpdates() {
@@ -563,6 +562,14 @@ public class ViewMapActivity extends AppCompatActivity
     @Override
     public void onRoutingCancelled() {
 
+    }
+
+    private void toast(String message) {
+        Toast.makeText(
+                this,
+                message,
+                Toast.LENGTH_SHORT
+        ).show();
     }
 
     private void removeRoute() {

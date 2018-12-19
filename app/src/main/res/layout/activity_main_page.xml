@@ -22,7 +22,6 @@
 
     <LinearLayout
         android:id="@+id/main_page_layout"
-        android:visibility="gone"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -40,47 +39,58 @@
 
         </android.support.design.widget.AppBarLayout>
         <LinearLayout
-            android:paddingHorizontal="20dp"
             android:gravity="center"
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-            <TextView
-                android:textSize="25dp"
-                android:textColor="#000"
-                android:textAllCaps="true"
-                android:gravity="center"
-                android:text="Find the nearest Stations"
+            <LinearLayout
+                android:background="@color/colorPrimaryDark"
+                android:layout_width="match_parent"
+                android:layout_height="100dp">
+                <TextView
+                    android:textSize="25dp"
+                    android:textColor="@color/colorLight"
+                    android:textAllCaps="true"
+                    android:gravity="center_horizontal"
+                    android:text="Find the nearest Stations"
+                    android:background="@color/colorPrimaryDark"
+                    android:layout_marginBottom="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
+            <LinearLayout
+                android:paddingHorizontal="10dp"
+                android:orientation="horizontal"
                 android:layout_marginBottom="10dp"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-            <Button
-                android:text="Vulcanizing shop"
-                android:id="@+id/btn_find_vul"
-                android:layout_width="fill_parent"
-                android:textStyle="bold"
-                android:background="@color/colorPrimaryDark"
-                android:textColor="@color/colorLight"
-                android:layout_height="wrap_content" />
-            <Button
-                android:text="Gas station"
-                android:id="@+id/btn_find_gas"
-                android:layout_width="fill_parent"
-                android:textStyle="bold"
-                android:background="@color/colorPrimaryDark"
-                android:layout_marginTop="10dp"
-                android:textColor="@color/colorLight"
-                android:layout_height="wrap_content" />
-            <Button
-                android:text="Vulcanizing and Gas Station"
-                android:id="@+id/btn_find_both"
-                android:layout_width="fill_parent"
-                android:textStyle="bold"
-                android:layout_marginBottom="30dp"
-                android:background="@color/colorPrimaryDark"
-                android:layout_marginTop="10dp"
-                android:textColor="@color/colorLight"
-                android:layout_height="wrap_content" />
+                android:layout_height="75dp">
+                <ImageButton
+                    android:id="@+id/btn_find_vul"
+                    android:textStyle="bold"
+                    android:background="@drawable/ic_local_car_wash_primary_100dp"
+                    android:textColor="@color/colorLight"
+                    android:layout_weight="1"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+                <Button
+                    android:text="Gas station"
+                    android:id="@+id/btn_find_gas"
+                    android:textStyle="bold"
+                    android:background="@color/colorPrimaryDark"
+                    android:textColor="@color/colorLight"
+                    android:layout_weight="1"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+                <Button
+                    android:text="Vulcanizing and Gas Station"
+                    android:id="@+id/btn_find_both"
+                    android:textStyle="bold"
+                    android:background="@color/colorPrimaryDark"
+                    android:textColor="@color/colorLight"
+                    android:layout_weight="1"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+            </LinearLayout>
             <TextView
                 android:textSize="25dp"
                 android:textColor="#000"
