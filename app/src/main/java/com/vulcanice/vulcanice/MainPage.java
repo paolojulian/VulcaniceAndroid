@@ -14,6 +14,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -37,6 +38,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.twitter.sdk.android.core.models.Card;
 import com.vulcanice.vulcanice.Model.Session;
 import com.vulcanice.vulcanice.Model.VCN_User;
 
@@ -63,7 +65,7 @@ public class MainPage extends AppCompatActivity {
     private ActionBarDrawerToggle mToggleDrawer;
     private NavigationView mNavigationView;
 
-    private Button BtnFindGas, BtnFindVul, BtnFindBoth,
+    private CardView BtnFindVul, BtnFindGas, BtnFindBoth,
             BtnListVul, BtnListGas, BtnListBoth;
     private ImageButton BtnNotification;
     private TextView notifCount, navName, navEmail, navMobile;
@@ -114,6 +116,9 @@ public class MainPage extends AppCompatActivity {
         mDatabase = FirebaseDatabase.getInstance();
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
+
+        pageLoader.setVisibility(View.VISIBLE);
+        mLayout.setVisibility(View.GONE);
 
         Log.d(TAG, "CurrentUser: " + currentUser.getUid());
 //        setupNotification();
