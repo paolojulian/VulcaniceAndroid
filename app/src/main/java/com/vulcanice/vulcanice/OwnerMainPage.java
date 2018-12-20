@@ -4,7 +4,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
+import android.nfc.Tag;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -19,8 +21,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -37,11 +41,14 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.vulcanice.vulcanice.Adapters.RequestListAdapter;
+import com.vulcanice.vulcanice.Library.RequestHelper;
 import com.vulcanice.vulcanice.Model.Request;
 import com.vulcanice.vulcanice.Model.Session;
 import com.vulcanice.vulcanice.Model.VCN_User;
+import com.vulcanice.vulcanice.ViewHolders.ListRequestViewHolder;
 
-import java.security.acl.Owner;
+import java.util.ArrayList;
 
 /**
  * Created by User on 13/12/2018.
@@ -56,6 +63,10 @@ public class OwnerMainPage extends AppCompatActivity {
     private ProgressBar pageLoader;
     private RecyclerView mListRequest;
     private RecyclerView.LayoutManager mLayoutManager;
+    private ListView mRequestList;
+    private ArrayList<Request> mRequestArray = new ArrayList<>();
+    private ArrayAdapter<Request> mRequestAdapter;
+    private RequestListAdapter mRequestListAdapter;
     private TextView noRequest;
     private Toolbar mToolbar;
     private NavigationView mSideBar;
@@ -69,8 +80,14 @@ public class OwnerMainPage extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseDatabase mDatabase;
     private FirebaseUser mUser;
+    protected FirebaseRecyclerAdapter<Request, ListRequestViewHolder> firebaseAdapter;
+    private DatabaseReference requestList;
     // Others
     private String mUserType;
+    // Helpers
+    public RequestHelper fetchList;
+    // STATES
+    private static final int STATE_LIST_CHANGED = 109;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,16 +97,22 @@ public class OwnerMainPage extends AppCompatActivity {
 
         initialData();
         sideBarCallBacks();
-        displayRequestList();
     }
 
     private void initialData() {
         session = new Session(context);
+        // Firebase
+        mAuth = FirebaseAuth.getInstance();
+        mDatabase = FirebaseDatabase.getInstance();
+        mUser = mAuth.getCurrentUser();
+        if (mUser == null) {
+            gotoSignIn();
+        }
+        Log.d(TAG, "User: " + mUser.getUid());
         // Layouts
         mLayout = findViewById(R.id.layout_main_page);
-        mLayout.setVisibility(View.GONE);
         pageLoader = findViewById(R.id.page_loader);
-        mListRequest = findViewById(R.id.list_request);
+        mRequestList = findViewById(R.id.request_list);
         noRequest = findViewById(R.id.no_request);
         mToolbar = findViewById(R.id.toolbar);
         mDrawer = findViewById(R.id.drawer_layout);
@@ -101,15 +124,6 @@ public class OwnerMainPage extends AppCompatActivity {
         navMobile = sideBar.findViewById(R.id.navigation_mobile);
         navName = sideBar.findViewById(R.id.navigation_name);
         navImg = sideBar.findViewById(R.id.navigation_img_user);
-
-        // Firebase
-        mAuth = FirebaseAuth.getInstance();
-        mDatabase = FirebaseDatabase.getInstance();
-        mUser = mAuth.getCurrentUser();
-        if (mUser == null) {
-            gotoSignIn();
-        }
-        Log.d(TAG, "User: " + mUser.getUid());
 
         // Extras
         Bundle extras = getIntent().getExtras();
@@ -177,6 +191,7 @@ public class OwnerMainPage extends AppCompatActivity {
 
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                mDrawer.closeDrawers();
                 switch (item.getItemId()) {
                     case R.id.manage_account:
                         startActivity(new Intent(OwnerMainPage.this, EditAccountActivity.class));
@@ -204,31 +219,58 @@ public class OwnerMainPage extends AppCompatActivity {
         });
     }
 
-    private boolean isFirst = true;
     private void displayRequestList() {
-        Query requestList = mDatabase.getReference("Request")
+
+        requestList = mDatabase.getReference("Request");
+        fetchList = new RequestHelper(requestList);
+
+        Query q = requestList
                 .child(mUser.getUid())
                 .orderByChild("isAccepted")
                 .equalTo(0);
 
-        FirebaseRecyclerAdapter<Request, ListRequestViewHolder> firebaseAdapter;
-        firebaseAdapter = new FirebaseRecyclerAdapter<Request, ListRequestViewHolder>
-                (Request.class, R.layout.layout_request, ListRequestViewHolder.class, requestList) {
+        q.addValueEventListener(new ValueEventListener() {
             @Override
-            protected void populateViewHolder(ListRequestViewHolder viewHolder, Request model, int position) {
-                viewHolder.bindListRequest(model, position);
-                if (isFirst) {
-                    viewHolder.setUserUid(mUser.getUid());
-                    noRequest.setVisibility(View.GONE);
-                    mLayout.setVisibility(View.VISIBLE);
-                    isFirst = false;
-                }
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                updateUi(STATE_LIST_CHANGED, dataSnapshot);
             }
-        };
-        mListRequest.setHasFixedSize(true);
-        mLayoutManager = new LinearLayoutManager(this);
-        mListRequest.setLayoutManager(mLayoutManager);
-        mListRequest.setAdapter(firebaseAdapter);
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        mRequestListAdapter = new RequestListAdapter(
+                this,
+                mRequestArray,
+                mUser.getUid());
+
+        mRequestList.setAdapter(mRequestListAdapter);
+    }
+
+    private void updateUi (int state, DataSnapshot dataSnapshot) {
+        switch(state) {
+            case STATE_LIST_CHANGED:
+                mRequestArray.clear();
+                for (DataSnapshot ds: dataSnapshot.getChildren()) {
+                    Request request = ds.getValue(Request.class);
+                    mRequestArray.add(request);
+                }
+
+                if (mRequestArray.size() == 0) {
+                    noRequest.setVisibility(View.VISIBLE);
+                } else {
+                    noRequest.setVisibility(View.GONE);
+                }
+
+                if (mRequestListAdapter != null) {
+                    mRequestListAdapter.notifyDataSetChanged();
+                }
+                break;
+            default:
+                break;
+        }
     }
 
     protected boolean isConnected() {
@@ -287,6 +329,20 @@ public class OwnerMainPage extends AppCompatActivity {
                             gotoSignIn();
                         }
                     }).create().show();
+        }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        displayRequestList();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (firebaseAdapter != null) {
+            firebaseAdapter.cleanup();
         }
     }
 }

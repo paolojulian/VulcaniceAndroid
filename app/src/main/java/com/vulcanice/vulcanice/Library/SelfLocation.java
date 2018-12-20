@@ -19,8 +19,7 @@ import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 
-public class SelfLocation implements com.google.android.gms.location.LocationListener,
-    GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks {
+public class SelfLocation implements com.google.android.gms.location.LocationListener {
     private Context context;
     //USER LOCATION
     protected FusedLocationProviderClient mFusedLocationClient;
@@ -86,21 +85,6 @@ public class SelfLocation implements com.google.android.gms.location.LocationLis
             return;
         }
         this.mFusedLocationClient.removeLocationUpdates(this.locationCallback);
-    }
-
-    @Override
-    public void onConnected(@Nullable Bundle bundle) {
-
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
     }
 
     @Override

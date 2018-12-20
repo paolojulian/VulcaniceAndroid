@@ -1,10 +1,7 @@
 package com.vulcanice.vulcanice;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.provider.ContactsContract;
-import android.provider.SyncStateContract;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -17,11 +14,14 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.vulcanice.vulcanice.Model.Request;
+import com.vulcanice.vulcanice.ViewHolders.ListRequestViewHolder;
+
 /**
  * Created by User on 21/06/2018.
  */
 
 public class ViewRequestsActivity extends AppCompatActivity{
+    private final String TAG = "TAG_" + ViewRequestsActivity.class.getName();
     private FirebaseAuth mAuth;
     private FirebaseDatabase mDatabase;
     private FirebaseUser currentUser;
@@ -34,6 +34,8 @@ public class ViewRequestsActivity extends AppCompatActivity{
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_request);
+        Log.d(TAG, "Init");
+
         setupDatabase();
         listRequests();
     }
@@ -62,6 +64,7 @@ public class ViewRequestsActivity extends AppCompatActivity{
             @Override
             protected void populateViewHolder(ListRequestViewHolder viewHolder, Request model, int position) {
                 viewHolder.bindListRequest(model, position);
+                Log.d(TAG, "List: " + model);
                 if (isFirst) {
                     viewHolder.setUserUid(currentUser.getUid());
                     isFirst = false;

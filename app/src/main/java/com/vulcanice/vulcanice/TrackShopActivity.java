@@ -100,8 +100,6 @@ public class TrackShopActivity extends AppCompatActivity
         setDatas();
         setupMap();
         selfLocation = new SelfLocation(context);
-//        setLocationRequest();
-//        setLocation();
         setOnLocationUpdate();
     }
 
@@ -129,25 +127,6 @@ public class TrackShopActivity extends AppCompatActivity
         Double shopLng = i.getExtras().getDouble("shopLng");
         Double shopLat = i.getExtras().getDouble("shopLat");
         shopLocation = new LatLng(shopLat, shopLng);
-    }
-
-    private void setLocationRequest() {
-        mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(UPDATE_INTERVAL);
-        mLocationRequest.setFastestInterval(FASTEST_INTERVAL);
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-    }
-
-    private void setLocation() {
-        // Create LocationSettingsRequest object using location request
-        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
-        builder.addLocationRequest(mLocationRequest);
-        LocationSettingsRequest locationSettingsRequest = builder.build();
-
-        // Check whether location settings are satisfied
-        SettingsClient settingsClient = LocationServices.getSettingsClient(this);
-        settingsClient.checkLocationSettings(locationSettingsRequest);
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
     }
 
     private void setOnLocationUpdate() {

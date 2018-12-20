@@ -1,4 +1,4 @@
-package com.vulcanice.vulcanice;
+package com.vulcanice.vulcanice.ViewHolders;
 
 import android.content.Context;
 import android.content.Intent;
@@ -17,6 +17,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.vulcanice.vulcanice.Model.Request;
+import com.vulcanice.vulcanice.R;
+import com.vulcanice.vulcanice.TrackRequestActivity;
 
 import java.util.ArrayList;
 
@@ -65,12 +67,15 @@ public class ListRequestViewHolder extends RecyclerView.ViewHolder implements Vi
         pos = getAdapterPosition();
         clientUid = requestIds.get(pos);
 
-        if (id == btnAccept.getId()) {
-            acceptRequest();
-        } else if (id == btnDecline.getId()) {
-            declineRequest();
-        } else {
-            return;
+        switch (id) {
+            case R.id.btn_accept_request:
+                acceptRequest();
+                break;
+            case R.id.btn_decline_request:
+                declineRequest();
+                break;
+            default:
+                break;
         }
     }
 

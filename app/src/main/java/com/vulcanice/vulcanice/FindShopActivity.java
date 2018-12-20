@@ -72,8 +72,6 @@ public class FindShopActivity extends AppCompatActivity {
         setActivityTitle();
         //GET LOCATION
         selfLocation = new SelfLocation(context);
-//        setLocationRequest();
-//        setLocation();
         setOnLocationUpdate();
 //        listGas();
     }
@@ -98,25 +96,6 @@ public class FindShopActivity extends AppCompatActivity {
         }
         setTitle("Finding nearest Station");
 
-    }
-
-    private void setLocationRequest() {
-        mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(UPDATE_INTERVAL);
-        mLocationRequest.setFastestInterval(FASTEST_INTERVAL);
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-    }
-
-    private void setLocation() {
-        // Create LocationSettingsRequest object using location request
-        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
-        builder.addLocationRequest(mLocationRequest);
-        LocationSettingsRequest locationSettingsRequest = builder.build();
-
-        // Check whether location settings are satisfied
-        SettingsClient settingsClient = LocationServices.getSettingsClient(this);
-        settingsClient.checkLocationSettings(locationSettingsRequest);
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
     }
 
     private void setOnLocationUpdate() {
