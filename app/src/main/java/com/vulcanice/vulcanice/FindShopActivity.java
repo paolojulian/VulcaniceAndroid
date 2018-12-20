@@ -1,6 +1,7 @@
 package com.vulcanice.vulcanice;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -32,20 +33,25 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.vulcanice.vulcanice.Library.SelfLocation;
 import com.vulcanice.vulcanice.Model.Shop;
 
 public class FindShopActivity extends AppCompatActivity {
+    private final String TAG = "TAG_" + FindShopActivity.class.getName();
+    private Context context;
     //DATABASE
     protected FirebaseUser user;
     //VIEW
     protected ProgressBar progressBar;
     //LOCATION
+    protected SelfLocation selfLocation;
     protected FusedLocationProviderClient mFusedLocationClient;
     protected Location mLastLocation;
     protected LocationCallback locationCallback;
     protected LocationRequest mLocationRequest;
     //TYPE
     protected String shopType, dbGas, dbVul, dbBoth;
+    private static final int PERMISSION_REQUEST_CODE = 7171;
     /*
     * gasStation
     * vulcanizeStation
@@ -58,12 +64,16 @@ public class FindShopActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_find_nearest_shop);
+        Log.d(TAG, "Init");
+        context = FindShopActivity.this;
+
         checkIfLoggedIn();
         setData();
         setActivityTitle();
         //GET LOCATION
-        setLocationRequest();
-        setLocation();
+        selfLocation = new SelfLocation(context);
+//        setLocationRequest();
+//        setLocation();
         setOnLocationUpdate();
 //        listGas();
     }
@@ -110,15 +120,20 @@ public class FindShopActivity extends AppCompatActivity {
     }
 
     private void setOnLocationUpdate() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            responseNoLocation();
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[] {
+                    android.Manifest.permission.ACCESS_COARSE_LOCATION,
+                    android.Manifest.permission.ACCESS_FINE_LOCATION,
+                    android.Manifest.permission.INTERNET
+            },PERMISSION_REQUEST_CODE);
             return;
         }
-        mFusedLocationClient.getLastLocation()
+        selfLocation.getFusedLocationClient().getLastLocation()
                 .addOnSuccessListener(this, new OnSuccessListener<Location>() {
                     @Override
                     public void onSuccess(Location location) {
                         if (location == null) {
+                            Log.d(TAG, "No Location: " + location);
                             responseNoLocation();
                             return;
                         }
@@ -133,7 +148,7 @@ public class FindShopActivity extends AppCompatActivity {
                     }
                 });
         // Used for repeating request
-        locationCallback = new LocationCallback() {
+        selfLocation.setLocationCallback(new LocationCallback() {
             @Override
             public void onLocationResult(LocationResult locationResult) {
                 super.onLocationResult(locationResult);
@@ -147,39 +162,32 @@ public class FindShopActivity extends AppCompatActivity {
                     ).show();
                 }
             }
-        };
-        startLocationUpdates();
+        });
+        selfLocation.startLocationUpdates();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        startLocationUpdates();
-    }
-
-    private void startLocationUpdates() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
+        if (selfLocation != null) {
+            selfLocation.startLocationUpdates();
         }
-        mFusedLocationClient.requestLocationUpdates(
-                mLocationRequest, locationCallback, null
-        );
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        stopLocationUpdates();
+        if (selfLocation != null) {
+            selfLocation.stopLocationUpdates();
+        }
     }
 
     @Override
     protected void onStop() {
-        geoQuery.removeAllListeners();
+        if (geoQuery != null) {
+            geoQuery.removeAllListeners();
+        }
         super.onStop();
-    }
-
-    private void stopLocationUpdates() {
-        mFusedLocationClient.removeLocationUpdates(locationCallback);
     }
 
     protected void checkIfLoggedIn() {

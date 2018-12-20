@@ -41,6 +41,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.vulcanice.vulcanice.Library.SelfLocation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,6 +66,7 @@ public class TrackShopActivity extends AppCompatActivity
     private TextView routeLabel2, routeDistance2, routeDuration2;
     private LinearLayout route2;
     //USER LOCATION
+    protected SelfLocation selfLocation;
     protected FusedLocationProviderClient mFusedLocationClient;
     protected Location mLastLocation;
     protected LocationCallback locationCallback;
@@ -97,8 +99,9 @@ public class TrackShopActivity extends AppCompatActivity
 
         setDatas();
         setupMap();
-        setLocationRequest();
-        setLocation();
+        selfLocation = new SelfLocation(context);
+//        setLocationRequest();
+//        setLocation();
         setOnLocationUpdate();
     }
 
@@ -151,7 +154,7 @@ public class TrackShopActivity extends AppCompatActivity
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
-        mFusedLocationClient.getLastLocation()
+        selfLocation.getFusedLocationClient().getLastLocation()
                 .addOnSuccessListener(this, new OnSuccessListener<Location>() {
                     @Override
                     public void onSuccess(Location location) {
@@ -164,7 +167,7 @@ public class TrackShopActivity extends AppCompatActivity
                     }
                 });
         // Used for repeating request
-        locationCallback = new LocationCallback() {
+        selfLocation.setLocationCallback(new LocationCallback() {
             @Override
             public void onLocationResult(LocationResult locationResult) {
                 super.onLocationResult(locationResult);
@@ -175,8 +178,8 @@ public class TrackShopActivity extends AppCompatActivity
                 drawRoute(userLocation);
                 updateMarker(userLocation);
             }
-        };
-        startLocationUpdates();
+        });
+        selfLocation.startLocationUpdates();
     }
 
     private void setupMap() {
@@ -319,8 +322,7 @@ public class TrackShopActivity extends AppCompatActivity
 
     @Override
     protected void onStop() {
-        if(mGoogleApiClient != null)
-        {
+        if(mGoogleApiClient != null) {
             mGoogleApiClient.disconnect();
         }
         super.onStop();
@@ -362,29 +364,16 @@ public class TrackShopActivity extends AppCompatActivity
         mGoogleApiClient.connect();
     }
 
-    private void stopLocationUpdates() {
-        mFusedLocationClient.removeLocationUpdates(locationCallback);
-    }
-
-    private void startLocationUpdates() {
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-        mFusedLocationClient.requestLocationUpdates(
-                mLocationRequest, locationCallback, null
-        );
-    }
-
     @Override
     protected void onPause() {
         super.onPause();
-        stopLocationUpdates();
+        selfLocation.stopLocationUpdates();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        startLocationUpdates();
+        selfLocation.startLocationUpdates();
     }
 
     @Override
