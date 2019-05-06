@@ -77,7 +77,7 @@
             android:theme="@style/AppTheme.NoActionBar"/>
 
         <activity
-            android:name=".RequestShopActivity"
+            android:name=".ClientRequest.RequestShopActivity"
             android:theme="@style/AppTheme"
             android:label="Enter Description"/>
 

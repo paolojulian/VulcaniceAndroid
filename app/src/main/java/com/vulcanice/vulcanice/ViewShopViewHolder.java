@@ -8,6 +8,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.vulcanice.vulcanice.ClientRequest.RequestShopActivity;
+
 
 public class ViewShopViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 

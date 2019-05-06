@@ -87,7 +87,7 @@
                         android:orientation="vertical"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content">
-                        <ImageButton
+                        <ImageView
                             android:background="@drawable/ic_local_car_wash_primary_100dp"
                             android:layout_weight="8"
                             android:layout_width="wrap_content"
@@ -118,7 +118,7 @@
                         android:orientation="vertical"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content">
-                        <ImageButton
+                        <ImageView
                             android:background="@drawable/ic_local_gas_station_accent_100dp"
                             android:layout_weight="8"
                             android:layout_width="wrap_content"
@@ -149,7 +149,7 @@
                         android:orientation="vertical"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content">
-                        <ImageButton
+                        <ImageView
                             android:textStyle="bold"
                             android:background="@drawable/ic_store_mall_directory_dark_100dp"
                             android:textColor="@color/colorLight"
@@ -211,7 +211,7 @@
                         android:orientation="vertical"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content">
-                        <ImageButton
+                        <ImageView
                             android:background="@drawable/ic_local_car_wash_primary_100dp"
                             android:layout_weight="8"
                             android:layout_width="wrap_content"
@@ -242,7 +242,7 @@
                         android:orientation="vertical"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content">
-                        <ImageButton
+                        <ImageView
                             android:textStyle="bold"
                             android:background="@drawable/ic_local_gas_station_accent_100dp"
                             android:textColor="@color/colorLight"
@@ -275,7 +275,7 @@
                         android:orientation="vertical"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content">
-                        <ImageButton
+                        <ImageView
                             android:textStyle="bold"
                             android:background="@drawable/ic_store_mall_directory_dark_100dp"
                             android:textColor="@color/colorLight"

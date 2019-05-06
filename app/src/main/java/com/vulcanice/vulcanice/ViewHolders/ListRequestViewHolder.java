@@ -3,6 +3,7 @@ package com.vulcanice.vulcanice.ViewHolders;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
@@ -28,7 +29,7 @@ import java.util.ArrayList;
 
 public class ListRequestViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
     View mView;
-    protected Button btnAccept, btnDecline;
+    protected FloatingActionButton btnAccept, btnDecline;
     private ArrayList<String> requestIds;
     private Context context;
     private Integer id;
@@ -45,10 +46,16 @@ public class ListRequestViewHolder extends RecyclerView.ViewHolder implements Vi
     public void bindListRequest(Request request, Integer position) {
         TextView clientName = mView.findViewById(R.id.client_name);
         TextView description = mView.findViewById(R.id.description);
+        TextView pickupType = mView.findViewById(R.id.pickup_type);
+        TextView vehicleType = mView.findViewById(R.id.vehicle_type);
+        TextView vehicleColor = mView.findViewById(R.id.vehicle_color);
         btnAccept = mView.findViewById(R.id.btn_accept_request);
         btnDecline = mView.findViewById(R.id.btn_decline_request);
 
         clientName.setText(request.getClientName());
+        pickupType.setText(request.getPickupType());
+        vehicleType.setText(request.getVehicleType());
+        vehicleColor.setText(request.getVehicleColor());
         description.setText(request.getDescription());
         requestIds.add(request.getClientUid());
 

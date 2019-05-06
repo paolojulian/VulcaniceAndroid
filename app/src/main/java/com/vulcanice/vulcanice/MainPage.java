@@ -162,41 +162,6 @@ public class MainPage extends AppCompatActivity {
         });
     }
 
-    protected void setupBtn() {
-        BtnFindGas = findViewById(R.id.btn_find_gas);
-        BtnFindVul = findViewById(R.id.btn_find_vul);
-        BtnFindBoth = findViewById(R.id.btn_find_both);
-        BtnListVul = findViewById(R.id.btn_list_vul);
-        BtnListGas = findViewById(R.id.btn_list_gas);
-        BtnListBoth = findViewById(R.id.btn_list_both);
-    }
-
-    private void setupNotification() {
-        mBuilder = new NotificationCompat.Builder(this);
-        mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
-        Intent intent = new Intent(MainPage.this, ViewRequestsActivity.class);
-        pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
-        mBuilder.setContentIntent(pendingIntent);
-
-        setupNotificationActions();
-        mBuilder.setSmallIcon(R.drawable.vulcanice_logo);
-        mBuilder.setContentTitle("My notification");
-        mBuilder.setContentText("Hello World!");
-    }
-
-    private void setupNotificationActions() {
-        NotificationCompat.Action accept_request = new NotificationCompat.Action.Builder(
-                R.mipmap.ic_launcher, "Accept", pendingIntent
-        ).build();
-        NotificationCompat.Action decline_request = new NotificationCompat.Action.Builder(
-                R.mipmap.ic_launcher, "Decline", pendingIntent
-        ).build();
-
-        mBuilder.addAction(accept_request);
-        mBuilder.addAction(decline_request);
-    }
-
     private void setCallbacks() {
         final Intent iFindShop = new Intent(MainPage.this, FindShopActivity.class);
 

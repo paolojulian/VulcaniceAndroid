@@ -5,9 +5,42 @@ package com.vulcanice.vulcanice.Model;
  */
 
 public class Request {
-    protected String description, clientName, clientUid;
+    protected String description, clientName, clientUid, vehicleColor, vehicleType, pickupType, plateNumber;
     protected Integer isAccepted;
     protected Boolean isValid;
+
+    public String getVehicleColor() {
+        return vehicleColor;
+    }
+
+    public void setVehicleColor(String vehicleColor) {
+        this.vehicleColor = vehicleColor;
+    }
+
+    public String getVehicleType() {
+        return vehicleType;
+    }
+
+    public void setVehicleType(String vehicleType) {
+        this.vehicleType = vehicleType;
+    }
+
+    public String getPickupType() {
+        return pickupType;
+    }
+
+    public void setPickupType(String pickupType) {
+        this.pickupType = pickupType;
+    }
+
+    public String getPlateNumber() {
+        return plateNumber;
+    }
+
+    public void setPlateNumber(String plateNumber) {
+        this.plateNumber = plateNumber;
+    }
+
     public Request () {
     }
 

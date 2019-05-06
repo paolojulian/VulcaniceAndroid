@@ -26,6 +26,7 @@
         <item>Gasoline Station</item>
         <item>Both</item>
     </string-array>
+
     <string name="vcn_shop_create">Create Shop</string>
     <string name="db_gas">gasStation</string>
     <string name="db_vul">vulcanizeStation</string>
@@ -81,4 +82,15 @@
         Requests
     -->
     <string name="no_request">No request/s available</string>
+    <string-array name="vcn_vehicle_type">
+        <item>Car</item>
+        <item>Van</item>
+        <item>Bus</item>
+        <item>Truck</item>
+        <item>Motorbike</item>
+    </string-array>
+    <string-array name="vcn_pickup_type">
+        <item>Tow</item>
+        <item>Drop</item>
+    </string-array>
 </resources>

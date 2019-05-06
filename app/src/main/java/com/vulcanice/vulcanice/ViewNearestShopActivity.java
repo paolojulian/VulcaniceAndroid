@@ -29,6 +29,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.vulcanice.vulcanice.ClientRequest.RequestShopActivity;
 import com.vulcanice.vulcanice.Model.Shop;
 
 public class ViewNearestShopActivity extends AppCompatActivity {
