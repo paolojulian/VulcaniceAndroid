@@ -49,6 +49,7 @@ public class ListRequestViewHolder extends RecyclerView.ViewHolder implements Vi
         TextView pickupType = mView.findViewById(R.id.pickup_type);
         TextView vehicleType = mView.findViewById(R.id.vehicle_type);
         TextView vehicleColor = mView.findViewById(R.id.vehicle_color);
+        TextView repairType = mView.findViewById(R.id.repair_type);
         btnAccept = mView.findViewById(R.id.btn_accept_request);
         btnDecline = mView.findViewById(R.id.btn_decline_request);
 
@@ -57,6 +58,7 @@ public class ListRequestViewHolder extends RecyclerView.ViewHolder implements Vi
         vehicleType.setText(request.getVehicleType());
         vehicleColor.setText(request.getVehicleColor());
         description.setText(request.getDescription());
+        repairType.setText(request.getRepairType());
         requestIds.add(request.getClientUid());
 
         btnAccept.setOnClickListener(this);

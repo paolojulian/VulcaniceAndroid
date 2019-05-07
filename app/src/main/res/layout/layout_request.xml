@@ -23,6 +23,7 @@
             android:id="@+id/client_name"
             android:text="Client Name"
             android:textSize="24sp"
+            android:textAllCaps="true"
             android:textColor="@color/colorAccent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
@@ -32,6 +33,13 @@
             android:textSize="16sp"
             android:textColor="@color/colorPrimary"
             android:textStyle="bold"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/repair_type"
+            android:text="Flat Tire"
+            android:textSize="14sp"
+            android:textColor="@color/colorPrimaryDark"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
         <LinearLayout

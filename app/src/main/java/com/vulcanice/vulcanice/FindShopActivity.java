@@ -173,6 +173,7 @@ public class FindShopActivity extends AppCompatActivity {
         user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
             startActivity(new Intent(FindShopActivity.this, MainActivity.class));
+            finish();
         }
     }
 
@@ -221,6 +222,7 @@ public class FindShopActivity extends AppCompatActivity {
                         Toast.LENGTH_SHORT
                 ).show();
                 startActivity(new Intent(FindShopActivity.this, MainPage.class));
+                finish();
             }
 
             @Override
@@ -231,6 +233,7 @@ public class FindShopActivity extends AppCompatActivity {
                         Toast.LENGTH_SHORT
                 ).show();
                 startActivity(new Intent(FindShopActivity.this, MainPage.class));
+                finish();
             }
 
             @Override
@@ -289,6 +292,7 @@ public class FindShopActivity extends AppCompatActivity {
         i.putExtra("shopLat", shopLat);
         i.putExtra("shopLng", shopLng);
         startActivity(i);
+        finish();
     }
 
     public Boolean isCloser(Double lat1, Double lng1, Double lat2, Double lng2) {

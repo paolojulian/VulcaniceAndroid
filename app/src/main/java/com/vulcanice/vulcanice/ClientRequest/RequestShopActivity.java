@@ -1,9 +1,12 @@
 package com.vulcanice.vulcanice.ClientRequest;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -38,6 +41,7 @@ import com.vulcanice.vulcanice.TrackRequestActivity;
  */
 
 public class RequestShopActivity extends AppCompatActivity{
+    protected Context context;
     private FirebaseDatabase mDatabase;
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
@@ -46,17 +50,19 @@ public class RequestShopActivity extends AppCompatActivity{
     protected Button btnRequest;
     protected TextView clientDescription, mShopName;
     protected Spinner vehicleType, pickupType;
-    protected EditText plateNumber1, plateNumber2, vehicleColor;
+    protected EditText plateNumber1, plateNumber2, vehicleColor, repairType;
     protected ProgressBar progressBar;
     protected Request request;
     protected VCN_User vcnUser;
     protected String shopId, shopName;
+    protected CountDownTimer countDownTimer;
 
     protected TextView countdown;
     protected LinearLayout waitingRequest;
     protected LinearLayout processRequest;
     protected LinearLayout requestDeclined;
     protected LinearLayout requestTimeout;
+    protected ConstraintLayout confirmRequest;
 
     private OnSuccessListener onRequestSuccess = new OnSuccessListener() {
         @Override
@@ -88,6 +94,7 @@ public class RequestShopActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_request_shop);
 
+        context = RequestShopActivity.this;
         setupView();
         setupFirebase();
         getUserInfo();
@@ -95,20 +102,28 @@ public class RequestShopActivity extends AppCompatActivity{
     }
 
     private void setupView() {
-        btnRequest = findViewById(R.id.btn_request);
-        clientDescription = findViewById(R.id.user_description);
+        // ProgressBar
         progressBar = findViewById(R.id.progress_bar);
+        // Button
+        btnRequest = findViewById(R.id.btn_request);
+        // TextView
+        countdown = findViewById(R.id.countdown);
         mShopName = findViewById(R.id.txt_shop_name);
+        // Spinner
         vehicleType = findViewById(R.id.vehicle_type);
         pickupType = findViewById(R.id.pickup_type);
+        // EditText
         vehicleColor = findViewById(R.id.vehicle_color);
         plateNumber1 = findViewById(R.id.plate_number_1);
         plateNumber2 = findViewById(R.id.plate_number_2);
-        countdown = findViewById(R.id.countdown);
+        repairType = findViewById(R.id.repair_type);
+        clientDescription = findViewById(R.id.user_description);
+        // LinearLayout
         waitingRequest = findViewById(R.id.waiting_request);
         processRequest = findViewById(R.id.process_request);
         requestDeclined = findViewById(R.id.request_declined);
         requestTimeout = findViewById(R.id.request_timeout);
+        confirmRequest = findViewById(R.id.confirm_request);
 
         populateSpinners();
 
@@ -125,9 +140,9 @@ public class RequestShopActivity extends AppCompatActivity{
         waitingRequest.setVisibility(View.VISIBLE);
         processRequest.setVisibility(View.GONE);
 
+        // TODO remove timer if has other action (if declined or cancelled)
         // SET TIME OUT FOR 60 SECONDS
-        new CountDownTimer(60000, 1000) {
-
+        countDownTimer = new CountDownTimer(60000, 1000) {
             public void onTick(long millisUntilFinished) {
                 handleCountdown();
             }
@@ -135,7 +150,8 @@ public class RequestShopActivity extends AppCompatActivity{
             public void onFinish() {
                 handleRequestTimeout();
             }
-        }.start();
+        };
+        countDownTimer.start();
 
         // CHECK IF THERE'S AN ACTION MADE
         DatabaseReference isAcceptedReference = requestReference.child("isAccepted");
@@ -145,36 +161,75 @@ public class RequestShopActivity extends AppCompatActivity{
                 if ( ! dataSnapshot.exists()) {
                     return;
                 }
+                countDownTimer.cancel();
                 if (isRequestDeclined(dataSnapshot)) {
                     handleRequestDeclined();
                     return;
                 }
                 if (isRequestAccepted(dataSnapshot)) {
-                    Intent intent = new Intent(RequestShopActivity.this, TrackRequestActivity.class);
-                    intent.putExtra("id", shopId);
-                    intent.putExtra("type", "client");
-                    startActivity(intent);
+                    handleRequestAccepted();
+                    return;
                 }
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 String dbError = RequestShopActivity.this.getString(R.string.db_error);
-                Toast.makeText(RequestShopActivity.this, dbError, Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, dbError, Toast.LENGTH_SHORT).show();
             }
         });
     }
 
     private void handleRequestDeclined () {
-        requestDeclined.setVisibility(View.VISIBLE);
-        waitingRequest.setVisibility(View.GONE);
-        processRequest.setVisibility(View.GONE);
+        showUI(requestDeclined);
+    }
+
+    private void handleRequestAccepted () {
+        final FloatingActionButton acceptConfirmation = findViewById(R.id.btn_accept_confirmation);
+        final FloatingActionButton declineConfirmation = findViewById(R.id.btn_decline_confirmation);
+
+        View.OnClickListener onClickAccept = new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                DatabaseReference reqRef = mDatabase.getReference()
+                        .child("Request").child(shopId).child(currentUser.getUid());
+
+                reqRef.child("isAccepted").setValue(4).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if ( ! task.isSuccessful()) {
+                            Toast.makeText(
+                                    RequestShopActivity.this,
+                                    "Oops.. Unable to process your request.\nPlease try again later.",
+                                    Toast.LENGTH_SHORT
+                            ).show();
+                            return;
+                        }
+                        Intent intent = new Intent(RequestShopActivity.this, TrackRequestActivity.class);
+                        intent.putExtra("id", shopId);
+                        intent.putExtra("type", "client");
+                        startActivity(intent);
+                    }
+                });
+            }
+        };
+        View.OnClickListener onClickDecline = new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                removeRequest();
+                Intent i = new Intent(context, MainPage.class);
+                startActivity(i);
+                finish();
+            }
+        };
+        acceptConfirmation.setOnClickListener(onClickAccept);
+        declineConfirmation.setOnClickListener(onClickDecline);
+        showUI(confirmRequest);
     }
 
     private void handleRequestTimeout () {
-        requestTimeout.setVisibility(View.VISIBLE);
-        waitingRequest.setVisibility(View.GONE);
-        processRequest.setVisibility(View.GONE);
+        removeRequest();
+        showUI(requestTimeout);
     }
 
     private void handleCountdown () {
@@ -184,6 +239,21 @@ public class RequestShopActivity extends AppCompatActivity{
             time --;
             countdown.setText(time + "");
         }
+    }
+
+    private void showUI (LinearLayout layout) {
+        requestTimeout.setVisibility(View.GONE);
+        waitingRequest.setVisibility(View.GONE);
+        processRequest.setVisibility(View.GONE);
+
+        layout.setVisibility(View.VISIBLE);
+    }
+    private void showUI (ConstraintLayout layout) {
+        requestTimeout.setVisibility(View.GONE);
+        waitingRequest.setVisibility(View.GONE);
+        processRequest.setVisibility(View.GONE);
+
+        layout.setVisibility(View.VISIBLE);
     }
 
     private boolean isRequestAccepted(DataSnapshot dataSnapshot) {
@@ -238,6 +308,7 @@ public class RequestShopActivity extends AppCompatActivity{
         request.setVehicleType(vehicleType.getSelectedItem().toString());
         request.setVehicleColor(vehicleColor.getText().toString().trim());
         request.setPickupType(pickupType.getSelectedItem().toString());
+        request.setRepairType(repairType.getText().toString().trim());
         request.setPlateNumber(plateNumber1.getText().toString().trim() + "-" + plateNumber2.getText().toString().trim());
 
         progressBar.setVisibility(View.VISIBLE);

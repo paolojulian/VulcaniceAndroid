@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
 import com.google.firebase.auth.FirebaseAuth;
@@ -18,6 +19,8 @@ public class MainActivity extends AppCompatActivity {
 
     Button btnSignIn, btnSignUp;
     private final static int LOGIN_PERMISSION=1000;
+    private long backPressedTime;
+    private Toast backPressToast;
     private FirebaseUser user;
     //STATIC_VALUES
     private static final int PERMISSION_REQUEST_CODE = 7171;
@@ -29,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
         user = FirebaseAuth.getInstance().getCurrentUser();
         if(user != null) {
             startActivity(new Intent(MainActivity.this, MainPage.class));
+            finish();
             return;
         }
 
@@ -79,15 +83,13 @@ public class MainActivity extends AppCompatActivity {
     }
     @Override
     public void onBackPressed() {
-        new AlertDialog.Builder(this)
-                .setTitle("Really Exit?")
-                .setMessage("Are you sure you want to exit?")
-                .setNegativeButton(android.R.string.no, null)
-                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface arg0, int arg1) {
-                        finish();
-                        System.exit(0);
-                    }
-                }).create().show();
+        if (backPressedTime + 2000 > System.currentTimeMillis()) {
+            backPressToast.cancel();
+            super.onBackPressed();
+        } else {
+            backPressToast = Toast.makeText(getBaseContext(), "Press back again to exit", Toast.LENGTH_SHORT);
+            backPressToast.show();
+        }
+        backPressedTime = System.currentTimeMillis();
     }
 }

@@ -5,9 +5,24 @@ package com.vulcanice.vulcanice.Model;
  */
 
 public class Request {
-    protected String description, clientName, clientUid, vehicleColor, vehicleType, pickupType, plateNumber;
+    protected String description;
+    protected String clientName;
+    protected String clientUid;
+    protected String vehicleColor;
+    protected String vehicleType;
+    protected String pickupType;
+    protected String plateNumber;
+    protected String repairType;
     protected Integer isAccepted;
-    protected Boolean isValid;
+    protected Boolean isValid; // 0 = Display on owner request list, 1 = Accepted, 2 = Declined, 3 = Canceled, 4 = Tracking
+
+    public String getRepairType() {
+        return repairType;
+    }
+
+    public void setRepairType(String repairType) {
+        this.repairType = repairType;
+    }
 
     public String getVehicleColor() {
         return vehicleColor;

@@ -206,6 +206,7 @@ public class OwnerMainPage extends AppCompatActivity {
                             return true;
                         }
                         startActivity(new Intent(OwnerMainPage.this, DashBoard.class));
+                        finish();
                         return true;
 
                     case R.id.logout:
@@ -316,23 +317,6 @@ public class OwnerMainPage extends AppCompatActivity {
     }
 
     @Override
-    public void onBackPressed() {
-        if(mDrawer.isDrawerOpen(GravityCompat.START)) {
-            mDrawer.closeDrawers();
-        } else {
-            new AlertDialog.Builder(this)
-                    .setTitle("Notice")
-                    .setMessage("Are you sure you want to log out?")
-                    .setNegativeButton(android.R.string.no, null)
-                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface arg0, int arg1) {
-                            gotoSignIn();
-                        }
-                    }).create().show();
-        }
-    }
-
-    @Override
     protected void onStart() {
         super.onStart();
         displayRequestList();
@@ -343,6 +327,23 @@ public class OwnerMainPage extends AppCompatActivity {
         super.onStop();
         if (firebaseAdapter != null) {
             firebaseAdapter.cleanup();
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(mDrawer.isDrawerOpen(GravityCompat.START)) {
+            mDrawer.closeDrawers();
+        } else {
+            new AlertDialog.Builder(this)
+                    .setTitle("Confirmation")
+                    .setMessage("Are you sure you want to exit?")
+                    .setNegativeButton(android.R.string.no, null)
+                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface arg0, int arg1) {
+                            OwnerMainPage.super.onBackPressed();
+                        }
+                    }).create().show();
         }
     }
 }

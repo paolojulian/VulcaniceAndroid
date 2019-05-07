@@ -180,6 +180,7 @@ public class ViewMapActivity extends AppCompatActivity
                 i.putExtra("shopId", shopId);
                 i.putExtra("shopName", shopName);
                 startActivity(i);
+                finish();
             }
         });
     }

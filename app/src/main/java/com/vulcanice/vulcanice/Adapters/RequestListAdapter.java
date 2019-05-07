@@ -4,12 +4,12 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,8 +18,8 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.vulcanice.vulcanice.Model.Request;
+import com.vulcanice.vulcanice.OwnerRequest.ClientConfirmation;
 import com.vulcanice.vulcanice.R;
-import com.vulcanice.vulcanice.TrackRequestActivity;
 
 
 import java.util.ArrayList;
@@ -67,12 +67,20 @@ public class RequestListAdapter extends BaseAdapter {
         final Request request = (Request) this.getItem(position);
 
         TextView clientName = convertView.findViewById(R.id.client_name);
-        TextView clientDescription = convertView.findViewById(R.id.client_description);
-        final Button acceptRequest = convertView.findViewById(R.id.btn_accept_request);
-        final Button declineRequest = convertView.findViewById(R.id.btn_decline_request);
+        TextView clientDescription = convertView.findViewById(R.id.description);
+        TextView pickupType = convertView.findViewById(R.id.pickup_type);
+        TextView vehicleType = convertView.findViewById(R.id.vehicle_type);
+        TextView vehicleColor = convertView.findViewById(R.id.vehicle_color);
+        TextView repairType = convertView.findViewById(R.id.repair_type);
+        final FloatingActionButton acceptRequest = convertView.findViewById(R.id.btn_accept_request);
+        final FloatingActionButton declineRequest = convertView.findViewById(R.id.btn_decline_request);
 
         clientName.setText(request.getClientName());
         clientDescription.setText(request.getDescription());
+        pickupType.setText(request.getPickupType());
+        vehicleType.setText(request.getVehicleType());
+        vehicleColor.setText(request.getVehicleColor());
+        repairType.setText(request.getRepairType());
 
         final String userUid = this._userUid;
 
@@ -114,9 +122,8 @@ public class RequestListAdapter extends BaseAdapter {
                                 "Accepted Request",
                                 Toast.LENGTH_SHORT
                         ).show();
-                        Intent i = new Intent(context, TrackRequestActivity.class);
+                        Intent i = new Intent(context, ClientConfirmation.class);
                         i.putExtra("id", clientUid);
-                        i.putExtra("type", "owner");
                         context.startActivity(i);
                     }
                 })

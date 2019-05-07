@@ -201,6 +201,7 @@ public class DashBoard extends AppCompatActivity {
                         return true;
                     case R.id.main_page:
                         startActivity(new Intent(DashBoard.this, OwnerMainPage.class));
+                        finish();
                         return true;
                     case R.id.logout:
                         mAuth.signOut();
@@ -214,6 +215,7 @@ public class DashBoard extends AppCompatActivity {
     }
     protected void gotoSignIn() {
         startActivity(new Intent(DashBoard.this, MainActivity.class));
+        finish();
     }
 
     @Override
@@ -222,6 +224,7 @@ public class DashBoard extends AppCompatActivity {
             mDrawer.closeDrawers();
         } else {
             startActivity(new Intent(DashBoard.this, OwnerMainPage.class));
+            finish();
         }
     }
 }

@@ -309,13 +309,12 @@ public class ViewNearestShopActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
+        stopLocationUpdates();
     }
     @Override
     public void onBackPressed() {
-        startActivity(
-                new Intent(ViewNearestShopActivity.this, MainPage.class)
-        );
-        super.onStop();
+        super.onBackPressed();
+        stopLocationUpdates();
     }
 }
 

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:paddingLeft="24dp"
+        android:paddingRight="24dp">
+
+        <TextView
+            android:text="The shop owner accepted your request.\nContinue?"
+            android:textAlignment="center"
+            android:textSize="20sp"
+            android:textColor="@color/colorPrimaryDark"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="60dp"
+        android:layout_marginBottom="50sp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/btn_accept_request"
+            android:layout_width="50sp"
+            android:layout_height="wrap_content"
+            android:layout_margin="1dp"
+            android:backgroundTint="@color/colorPrimaryDark"
+            android:elevation="5dp"
+            android:src="@drawable/check_button" />
+
+        <!-- SPACER -->
+        <View
+            android:layout_width="50sp"
+            android:layout_height="wrap_content"></View>
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/btn_decline_request"
+            android:layout_width="50sp"
+            android:layout_height="wrap_content"
+            android:layout_margin="1dp"
+            android:backgroundTint="@color/colorAccent"
+            android:elevation="5dp"
+            android:src="@drawable/x_button" />
+    </LinearLayout>
+</android.support.constraint.ConstraintLayout>

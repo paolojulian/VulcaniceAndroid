@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
@@ -20,7 +21,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -38,7 +38,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.twitter.sdk.android.core.models.Card;
 import com.vulcanice.vulcanice.Model.Session;
 import com.vulcanice.vulcanice.Model.VCN_User;
 
@@ -121,8 +120,8 @@ public class MainPage extends AppCompatActivity {
         mLayout.setVisibility(View.GONE);
 
         Log.d(TAG, "CurrentUser: " + currentUser.getUid());
-//        setupNotification();
     }
+
 
     private void setupUserImage() {
         storageReference = FirebaseStorage.getInstance().getReference("images").child(currentUser.getUid());
@@ -270,7 +269,6 @@ public class MainPage extends AppCompatActivity {
     protected void onStart() {
         if (currentUser == null) {
             gotoSignIn();
-            finish();
         }
         super.onStart();
     }
@@ -279,8 +277,6 @@ public class MainPage extends AppCompatActivity {
     public boolean onMenuOpened(int featureId, Menu menu) {
         return super.onMenuOpened(featureId, menu);
     }
-
-    //        Toast.makeText(MainPage.this, "Test", Toast.LENGTH_SHORT).show();
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -303,61 +299,7 @@ public class MainPage extends AppCompatActivity {
      */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // setup request notif
-//        MenuInflater menuInflater = getMenuInflater();
-//        menuInflater.inflate(R.menu.main_menu, menu);
-//
-//        setupMenuItems(menu);
-//        displayNotifCount();
         return true;
-    }
-
-    private void displayNotifCount() {
-        DatabaseReference notifReference = mDatabase.getReference()
-                                                .child("Request")
-                                                .child(currentUser.getUid());
-        notifReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                int count = 0;
-                for (DataSnapshot item: dataSnapshot.getChildren()) {
-                    if (item.child("isAccepted").getValue().toString().equals("0")) {
-                        count ++;
-                    }
-                }
-                notifCount.setText(Integer.toString(count));
-//                mNotificationManager.notify(001, mBuilder.build());
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-    }
-
-    private void setupMenuItems(Menu menu) {
-        MenuItem menuItem = menu.findItem(R.id.action_check_requests);
-
-        eventNotificationCount(menuItem);
-        eventClickNotification(menuItem);
-    }
-
-    private void eventClickNotification(MenuItem menuItem) {
-        BtnNotification = menuItem.getActionView().findViewById(R.id.btn_notif);
-        BtnNotification.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (notifCount.getText().toString().equals("0")) {
-                    return;
-                }
-                startActivity(new Intent(MainPage.this, ViewRequestsActivity.class));
-            }
-        });
-    }
-
-    private void eventNotificationCount(MenuItem menuItem) {
-        notifCount = menuItem.getActionView().findViewById(R.id.notif_count);
     }
 
     private void setupToolbar() {
@@ -426,19 +368,20 @@ public class MainPage extends AppCompatActivity {
     }
     @Override
     public void onBackPressed() {
+        if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+            mDrawerLayout.closeDrawers();
+            return;
+        }
+
         new AlertDialog.Builder(this)
                 .setTitle("Confirmation")
                 .setMessage("Are you sure you want to exit?")
                 .setNegativeButton(android.R.string.no, null)
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface arg0, int arg1) {
-                        System.exit(0);
+                        MainPage.super.onBackPressed();
                     }
                 }).create().show();
-    }
-
-    private void gotoHome() {
-        startActivity(new Intent(MainPage.this, MainPage.class));
     }
 }
 

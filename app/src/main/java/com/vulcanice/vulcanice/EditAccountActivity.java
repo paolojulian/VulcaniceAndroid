@@ -113,6 +113,7 @@ public class EditAccountActivity extends AppCompatActivity{
                         ).show();
 
                         startActivity(new Intent(EditAccountActivity.this, MainPage.class));
+                        finish();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -166,6 +167,7 @@ public class EditAccountActivity extends AppCompatActivity{
 
     protected void gotoSignIn() {
         startActivity(new Intent(EditAccountActivity.this, MainActivity.class));
+        finish();
     }
 
 }

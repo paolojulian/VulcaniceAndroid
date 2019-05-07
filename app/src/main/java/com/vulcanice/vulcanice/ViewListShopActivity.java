@@ -91,7 +91,6 @@ public class ViewListShopActivity extends AppCompatActivity {
         setLocationRequest();
         setLocation();
         setOnLocationUpdate();
-
     }
 
     private void setupReferences() {

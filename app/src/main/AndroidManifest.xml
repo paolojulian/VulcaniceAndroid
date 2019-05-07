@@ -68,6 +68,12 @@
             android:label="Tracking Client" />
 
         <activity
+            android:name=".OwnerRequest.ClientConfirmation"
+            android:theme="@style/AppTheme"
+            android:label="Request Confirmation" />
+
+
+        <activity
             android:name=".ViewRequestsActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:label="Requests" />
