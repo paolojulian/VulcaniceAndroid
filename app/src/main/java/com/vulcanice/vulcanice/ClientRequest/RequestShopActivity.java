@@ -2,6 +2,7 @@ package com.vulcanice.vulcanice.ClientRequest;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -51,6 +52,11 @@ public class RequestShopActivity extends AppCompatActivity{
     protected VCN_User vcnUser;
     protected String shopId, shopName;
 
+    protected LinearLayout waitingRequest;
+    protected LinearLayout processRequest;
+    protected LinearLayout requestDeclined;
+    protected LinearLayout requestTimeout;
+
     private OnSuccessListener onRequestSuccess = new OnSuccessListener() {
         @Override
         public void onSuccess(Object o) {
@@ -87,13 +93,48 @@ public class RequestShopActivity extends AppCompatActivity{
         setEvents();
     }
 
+    private void setupView() {
+        btnRequest = findViewById(R.id.btn_request);
+        clientDescription = findViewById(R.id.user_description);
+        progressBar = findViewById(R.id.progress_bar);
+        mShopName = findViewById(R.id.txt_shop_name);
+        vehicleType = findViewById(R.id.vehicle_type);
+        pickupType = findViewById(R.id.pickup_type);
+        vehicleColor = findViewById(R.id.vehicle_color);
+        plateNumber1 = findViewById(R.id.plate_number_1);
+        plateNumber2 = findViewById(R.id.plate_number_2);
+        waitingRequest = findViewById(R.id.waiting_request);
+        processRequest = findViewById(R.id.process_request);
+        requestDeclined = findViewById(R.id.request_declined);
+        requestTimeout = findViewById(R.id.request_timeout);
+
+        populateSpinners();
+
+        Intent i = getIntent();
+        shopId = i.getExtras().getString("shopId");
+        shopName = i.getExtras().getString("shopName");
+
+        shopId = shopId.split("_")[0];
+        getSupportActionBar().setTitle(shopName);
+    }
+
     private void listenForRequest() {
-        LinearLayout waitingRequest = findViewById(R.id.waiting_request);
-        LinearLayout processRequest = findViewById(R.id.process_request);
 
         waitingRequest.setVisibility(View.VISIBLE);
         processRequest.setVisibility(View.GONE);
 
+        // SET TIME OUT FOR 30 SECONDS
+        final Handler m_handler = new Handler();
+        final Runnable m_handlerTask = new Runnable()
+        {
+            @Override
+            public void run() {
+                handleRequestTimeout();
+            }
+        };
+        m_handler.postDelayed(m_handlerTask, 30000);
+
+        // CHECK IF THERE'S AN ACTION MADE
         DatabaseReference isAcceptedReference = requestReference.child("isAccepted");
         isAcceptedReference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -102,9 +143,7 @@ public class RequestShopActivity extends AppCompatActivity{
                     return;
                 }
                 if (isRequestDeclined(dataSnapshot)) {
-                    Toast.makeText(RequestShopActivity.this, "Your request have been declined", Toast.LENGTH_SHORT)
-                            .show();
-                    gotoMainPage();
+                    handleRequestDeclined();
                     return;
                 }
                 if (isRequestAccepted(dataSnapshot)) {
@@ -122,33 +161,24 @@ public class RequestShopActivity extends AppCompatActivity{
         });
     }
 
+    private void handleRequestDeclined () {
+        requestDeclined.setVisibility(View.VISIBLE);
+        waitingRequest.setVisibility(View.GONE);
+        processRequest.setVisibility(View.GONE);
+    }
+
+    private void handleRequestTimeout () {
+        requestTimeout.setVisibility(View.VISIBLE);
+        waitingRequest.setVisibility(View.GONE);
+        processRequest.setVisibility(View.GONE);
+    }
+
     private boolean isRequestAccepted(DataSnapshot dataSnapshot) {
         return dataSnapshot.getValue().toString().equals("1");
     }
 
     private boolean isRequestDeclined(DataSnapshot dataSnapshot) {
         return dataSnapshot.getValue().toString().equals("2");
-    }
-
-    private void setupView() {
-        btnRequest = findViewById(R.id.btn_request);
-        clientDescription = findViewById(R.id.user_description);
-        progressBar = findViewById(R.id.progress_bar);
-        mShopName = findViewById(R.id.txt_shop_name);
-        vehicleType = findViewById(R.id.vehicle_type);
-        pickupType = findViewById(R.id.pickup_type);
-        vehicleColor = findViewById(R.id.vehicle_color);
-        plateNumber1 = findViewById(R.id.plate_number_1);
-        plateNumber2 = findViewById(R.id.plate_number_2);
-
-        populateSpinners();
-
-        Intent i = getIntent();
-        shopId = i.getExtras().getString("shopId");
-        shopName = i.getExtras().getString("shopName");
-
-        shopId = shopId.split("_")[0];
-        getSupportActionBar().setTitle(shopName);
     }
     protected void populateSpinners() {
         // VEHICLE TYPE

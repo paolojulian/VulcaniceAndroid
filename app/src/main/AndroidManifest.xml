@@ -79,6 +79,7 @@
         <activity
             android:name=".ClientRequest.RequestShopActivity"
             android:theme="@style/AppTheme"
+            android:windowSoftInputMode="adjustPan"
             android:label="Enter Description"/>
 
         <activity
