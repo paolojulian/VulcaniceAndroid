@@ -427,13 +427,12 @@ public class MainPage extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         new AlertDialog.Builder(this)
-                .setTitle("Really Exit?")
+                .setTitle("Confirmation")
                 .setMessage("Are you sure you want to exit?")
                 .setNegativeButton(android.R.string.no, null)
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface arg0, int arg1) {
-                        finish();
-                        System.exit(1);
+                        System.exit(0);
                     }
                 }).create().show();
     }

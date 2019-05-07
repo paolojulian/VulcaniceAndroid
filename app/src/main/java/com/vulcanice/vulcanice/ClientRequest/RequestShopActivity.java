@@ -2,7 +2,7 @@ package com.vulcanice.vulcanice.ClientRequest;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
+import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -52,6 +52,7 @@ public class RequestShopActivity extends AppCompatActivity{
     protected VCN_User vcnUser;
     protected String shopId, shopName;
 
+    protected TextView countdown;
     protected LinearLayout waitingRequest;
     protected LinearLayout processRequest;
     protected LinearLayout requestDeclined;
@@ -103,6 +104,7 @@ public class RequestShopActivity extends AppCompatActivity{
         vehicleColor = findViewById(R.id.vehicle_color);
         plateNumber1 = findViewById(R.id.plate_number_1);
         plateNumber2 = findViewById(R.id.plate_number_2);
+        countdown = findViewById(R.id.countdown);
         waitingRequest = findViewById(R.id.waiting_request);
         processRequest = findViewById(R.id.process_request);
         requestDeclined = findViewById(R.id.request_declined);
@@ -123,16 +125,17 @@ public class RequestShopActivity extends AppCompatActivity{
         waitingRequest.setVisibility(View.VISIBLE);
         processRequest.setVisibility(View.GONE);
 
-        // SET TIME OUT FOR 30 SECONDS
-        final Handler m_handler = new Handler();
-        final Runnable m_handlerTask = new Runnable()
-        {
-            @Override
-            public void run() {
+        // SET TIME OUT FOR 60 SECONDS
+        new CountDownTimer(60000, 1000) {
+
+            public void onTick(long millisUntilFinished) {
+                handleCountdown();
+            }
+
+            public void onFinish() {
                 handleRequestTimeout();
             }
-        };
-        m_handler.postDelayed(m_handlerTask, 30000);
+        }.start();
 
         // CHECK IF THERE'S AN ACTION MADE
         DatabaseReference isAcceptedReference = requestReference.child("isAccepted");
@@ -156,7 +159,8 @@ public class RequestShopActivity extends AppCompatActivity{
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                String dbError = RequestShopActivity.this.getString(R.string.db_error);
+                Toast.makeText(RequestShopActivity.this, dbError, Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -171,6 +175,15 @@ public class RequestShopActivity extends AppCompatActivity{
         requestTimeout.setVisibility(View.VISIBLE);
         waitingRequest.setVisibility(View.GONE);
         processRequest.setVisibility(View.GONE);
+    }
+
+    private void handleCountdown () {
+        int time = Integer.parseInt(countdown.getText().toString());
+        Log.d("Timer_countdown", time + "");
+        if (time > 0) {
+            time --;
+            countdown.setText(time + "");
+        }
     }
 
     private boolean isRequestAccepted(DataSnapshot dataSnapshot) {

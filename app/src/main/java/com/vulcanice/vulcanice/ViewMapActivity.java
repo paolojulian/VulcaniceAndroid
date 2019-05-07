@@ -194,6 +194,7 @@ public class ViewMapActivity extends AppCompatActivity
         Routing routing = new Routing.Builder()
                 .travelMode(AbstractRouting.TravelMode.DRIVING)
                 .withListener(this)
+                .key(context.getString(R.string.google_server_key))
                 .alternativeRoutes(false)
                 .waypoints(userLocation, shopLocation)
                 .build();
