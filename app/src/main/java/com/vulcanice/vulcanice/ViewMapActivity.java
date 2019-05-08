@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -21,7 +22,10 @@ import com.directions.route.Route;
 import com.directions.route.RouteException;
 import com.directions.route.Routing;
 import com.directions.route.RoutingListener;
+import com.firebase.geofire.GeoFire;
+import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.GeoQuery;
+import com.firebase.geofire.GeoQueryEventListener;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -85,6 +89,10 @@ public class ViewMapActivity extends AppCompatActivity
     protected DatabaseReference usersRef, ownerRef;
     protected FirebaseDatabase mDatabase;
     protected VCN_User userModel;
+    // GEOMAP
+    protected GeoFire _geoFire;
+    protected GeoQuery _geoQuery;
+    protected Integer _searchRadius = 5;// 5km
     //MAP
     private GoogleMap mMap;
     private MapFragment mapFragment;
@@ -127,7 +135,7 @@ public class ViewMapActivity extends AppCompatActivity
         setupListeners();
 
         setupMap();
-        getShops();
+//        getShops();
 
         context = ViewMapActivity.this;
     }
@@ -208,7 +216,9 @@ public class ViewMapActivity extends AppCompatActivity
         mapFragment.getMapAsync(ViewMapActivity.this);
     }
 
-
+    /**
+     * Function called if the user moved locations
+     */
     private void setOnLocationUpdate() {
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             responseNoLocation();
@@ -224,6 +234,16 @@ public class ViewMapActivity extends AppCompatActivity
                             return;
                         }
                         setUserLocation(location);
+                        getNearesetShops(
+                                new GeoLocation(location.getLatitude(), location.getLongitude()),
+                                context.getString(R.string.db_both));
+                        getNearesetShops(
+                                new GeoLocation(location.getLatitude(), location.getLongitude()),
+                                context.getString(R.string.db_gas));
+                        getNearesetShops(
+                                new GeoLocation(location.getLatitude(), location.getLongitude()),
+                                context.getString(R.string.db_vul));
+
                         userMarker = mMap.addMarker(new MarkerOptions()
                                 .position(userLocation)
                                 .title("Your Location")
@@ -240,6 +260,15 @@ public class ViewMapActivity extends AppCompatActivity
                     setUserLocation(location);
                     userMarker.setPosition(userLocation);
         //        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 15));
+                    getNearesetShops(
+                            new GeoLocation(location.getLatitude(), location.getLongitude()),
+                            context.getString(R.string.db_both));
+                    getNearesetShops(
+                            new GeoLocation(location.getLatitude(), location.getLongitude()),
+                            context.getString(R.string.db_gas));
+                    getNearesetShops(
+                            new GeoLocation(location.getLatitude(), location.getLongitude()),
+                            context.getString(R.string.db_vul));
                 }
                 if (isTracking) {
                     trackShop();
@@ -272,9 +301,6 @@ public class ViewMapActivity extends AppCompatActivity
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
     }
 
-    /******
-     *
-     */
     private void setLocationRequest() {
         mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(UPDATE_INTERVAL);
@@ -415,6 +441,58 @@ public class ViewMapActivity extends AppCompatActivity
         });
     }
 
+    /**
+     * GETS THE NEAREST SHOPS from the given location
+     * @param geoLocation - the location of the user
+     * @param shopType - shoptype [Gas, Vulcanize, Both]
+     */
+    private void getNearesetShops (GeoLocation geoLocation, final String shopType) {
+        DatabaseReference locationRef = mDatabase.getReference("Locations");
+        GeoFire geoFire = new GeoFire(locationRef.child(shopType));
+        GeoQuery geoQuery = geoFire.queryAtLocation(geoLocation, _searchRadius);
+
+        geoQuery.addGeoQueryEventListener(new GeoQueryEventListener() {
+            @Override
+            public void onKeyEntered(String key, GeoLocation location) {
+                getAndDrawShop(shopType, key);
+            }
+
+            @Override
+            public void onKeyExited(String key) {
+            }
+
+            @Override
+            public void onKeyMoved(String key, GeoLocation location) {
+            }
+
+            @Override
+            public void onGeoQueryReady() {
+            }
+
+            @Override
+            public void onGeoQueryError(DatabaseError error) {
+            }
+        });
+    }
+
+    private void getAndDrawShop (String shopType, String key) {
+        DatabaseReference shopRef = mDatabase.getReference("Shops")
+                .child(shopType)
+                .child(key);
+
+        shopRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                drawShop(dataSnapshot.getValue(Shop.class));
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.d("db error", databaseError.getMessage());
+            }
+        });
+    }
+
     private void startLocationUpdates() {
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             responseNoLocation();
@@ -538,13 +616,6 @@ public class ViewMapActivity extends AppCompatActivity
     public void onRoutingSuccess(ArrayList<Route> routes, int shortestRouteIndex) {
         removeRoute();
         polylines = new ArrayList<>();
-        //add route(s) to the map.
-//        for (int i = 0; i <route.size(); i++) {
-//            //Only 2 routes is available
-//            if (i == 2) {
-//                break;
-//            }
-//            //In case of more than 5 alternative routes
             int colorIndex = shortestRouteIndex % COLORS.length;
             Route route = routes.get(shortestRouteIndex);
 
